@@ -5,30 +5,33 @@ export default function Login () {
   return (
     <div className ="w-full flex items-center	min-h-screen">
       <div className ="w-full max-w-md mx-auto">
-        <div className =" bg-slate-100 p-10">
+        <div className =" bg-neutral-100 p-10 rounded-md  ">
           <h2 className ="text-center text-5xl font-extrabold pb-10">Login</h2>
           <div>
             <div className ="mb-4">
               <label className ="font-mono 	">Telephone number</label>
               <hr/>
               <input type="text" placeholder="000000000" 
-              className ="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-blue-hosta focus:ring-1 focus:ring-opacity-25"></input>
+              className ="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-blue-hosta focus:ring-2 focus:ring-opacity-25 border"></input>
             </div>
             <div className ="mb-4">
               <label className ="font-mono rounded-md	">Password</label><hr/>
-              <input type="password" placeholder="********" className ="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-ebony-clay focus:ring-1 focus:ring-opacity-25"></input>
+              <input type="password" placeholder="********" className ="w-full px-3 py-2 rounded-md focus:outline-none focus:ring-blue-hosta focus:ring-2 focus:ring-opacity-25 border"></input>
             </div>
-            <div className ="flex justify-between mb-4">
+            <div className ="flex justify-between mb-6">
               <div>
                 <input type ="checkbox" className ="mr-2 align-middle	"></input>
-                <label className ="font-mono 	">Remember me</label>
+                <label className ="font-mono text-base">Remember me</label>
               </div>
               <div>
-                <Link to = "#" className ="font-mono">Forgot password?</Link>
+                <Link to = "#" className ="font-mono text-sm ">Forgot password?</Link>
               </div>
             </div>
+            <div className ="mb-4">
+              <button className ="bg-blue-hosta	py-2 rounded-md w-full text-white">Login</button>
+            </div>
             <div>
-              <button className ="bg-blue-hosta w-full">Login</button>
+              <h2>Don't have account? <Link to ="#" className ="text-red-700 font-medium">Sign up</Link></h2>
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import Login from "../../components/Login";
 export default function UserLogin() {
   return (
   <div>
-    <Login/>
+    <Login username={"Phone"} bgcolor ={"bg-blue-hosta"} ringcolor={"focus:ring-blue-hosta"}/>
   </div>
   );
 }

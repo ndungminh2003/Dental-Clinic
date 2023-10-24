@@ -45,7 +45,7 @@ export default function Login({ username, bgcolor, ringcolor }) {
             <div>
               <h2 className="font-mono">
                 Don't have account?{" "}
-                <Link to="#" className="text-red-700 font-medium">
+                <Link to="/sign-up" className="text-red-700 font-medium">
                   Sign up
                 </Link>
               </h2>

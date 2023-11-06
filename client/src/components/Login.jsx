@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function Login({ username, bgcolor, ringcolor }) {
+export default function Login({ bgcolor, ringcolor }) {
   return (
     <div className="w-full flex items-center	min-h-screen">
       <div className="w-full max-w-md mx-auto">
@@ -9,7 +9,7 @@ export default function Login({ username, bgcolor, ringcolor }) {
           <h2 className="text-center text-5xl font-extrabold pb-10">Login</h2>
           <div>
             <div className="mb-4">
-              <label className="font-mono 	">{username}</label>
+              <label className="font-mono ">Phone</label>
               <hr />
               <input
                 type="text"

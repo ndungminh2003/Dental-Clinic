@@ -8,8 +8,15 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import UserLogin from "./pages/Login/UserLogin";
 import SignUp from "./pages/SignUp";
+
 import Dentist from "./pages/Dentist/Dentist";
 import DentistLogin from "./pages/Login/DentistLogin";
+import AddAppointments from "./pages/Dentist/pages/AddAppointments";
+import AllAppointments from "./pages/Dentist/pages/AllAppointments";
+import Appointment from "./pages/Dentist/pages/Appointment";
+import Record from "./pages/Dentist/pages/Record";
+import AddRecord from "./pages/Dentist/pages/AddRecord";
+import AllRecord from "./pages/Dentist/pages/AllRecord";
 
 import Staff from "./pages/Staff/Staff";
 import StaffLogin from "./pages/Login/StaffLogin";
@@ -24,9 +31,19 @@ const router = createBrowserRouter(
       <Route path="/about" element={<About />}></Route>
       <Route path="/login" element={<UserLogin />}></Route>
       <Route path="/sign-up" element={<SignUp />}></Route>
+
+      <Route path="dentist/login" element={<DentistLogin />}></Route>
       <Route path="/dentist" element={<Dentist />}>
-        <Route path="login" element={<DentistLogin />}></Route>
-      </Route>
+        <Route path ="appointment" element ={<Appointment/>}>
+          <Route path="add" element ={<AddAppointments/>}></Route>
+          <Route path="all" element ={<AllAppointments/>}></Route>
+        </Route>
+        <Route path ="record" element ={<Record/>}>
+          <Route path="add" element ={<AddRecord/>}></Route>
+          <Route path="all" element ={<AllRecord/>}></Route>
+        </Route>
+      </Route> 
+
       <Route path="/staff" element={<Staff />}>
         <Route path="login" element={<StaffLogin />}></Route>
       </Route>

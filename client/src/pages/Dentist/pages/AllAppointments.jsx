@@ -1,29 +1,45 @@
 import React from 'react'
 import TextField from '@mui/material/TextField';
 import MUIDataTable from "mui-datatables";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
 const AllAppointments = () => {
-  const columns = ["Name", "Company", "City", "State"];
+  const columns = ["Appointment date", "Patient name",  "Number" , "Adress"];
   const options = {
     filterType: 'checkbox',
   };
   
   const data = [
-  ["Joe James", "Test Corp", "Yonkers", "NY"],
-  ["John Walsh", "Test Corp", "Hartford", "CT"],
-  ["Bob Herm", "Test Corp", "Tampa", "FL"],
-  ["James Houston", "Test Corp", "Dallas", "TX"],
+  ["05-10-2023", "09:10 -> 15h50", "Yonkers", "5 Nguyễn Văn Cừ Q:5 P:10","0000000000"],
+  ["05-10-2023", "09:10 -> 15h50", "Yonkers", "5 Nguyễn Văn Cừ Q:5 P:10","0000000000"],
+  ["05-10-2023", "09:10 -> 15h50", "Yonkers", "5 Nguyễn Văn Cừ Q:5 P:10","0000000000"],
+  ["05-10-2023", "09:10 -> 15h50", "Yonkers", "5 Nguyễn Văn Cừ Q:5 P:10","0000000000"],
+
   ];
+  const getMuiTheme = () => createTheme({
+    components: {
+      MUIDataTableBodyCell: {
+        styleOverrides:{
+          root: {
+              marginLeft:"20px",
+          }
+        }
+      }
+    }
+  })
   return (
-    <div className ="p-5 w-full">
+    <div className ="w-full p-5">
       <div>
-      <MUIDataTable
-        title={"All appoinment"}
-        data={data}
-        columns={columns}
-        options={options}
-      />
+      <ThemeProvider theme={getMuiTheme()}>
+        <MUIDataTable
+          title={"All appoinment"}
+          data={data}
+          columns={columns}
+          options={options}
+          sx={{backgroundColor: 'blue'}}
+        />
+       </ThemeProvider>
       </div>
     </div>
   )

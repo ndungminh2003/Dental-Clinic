@@ -17,9 +17,9 @@ const AllAppointments = () => {
   ];
   return (
     <div className ="p-5 w-full">
-      <h1 className = "text-3xl font-bold uppercase mb-7">All appoinment</h1>
       <div>
       <MUIDataTable
+        title={"All appoinment"}
         data={data}
         columns={columns}
         options={options}

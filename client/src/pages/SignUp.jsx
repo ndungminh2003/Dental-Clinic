@@ -6,7 +6,7 @@ import 'react-phone-input-2/lib/style.css'
 export default function SignUp() {
   const [value,setValue] = useState();
   return (
-    <div className="w-full flex items-center min-h-screen	">
+    <div className="w-full flex items-center min-h-screen	bg-slate-300">
       <div className="w-full max-w-md mx-auto ">
         <div className=" bg-neutral-100 px-12 py-7 rounded-md  ">
           <h2 className="text-center text-4xl font-extrabold pb-5">Sign up</h2>
@@ -16,38 +16,46 @@ export default function SignUp() {
               <hr />
               <input
                 type="text"
-                className={`focus:ring-blue-hosta input focus:ring-opacity-25 `}
+                className={`focus:ring-blue-hosta input focus:ring-opacity-25  `}
               ></input>
             </div>
             <div className="mb-3 flex grow justify-between w-full">
-              <div className ="w-1/3">
+              <div className ="w-[45%]">
                 <label className="font-mono text-sm">Date of birth</label>
                 <hr />
                 <input
                   type="date"
-                  className={`focus:ring-blue-hosta px-2 py-1 input focus:ring-opacity-25 `}
+                  className={`focus:ring-blue-hosta px-2 py-1 input focus:ring-opacity-25  `}
                 ></input>
               </div>
-              <div className ="w-3/5 ">
-                <label className="font-mono text-sm">Phone</label>
+              <div className ="w-[45%]">
+                <label className="font-mono text-sm">Gender</label>
+                <hr />
+                <select className ="w-full  px-2 py-1 border border-gray-300 rounded-md">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+            </div>
+            <div className="mb-3">
+              <label className="font-mono text-sm">Phone</label>
                 <hr />
                 <PhoneInput
                   inputClass="!w-full !h-[31px]"
-                  // className={`focus:ring-blue-hosta w-full px-2 py-1 rounded-md focus:outline-none focus:ring-2 border focus:ring-opacity-25 `}
+                  // className={`focus:ring-blue-hosta w-full px-2 py-1 rounded-md focus:outline-none focus:ring-2 border focus:ring-opacity-25  `}
                   placeholder="Enter phone number"
                   country='vn'
                   regions={'asia'}
                   value={value}
                   onChange={setValue}
                   />
-              </div>
             </div>
             <div className="mb-3">
               <label className="font-mono text-sm">Address</label>
               <hr />
               <input
                 type="text"
-                className={`focus:ring-blue-hosta input focus:ring-opacity-25 `}
+                className={`focus:ring-blue-hosta input focus:ring-opacity-25  `}
               ></input>
             </div>
             <div className="mb-3">
@@ -55,7 +63,7 @@ export default function SignUp() {
               <hr />
               <input
                 type="password"
-                className={`focus:ring-blue-hosta input focus:ring-opacity-25 `}
+                className={`focus:ring-blue-hosta input focus:ring-opacity-25  `}
               ></input>
             </div>
             <div className="flex justify-between mb-6">

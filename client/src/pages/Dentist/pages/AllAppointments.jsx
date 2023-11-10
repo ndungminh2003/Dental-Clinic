@@ -1,5 +1,4 @@
 import React from 'react'
-import TextField from '@mui/material/TextField';
 import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -8,6 +7,8 @@ const AllAppointments = () => {
   const columns = ["Appointment date", "Patient name",  "Number" , "Adress"];
   const options = {
     filterType: 'checkbox',
+    download: false,
+    print: false,
   };
   
   const data = [
@@ -22,7 +23,7 @@ const AllAppointments = () => {
       MUIDataTableBodyCell: {
         styleOverrides:{
           root: {
-              marginLeft:"20px",
+              marginLeft:"15px",
           }
         }
       }
@@ -37,7 +38,6 @@ const AllAppointments = () => {
           data={data}
           columns={columns}
           options={options}
-          sx={{backgroundColor: 'blue'}}
         />
        </ThemeProvider>
       </div>

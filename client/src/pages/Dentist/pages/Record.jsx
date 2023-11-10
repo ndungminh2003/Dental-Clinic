@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import { Outlet } from "react-router-dom";
 
 const Record = () => {
   return (
-    <div>Record</div>
-  )
-}
+    <div>
+      <Outlet />
+    </div>
+  );
+};
 
-export default Record
+export default Record;

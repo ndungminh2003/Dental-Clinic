@@ -11,15 +11,21 @@ import SignUp from "./pages/SignUp";
 
 import Dentist from "./pages/Dentist/Dentist";
 import DentistLogin from "./pages/Login/DentistLogin";
-import AddAppointments from "./pages/Dentist/pages/AddAppointments";
-import AllAppointments from "./pages/Dentist/pages/AllAppointments";
-import Appointment from "./pages/Dentist/pages/Appointment";
-import Record from "./pages/Dentist/pages/Record";
-import AddRecord from "./pages/Dentist/pages/AddRecord";
-import AllRecord from "./pages/Dentist/pages/AllRecord";
+import DAddAppointments from "./pages/Dentist/pages/AddAppointments";
+import DAllAppointments from "./pages/Dentist/pages/AllAppointments";
+import DAppointment from "./pages/Dentist/pages/Appointment";
+import DRecord from "./pages/Dentist/pages/Record";
+import DAddRecord from "./pages/Dentist/pages/AddRecord";
+import DAllRecord from "./pages/Dentist/pages/AllRecord";
 
 import Staff from "./pages/Staff/Staff";
 import StaffLogin from "./pages/Login/StaffLogin";
+import SAddAppointments from "./pages/Staff/pages/AddAppointments";
+import SAllAppointments from "./pages/Staff/pages/AllAppointments";
+import SAppointment from "./pages/Staff/pages/Appointment";
+import SRecord from "./pages/Staff/pages/Record";
+import SAllRecord from "./pages/Staff/pages/AllRecord";
+
 
 import Admin from "./pages/Admin/Admin";
 import AdminLogin from "./pages/Login/AdminLogin";
@@ -34,18 +40,25 @@ const router = createBrowserRouter(
 
       <Route path="dentist/login" element={<DentistLogin />}></Route>
       <Route path="/dentist" element={<Dentist />}>
-        <Route path ="appointment" element ={<Appointment/>}>
-          <Route path="add" element ={<AddAppointments/>}></Route>
-          <Route path="all" element ={<AllAppointments/>}></Route>
+        <Route path ="appointment" element ={<DAppointment/>}>
+          <Route path="add" element ={<DAddAppointments/>}></Route>
+          <Route path="all" element ={<DAllAppointments/>}></Route>
         </Route>
-        <Route path ="record" element ={<Record/>}>
-          <Route path="add" element ={<AddRecord/>}></Route>
-          <Route path="all" element ={<AllRecord/>}></Route>
+        <Route path ="record" element ={<DRecord/>}>
+          <Route path="add" element ={<DAddRecord/>}></Route>
+          <Route path="all" element ={<DAllRecord/>}></Route>
         </Route>
       </Route> 
 
+      <Route path="staff/login" element={<StaffLogin />}></Route>
       <Route path="/staff" element={<Staff />}>
-        <Route path="login" element={<StaffLogin />}></Route>
+      <Route path ="appointment" element ={<SAppointment/>}>
+        <Route path="add" element ={<SAddAppointments/>}></Route>
+          <Route path="all" element ={<SAllAppointments/>}></Route>
+        </Route>
+        <Route path ="record" element ={<SRecord/>}>
+          <Route path="all" element ={<SAllRecord/>}></Route>
+        </Route>
       </Route>
       <Route path="/admin" element={<Admin />}>
         <Route path="login" element={<AdminLogin />}></Route>

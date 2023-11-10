@@ -11,6 +11,9 @@ module.exports = {
         "Topaz":"#07BFBD",
         "light-Topaz":"#09D3D1",
         "dark-Topaz":"#09A6A5",
+        "light-dirty-blue":"#65a4cb",
+        "dark-dirty-blue":"#306d99",
+
       }
     },
   },

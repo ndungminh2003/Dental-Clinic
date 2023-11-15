@@ -95,6 +95,10 @@ CREATE TRIGGER TRIGGER_APPOINTMENT ON APPOINTMENT
 FOR INSERT, UPDATE
 AS
 BEGIN
+	DECLARE @recordId INT = (SELECT recordId FROM inserted)
+	DECLARE @startTime DATETIME = (SELECT startTime FROM inserted)
+	DECLARE @dentistId INT = (SELECT dentistId FROM inserted)
+	DECLARE @customerId INT = (SELECT customerId FROM inserted)
 	IF UPDATE(startTime) or UPDATE(endTime)
 	BEGIN
 		IF EXISTS (SELECT * FROM inserted WHERE datediff(second,startTime, endTime) <= 0) 
@@ -105,7 +109,7 @@ BEGIN
 	END
 	IF UPDATE(recordId)
 	BEGIN
-		IF EXISTS (SELECT * FROM APPOINTMENT a WHERE a.startTime != inserted.startTime AND a.dentistId != inserted.dentistId AND a.recordId = inserted.recordId)
+		IF EXISTS (SELECT * FROM APPOINTMENT a WHERE (a.dentistId != @dentistId OR a.startTime != @startTime) AND a.recordId = @recordId)
 		BEGIN 
 			RAISERROR (N'Lỗi: Mỗi hồ sơ bệnh án thuộc về một cuộc hẹn duy nhất', 16, 1)
 			ROLLBACK
@@ -113,7 +117,7 @@ BEGIN
 	END
 	IF UPDATE(startTime) or UPDATE(customerId)
 	BEGIN
-		IF EXISTS (SELECT * FROM APPOINTMENT a WHERE a.startTime = inserted.startTime AND a.dentistId != inserted.dentistId AND a.customerId = inserted.customerId)
+		IF EXISTS (SELECT * FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId != @dentistId AND a.customerId = @customerId)
 		BEGIN 
 			RAISERROR (N'Lỗi: Trong một khoảng thời gian mỗi bệnh nhân chỉ có một cuộc hẹn với một nha sĩ duy nhất', 16, 1)
 			ROLLBACK
@@ -129,6 +133,13 @@ BEGIN
 	END
 END
 
+SELECT * FROM CUSTOMER
+SELECT * FROM SCHEDULE
+SELECT * FROM PATIENT_RECORD
+SELECT * FROM APPOINTMENT
+INSERT INTO SCHEDULE VALUES(1, '2023-11-10 07:00:00.000','2023-11-10 08:00:00.000', 0)
+INSERT INTO APPOINTMENT VALUES(1, 1, '2023-11-10 07:00:00.000', '2023-11-10 08:00:00.000', N'Đang chờ', NULL, NULL)
+DELETE FROM APPOINTMENT WHERE dentistId = 1 AND customerId = 1
 
 --Trigger5
 --R27: Thời gian hóa đơn được tạo phải sau thời gian hồ sơ bệnh án được tạo.

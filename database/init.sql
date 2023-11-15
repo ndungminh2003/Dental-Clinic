@@ -50,20 +50,20 @@ CREATE TABLE STAFF (
   phoneNumber VARCHAR(15) NOT NULL CHECK(ISNUMERIC(phoneNumber) = 1) UNIQUE,
   gender NVARCHAR(6) CHECK(gender in (N'Nam', N'Nữ')),
   isBlocked BIT NOT NULL DEFAULT(0),
-  startDate DATE
+  --startDate DATE
 );
 
 
 CREATE TABLE APPOINTMENT (
  
   dentistId INT NOT NULL,
-  startTime DATETIME CHECK (CONVERT(char(10), startTime, 108) IN ('07:00:00', '08:00:00', '09:00:00', '10:00:00', '13:00:00','14:00:00', '15:00:00', '16:00:00')),
   customerId INT NOT NULL,
+  startTime DATETIME CHECK (CONVERT(char(10), startTime, 108) IN ('07:00:00', '08:00:00', '09:00:00', '10:00:00', '13:00:00','14:00:00', '15:00:00', '16:00:00')),
   endTime DATETIME CHECK (CONVERT(char(10), endTime, 108) IN ('08:00:00', '09:00:00', '10:00:00', '11:00:00', '14:00:00','15:00:00', '16:00:00', '17:00:00')),
   status NVARCHAR(30) CHECK(status IN (N'Đang diễn ra', N'Đang chờ', N'Hoàn thành', N'Hủy', N'Không đến khám', N'Đang tạo hồ sơ bệnh án')),
   staffId INT,
   recordId INT,
-  CONSTRAINT PK_APPOINTMENT PRIMARY KEY (dentistId, customerId, startTime)
+  CONSTRAINT PK_APPOINTMENT PRIMARY KEY (dentistId, startTime)
 );
 
 CREATE TABLE PATIENT_RECORD(
@@ -99,17 +99,18 @@ CREATE TABLE SCHEDULE (
 CREATE TABLE PRESCRIBE_MEDICINE (
 	
   recordId INT NOT NULL,
-  medicineId INT NOT NULL,
+  medicineId INT,
+  medicineName NVARCHAR(30) NOT NULL,
   price FLOAT CHECK(price > 0),
   quantity INT CHECK(quantity >= 0),
-  CONSTRAINT PK_PRESCRIBE_MEDICINE PRIMARY KEY (recordId, medicineId)
+  CONSTRAINT PK_PRESCRIBE_MEDICINE PRIMARY KEY (recordId, medicineName)
 );
 
 CREATE TABLE MEDICINE (
 	
   id INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
-  unit NVARCHAR(10) CHECK(unit IN (N'Viên', N'Vỉ', N'Hộp', N'Chai', N'Ống', N'Gói')),
   name NVARCHAR(30) UNIQUE CHECK(LEN(name) > 0),
+  unit NVARCHAR(10) CHECK(unit IN (N'Viên', N'Vỉ', N'Hộp', N'Chai', N'Ống', N'Gói')),
   description NVARCHAR(100),
   expirationDate DATETIME,
   indication NVARCHAR(50),
@@ -120,13 +121,12 @@ CREATE TABLE MEDICINE (
 CREATE TABLE SERVICE (
 	
   id INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
-  price FLOAT CHECK(price > 0),
   name NVARCHAR(50) UNIQUE CHECK(LEN(name) > 0),
+  price FLOAT CHECK(price > 0),
   description NVARCHAR(100),
 );
 
 CREATE TABLE SERVICE_USE (
-	
   recordId INT NOT NULL,
   serviceId INT NOT NULL,
   price FLOAT CHECK(price > 0)
@@ -179,16 +179,16 @@ INSERT INTO ADMIN (name, password, phoneNumber)
 VALUES ('AdminUser', 'AdminPassword123', '123456789');
 
 -- Insert data into the CUSTOMER table
-INSERT INTO CUSTOMER (name, password, phoneNumber, gender, address, birthday, isBlocked)
-VALUES ('Customer1', 'CustomerPassword123', '987654321', N'Nam', '123 Main St', '1990-05-15', 0);
+INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
+VALUES ('Customer1', 'CustomerPassword123', '987654321', 'Customer', N'Nam', '123 Main St', '1990-05-15', 0);
 
 -- Insert data into the DENTIST table
 INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
 VALUES ('Dentist1', 'DentistPassword123', '567890123', N'Nữ', '1985-08-20', 'Experienced dentist', 0);
 
 -- Insert data into the STAFF table
-INSERT INTO STAFF (name, password, phoneNumber, gender, startDate, isBlocked)
-VALUES ('Staff1', 'StaffPassword123', '789012345', N'Nam', '2023-01-15', 0);
+INSERT INTO STAFF (name, password, phoneNumber, gender, isBlocked)
+VALUES ('Staff1', 'StaffPassword123', '789012345', N'Nam', 0);
 
 -- Insert data into the MEDICINE table
 INSERT INTO MEDICINE (unit, name, description, expirationDate, indication, quantity, price)
@@ -215,12 +215,12 @@ INSERT INTO PATIENT_RECORD (customerId, dentistId, symptom, advice, diagnostic, 
 VALUES (1, 1, N'Toothache', N'Rest and use painkiller', N'Cavity detected', '2023-12-12 11:30:00');
 
 -- Insert another prescription for a different patient record
-INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, price, quantity)
-VALUES (1, 1, 8.50, 20);
+INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, medicineName, price, quantity)
+VALUES (1, 1, 'Hello', 8.50, 20);
 
 -- Insert another prescription for a different patient record
-INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, price, quantity)
-VALUES (2, 2, 8.50, 20);
+INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, medicineName, price, quantity)
+VALUES (1, 2, 'Hello2', 8.50, 20);
 
 -- Insert data into the SERVICE table to define available services
 INSERT INTO SERVICE (name, price, description)

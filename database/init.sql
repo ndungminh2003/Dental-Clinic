@@ -83,8 +83,8 @@ CREATE TABLE INVOICE (
   total FLOAT CHECK(total >= 0),
   date_time DATETIME,
   status NVARCHAR(30) CHECK(status IN (N'Đã thanh toán', N'Chưa thanh toán')),
-  recordId INT NOT NULL,
-  staffId INT,
+  recordId INT NOT NULL UNIQUE,
+  staffId INT NOT NULL,
 );
 
 CREATE TABLE SCHEDULE (

@@ -119,9 +119,14 @@ BEGIN
 	BEGIN
 		IF EXISTS (SELECT * FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId != @dentistId AND a.customerId = @customerId)
 		BEGIN 
-			RAISERROR (N'Lỗi: Trong một khoảng thời gian mỗi bệnh nhân chỉ có một cuộc hẹn với một nha sĩ duy nhất', 16, 1)
+			RAISERROR (N'Lỗi: Khách hàng chỉ có thể có một cuộc hẹn trong một thời điểm', 16, 1)
 			ROLLBACK
 		END
+		-- IF EXISTS (SELECT * FROM inserted i WHERE i.status = N'Đang diễn ra' AND i.status = N'Hoàn thành' AND i.status = N'Đang tạo hồ sơ bệnh án' )
+		-- BEGIN
+		-- 	RAISERROR(N'Lỗi: Khách hàng chỉ có thể có một cuộc hẹn trong một thời điểm', 16, 1)
+		-- 	ROLLBACK
+		-- END
 	END
 	IF UPDATE(status) or UPDATE(recordId)
 	BEGIN
@@ -141,6 +146,8 @@ INSERT INTO SCHEDULE VALUES(1, '2023-11-10 07:00:00.000','2023-11-10 08:00:00.00
 INSERT INTO APPOINTMENT VALUES(1, 1, '2023-11-10 07:00:00.000', '2023-11-10 08:00:00.000', N'Đang chờ', NULL, NULL)
 DELETE FROM APPOINTMENT WHERE dentistId = 1 AND customerId = 1
 
+
+
 --Trigger5
 --R27: Thời gian hóa đơn được tạo phải sau thời gian hồ sơ bệnh án được tạo.
 GO
@@ -151,6 +158,9 @@ CREATE TRIGGER TRIGGER_INVOICE ON INVOICE
 FOR INSERT, UPDATE
 AS
 BEGIN
+	DECLARE @totalService FLOAT = (SELECT SUM(price) FROM SERVICE_USE s JOIN inserted i ON s.recordId = i.recordId)
+	DECLARE @totalMedicine FLOAT = (SELECT SUM(price * quantity) FROM PRESCRIBE_MEDICINE p JOIN inserted i ON p.recordId = i.recordId)
+	DECLARE @total FLOAT = @totalService + @totalMedicine
 	IF UPDATE(date_time) 
 	BEGIN
 		IF EXISTS (SELECT * FROM inserted JOIN PATIENT_RECORD ON PATIENT_RECORD.id = inserted.recordId  WHERE DATEDIFF(second,inserted.date_time, PATIENT_RECORD.date_time) >= 0 ) 
@@ -161,13 +171,22 @@ BEGIN
 	END
 	IF UPDATE(recordId) 
 	BEGIN
-		IF EXISTS (SELECT * FROM INVOICE i WHERE i.id != inserted.id AND i.recordId = inserted.recordId)
+		UPDATE iv SET total = @total FROM INVOICE iv JOIN INSERTED i ON iv.id = i.id 
+	END
+	IF UPDATE(total) 
+	BEGIN
+		IF EXISTS (SELECT * FROM inserted i WHERE i.total != @total)
 		BEGIN 
-			RAISERROR (N'Lỗi: Mỗi hồ sơ bệnh án chỉ có một hóa đơn duy nhất', 16, 1)
+			RAISERROR (N'Lỗi: Tổng tiền thanh toán phải bằng tổng tiền thuốc và dịch vụ đã dùng', 16, 1)
 			ROLLBACK
 		END
 	END
 END
+
+SELECT * FROM PATIENT_RECORD
+SELECT * FROM INVOICE
+INSERT INTO INVOICE VALUES(NULL, '2024-11-10 12:00:00.000', N'Chưa thanh toán', 2, 1)
+UPDATE INVOICE SET total = 100 WHERE id = 1
 
 --Trigger6
 --R28: Thời gian hồ sơ bệnh án được tạo phải sau thời gian bắt đầu của cuộc hẹn.
@@ -181,7 +200,6 @@ AS
 BEGIN
 	IF UPDATE(date_time)
 	BEGIN
-		PRINT 1
 		DECLARE @recordId INT = (SELECT id FROM inserted)
 		DECLARE @dateTime DATETIME = (SELECT date_time FROM inserted)
 		IF EXISTS (SELECT * FROM APPOINTMENT WHERE APPOINTMENT.recordId = @recordId AND DATEDIFF(second,@dateTime, APPOINTMENT.startTime) >= 0 ) 
@@ -192,6 +210,8 @@ BEGIN
 	END
 END
 
+--Trigger7
+GO
 IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PATIENT_RECORD2]'))
 DROP TRIGGER [dbo].[TRIGGER_PATIENT_RECORD2]
 GO
@@ -230,43 +250,71 @@ SELECT * FROM APPOINTMENT
 INSERT INTO PATIENT_RECORD (symptom, advice, diagnostic, date_time, dentistId, customerId) VALUES (N'Đau răng', N'Không', N'Không', '2023-12-12 10:00:00', 1, 1)
 UPDATE PATIENT_RECORD SET date_time = '2023-12-12 08:00:00' WHERE id = 5
 DELETE FROM PATIENT_RECORD WHERE id = 8
---Trigger7
-GO
-IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PATIENT_RECORD2]'))
-DROP TRIGGER [dbo].[TRIGGER_PATIENT_RECORD2]
-GO
-CREATE TRIGGER TRIGGER_PATIENT_RECORD2 ON PATIENT_RECORD
-INSTEAD OF INSERT
-AS
-BEGIN
-	DECLARE @recordId INT = (SELECT id FROM inserted)
-	DECLARE @customerId INT = (SELECT customerId FROM inserted)
-	DECLARE @dentistId INT = (SELECT dentistId FROM inserted)
-	INSERT INTO PATIENT_RECORD VALUES()
-	INSERT INTO SERVICE_USE (recordId, serviceId) VALUES (@recordId, 1)
-	UPDATE a SET a.recordId = @recordId FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án'
-END
 
---Trigger9
+--Trigger8*
+-- GO
+-- IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PATIENT_RECORD3]'))
+-- DROP TRIGGER [dbo].[TRIGGER_PATIENT_RECORD3]
+-- GO
+-- CREATE TRIGGER TRIGGER_PATIENT_RECORD3 ON PATIENT_RECORD
+-- FOR DELETE
+-- AS
+-- BEGIN
+
+--Trigger8
 --R30: Số lượng của một loại thuốc trong đơn thuốc phải bé hơn hoặc bằng số lượng của loại thuốc đó ở trong kho.
 GO
-CREATE TRIGGER PRESCRIBE_MEDICINE_QUANTITY
-ON PRESCRIBE_MEDICINE 
-AFTER INSERT, UPDATE
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PRESCRIBE_MEDICINE1]'))
+DROP TRIGGER [dbo].[TRIGGER_PRESCRIBE_MEDICINE1]
+GO
+CREATE TRIGGER TRIGGER_PRESCRIBE_MEDICINE1 ON PRESCRIBE_MEDICINE 
+FOR INSERT, UPDATE
 AS
-IF UPDATE(quantity)
 BEGIN
-	IF EXISTS (
-		SELECT 1
-		FROM INSERTED as i
-		JOIN MEDICINE as m ON i.medicineId = m.id
-		WHERE m.quantity < i.quantity
-	)
-	BEGIN 
-		RAISERROR(N'Lỗi: Số lượng của một loại thuốc trong đơn thuốc phải bé hơn hoặc bằng số lượng của loại thuốc đó ở trong kho.', 16, 1)
-		ROLLBACK TRANSACTION;
-	END;
+	IF UPDATE(quantity) or UPDATE(price)
+	BEGIN
+		IF EXISTS (
+			SELECT 1
+			FROM INSERTED as i
+			JOIN MEDICINE as m ON i.medicineId = m.id
+			WHERE m.quantity < i.quantity
+		)
+		BEGIN 
+			RAISERROR(N'Lỗi: Số lượng của một loại thuốc trong đơn thuốc phải bé hơn hoặc bằng số lượng của loại thuốc đó ở trong kho.', 16, 1)
+			ROLLBACK TRANSACTION;
+		END;
+		IF EXISTS ( SELECT * FROM INVOICE i JOIN inserted p ON i.recordId = p.recordId)
+		BEGIN
+			DECLARE @totalService FLOAT = (SELECT SUM(s.price) FROM SERVICE_USE s JOIN inserted i ON s.recordId = i.recordId)
+			DECLARE @totalMedicine FLOAT = (SELECT SUM(p.price * p.quantity) FROM PRESCRIBE_MEDICINE p JOIN inserted i ON p.recordId = i.recordId)
+			DECLARE @total FLOAT = @totalService + @totalMedicine
+			UPDATE i SET i.total = @total FROM INVOICE i JOIN inserted p ON i.recordId = p.recordId
+		END
+	END
+	IF UPDATE(medicineId)
+	BEGIN
+		UPDATE p SET p.medicineName = m.name, p.price = m.price
+		FROM PRESCRIBE_MEDICINE p JOIN INSERTED i ON p.medicineId = i.medicineId AND p.recordId = i.recordId JOIN MEDICINE m on m.id = i.medicineId 
+	END
 END;
+
+--Trigger9
+GO
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PRESCRIBE_MEDICINE2]'))
+DROP TRIGGER [dbo].[TRIGGER_PRESCRIBE_MEDICINE2]
+GO
+CREATE TRIGGER TRIGGER_PRESCRIBE_MEDICINE2 ON PRESCRIBE_MEDICINE 
+FOR DELETE
+AS
+BEGIN
+	IF EXISTS ( SELECT * FROM INVOICE i JOIN deleted d ON i.recordId = d.recordId)
+	BEGIN
+		DECLARE @totalService FLOAT = (SELECT SUM(s.price) FROM SERVICE_USE s JOIN inserted i ON s.recordId = i.recordId)
+		DECLARE @totalMedicine FLOAT = (SELECT SUM(p.price * p.quantity) FROM PRESCRIBE_MEDICINE p JOIN inserted i ON p.recordId = i.recordId)
+		DECLARE @total FLOAT = @totalService + @totalMedicine
+		UPDATE i SET i.total = @total FROM INVOICE i JOIN inserted p ON i.recordId = p.recordId
+	END
+END
 
 --Trigger10
 --R47: Bác sĩ chỉ tạo Patient records cho bệnh nhân chỉ khi bác sĩ và bệnh nhân đó đang có cuộc hẹn với nhau.

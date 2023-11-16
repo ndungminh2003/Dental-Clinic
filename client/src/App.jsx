@@ -50,6 +50,8 @@ const router = createBrowserRouter(
       <Route path="/admin" element={<Admin />}>
         <Route path="login" element={<AdminLogin />}></Route>
       </Route>
+      <Route path="/profile" element={<Profile />}></Route>
+      <Route path="/contact" element={<Contact />}></Route>
     </>
   )
 );

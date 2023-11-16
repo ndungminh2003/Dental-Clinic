@@ -14,12 +14,12 @@ BEGIN
     IF EXISTS (SELECT * FROM inserted WHERE role = N'Guest' and password IS NOT NULL) 
     BEGIN 
         RAISERROR(N'Lỗi: Không thể đặt mật khẩu cho Guest', 16, 1)
-        ROLLBACK
+        ROLLBACK TRAN
     END
 	IF EXISTS (SELECT * FROM inserted WHERE LEN(password) <= 10) 
     BEGIN 
         RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
-        ROLLBACK
+        ROLLBACK TRAN
     END
 END
 
@@ -50,7 +50,7 @@ BEGIN
     ELSE
     BEGIN
       RAISERROR('Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
-      RETURN
+      ROLLBACK TRAN
     END
   END
   ELSE
@@ -75,12 +75,12 @@ BEGIN
 	IF EXISTS (SELECT * FROM inserted WHERE (SELECT count(dentistId) FROM SCHEDULE WHERE startTime = inserted.startTime GROUP BY startTime) > 5) 
 	BEGIN 
 		RAISERROR(N'Lỗi: Tối đa 5 bác sĩ có cùng thời gian làm việc trong lịch trình', 16, 1)
-		ROLLBACK
+		ROLLBACK TRAN
 	END
 	IF EXISTS (SELECT * FROM inserted WHERE datediff(second,startTime, endTime) != 3600) 
 	BEGIN 
 		RAISERROR(N'Lỗi: thời gian bắt đầu phải cách thời gian kết thúc 1 giờ', 16, 1)
-		ROLLBACK
+		ROLLBACK TRAN
 	END
 END
 
@@ -104,7 +104,7 @@ BEGIN
 		IF EXISTS (SELECT * FROM inserted WHERE datediff(second,startTime, endTime) <= 0) 
 		BEGIN 
 			RAISERROR(N'Lỗi: Thời gian bắt đầu phải trước thời gian kết thúc', 16, 1)
-			ROLLBACK
+			ROLLBACK TRAN
 		END
 	END
 	IF UPDATE(recordId)
@@ -112,7 +112,7 @@ BEGIN
 		IF EXISTS (SELECT * FROM APPOINTMENT a WHERE (a.dentistId != @dentistId OR a.startTime != @startTime) AND a.recordId = @recordId)
 		BEGIN 
 			RAISERROR (N'Lỗi: Mỗi hồ sơ bệnh án thuộc về một cuộc hẹn duy nhất', 16, 1)
-			ROLLBACK
+			ROLLBACK TRAN
 		END
 	END
 	IF UPDATE(startTime) or UPDATE(customerId)
@@ -120,7 +120,7 @@ BEGIN
 		IF EXISTS (SELECT * FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId != @dentistId AND a.customerId = @customerId)
 		BEGIN 
 			RAISERROR (N'Lỗi: Khách hàng chỉ có thể có một cuộc hẹn trong một thời điểm', 16, 1)
-			ROLLBACK
+			ROLLBACK TRAN
 		END
 		-- IF EXISTS (SELECT * FROM inserted i WHERE i.status = N'Đang diễn ra' AND i.status = N'Hoàn thành' AND i.status = N'Đang tạo hồ sơ bệnh án' )
 		-- BEGIN
@@ -133,18 +133,10 @@ BEGIN
 		IF EXISTS (SELECT * FROM inserted WHERE inserted.status = N'Hoàn thành' and inserted.recordId IS NULL) 
 		BEGIN 
 			RAISERROR(N'Lỗi: Mỗi cuộc hẹn đã hoàn thành phải có một hồ sơ bệnh án ứng với cuộc hẹn đó', 16, 1)
-			ROLLBACK
+			ROLLBACK TRAN
 		END
 	END
 END
-
-SELECT * FROM CUSTOMER
-SELECT * FROM SCHEDULE
-SELECT * FROM PATIENT_RECORD
-SELECT * FROM APPOINTMENT
-INSERT INTO SCHEDULE VALUES(1, '2023-11-10 07:00:00.000','2023-11-10 08:00:00.000', 0)
-INSERT INTO APPOINTMENT VALUES(1, 1, '2023-11-10 07:00:00.000', '2023-11-10 08:00:00.000', N'Đang chờ', NULL, NULL)
-DELETE FROM APPOINTMENT WHERE dentistId = 1 AND customerId = 1
 
 
 
@@ -166,7 +158,7 @@ BEGIN
 		IF EXISTS (SELECT * FROM inserted JOIN PATIENT_RECORD ON PATIENT_RECORD.id = inserted.recordId  WHERE DATEDIFF(second,inserted.date_time, PATIENT_RECORD.date_time) >= 0 ) 
 		BEGIN 
 			RAISERROR (N'Lỗi: thời gian tạo hóa đơn phải sau thời gian tạo hồ sơ bệnh án', 16, 1)
-			ROLLBACK
+			ROLLBACK TRAN
 		END
 	END
 	IF UPDATE(recordId) 
@@ -178,15 +170,10 @@ BEGIN
 		IF EXISTS (SELECT * FROM inserted i WHERE i.total != @total)
 		BEGIN 
 			RAISERROR (N'Lỗi: Tổng tiền thanh toán phải bằng tổng tiền thuốc và dịch vụ đã dùng', 16, 1)
-			ROLLBACK
+			ROLLBACK TRAN
 		END
 	END
 END
-
-SELECT * FROM PATIENT_RECORD
-SELECT * FROM INVOICE
-INSERT INTO INVOICE VALUES(NULL, '2024-11-10 12:00:00.000', N'Chưa thanh toán', 2, 1)
-UPDATE INVOICE SET total = 100 WHERE id = 1
 
 --Trigger6
 --R28: Thời gian hồ sơ bệnh án được tạo phải sau thời gian bắt đầu của cuộc hẹn.
@@ -198,14 +185,32 @@ CREATE TRIGGER TRIGGER_PATIENT_RECORD1 ON PATIENT_RECORD
 FOR UPDATE
 AS
 BEGIN
+	DECLARE @recordId INT = (SELECT id FROM inserted)
+	DECLARE @dateTime DATETIME = (SELECT date_time FROM inserted)
+	DECLARE @customerId INT = (SELECT customerId FROM inserted)
+	DECLARE @dentistId INT = (SELECT dentistId FROM inserted)
 	IF UPDATE(date_time)
 	BEGIN
-		DECLARE @recordId INT = (SELECT id FROM inserted)
-		DECLARE @dateTime DATETIME = (SELECT date_time FROM inserted)
 		IF EXISTS (SELECT * FROM APPOINTMENT WHERE APPOINTMENT.recordId = @recordId AND DATEDIFF(second,@dateTime, APPOINTMENT.startTime) >= 0 ) 
 		BEGIN 
 			RAISERROR (N'Lỗi: Thời gian tạo hồ sơ bệnh án phải sau thời gian bắt đầu của cuộc hẹn.', 16, 1)
-			ROLLBACK
+			ROLLBACK TRAN
+		END
+	END
+	IF UPDATE(dentistId) or UPDATE(date_time)
+	BEGIN
+		IF EXISTS (SELECT * FROM PATIENT_RECORD p WHERE p.id != @recordId AND p.dentistId = @dentistId AND p.date_time = @dateTime)
+		BEGIN
+			RAISERROR (N'Lỗi: Hiện tại nha sĩ này chỉ có thể tạo một hồ sơ bệnh án', 16, 1)
+			ROLLBACK TRAN
+		END
+	END
+	IF UPDATE(dentistId) or UPDATE (customerId)
+	BEGIN
+		IF NOT EXISTS (SELECT * FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án')
+		BEGIN
+			RAISERROR (N'Lỗi: Không có cuộc hẹn cần tạo hồ sơ bệnh án', 16, 1)
+			ROLLBACK TRAN
 		END
 	END
 END
@@ -223,33 +228,45 @@ BEGIN
 	DECLARE @customerId INT = (SELECT customerId FROM inserted)
 	DECLARE @dentistId INT = (SELECT dentistId FROM inserted)
 	DECLARE @dateTime DATETIME = (SELECT date_time FROM inserted)
-	IF NOT EXISTS (SELECT * FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án')
+	IF NOT EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án')
 	BEGIN
 		RAISERROR (N'Lỗi: Không có cuộc hẹn cần tạo hồ sơ bệnh án', 16, 1)
-		ROLLBACK
+		ROLLBACK TRAN
 	END
 	IF EXISTS (SELECT * FROM PATIENT_RECORD p WHERE p.id != @recordId AND p.dentistId = @dentistId AND p.date_time = @dateTime)
 	BEGIN
-		RAISERROR (N'Lỗi: Hiện tại nha sĩ chỉ có thể tạo một hồ sơ bệnh án', 16, 1)
-		ROLLBACK
+		RAISERROR (N'Lỗi: Hiện tại nha sĩ này chỉ có thể tạo một hồ sơ bệnh án', 16, 1)
+		ROLLBACK TRAN
 	END
 	IF EXISTS (SELECT * FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án' AND DATEDIFF(second,@dateTime, a.startTime) >= 0 ) 
 	BEGIN 
 		RAISERROR (N'Lỗi: Thời gian tạo hồ sơ bệnh án phải sau thời gian bắt đầu của cuộc hẹn.', 16, 1)
-		ROLLBACK
+		ROLLBACK TRAN
 	END
 	UPDATE a SET a.recordId = @recordId, a.status = N'Hoàn thành' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án'
 	DECLARE @price INT = (SELECT price FROM SERVICE WHERE id = 1)
 	INSERT INTO SERVICE_USE (recordId, serviceId, price) VALUES(@recordId, 1, @price)
 END
 
-SELECT * FROM SERVICE
-SELECT * FROM SERVICE_USE
+GO
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PATIENT_RECORD3]'))
+DROP TRIGGER [dbo].[TRIGGER_PATIENT_RECORD3]
+GO
+CREATE TRIGGER TRIGGER_PATIENT_RECORD3 ON PATIENT_RECORD
+INSTEAD OF DELETE
+AS
+BEGIN
+	@deletedRecordId INT = (SELECT id FROM deleted)
+	UPDATE a.recordId = NULL FROM APPOINTMENT a WHERE a.recordId = @deletedRecordId
+	DELETE FROM INVOICE WHERE recordId = @deletedRecordId
+	DELETE FROM SERVICE_USE WHERE recordId = @deletedRecordId
+	DELETE FROM PRESCRIBE_MEDICINE WHERE recordId = @deletedRecordId
+	DELETE FROM PATIENT_RECORD WHERE id = @deletedRecordId
+END
+
 SELECT * FROM PATIENT_RECORD
-SELECT * FROM APPOINTMENT
-INSERT INTO PATIENT_RECORD (symptom, advice, diagnostic, date_time, dentistId, customerId) VALUES (N'Đau răng', N'Không', N'Không', '2023-12-12 10:00:00', 1, 1)
-UPDATE PATIENT_RECORD SET date_time = '2023-12-12 08:00:00' WHERE id = 5
-DELETE FROM PATIENT_RECORD WHERE id = 8
+
+DELETE FROM PATIENT_RECORD WHERE
 
 --Trigger8*
 -- GO
@@ -263,6 +280,7 @@ DELETE FROM PATIENT_RECORD WHERE id = 8
 
 --Trigger8
 --R30: Số lượng của một loại thuốc trong đơn thuốc phải bé hơn hoặc bằng số lượng của loại thuốc đó ở trong kho.
+--R48: Với mỗi loại thuốc được sử dụng trong đơn thuốc thì ngày hết hạn phải sau ngày khám.
 GO
 IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PRESCRIBE_MEDICINE1]'))
 DROP TRIGGER [dbo].[TRIGGER_PRESCRIBE_MEDICINE1]
@@ -293,6 +311,11 @@ BEGIN
 	END
 	IF UPDATE(medicineId)
 	BEGIN
+		IF EXISTS (SELECT * FROM inserted i JOIN MEDICINE m ON i.medicineId = m.id JOIN PATIENT_RECORD pr ON i.recordId = pr.id WHERE datediff(second, pr.date_time, m.expirationDate) <= 0) 
+		BEGIN 
+			RAISERROR(N'Lỗi: Hạn sử dụng của thuốc phải sau ngày khám', 16, 1)
+			ROLLBACK TRAN
+		END
 		UPDATE p SET p.medicineName = m.name, p.price = m.price
 		FROM PRESCRIBE_MEDICINE p JOIN INSERTED i ON p.medicineId = i.medicineId AND p.recordId = i.recordId JOIN MEDICINE m on m.id = i.medicineId 
 	END
@@ -317,30 +340,41 @@ BEGIN
 END
 
 --Trigger10
---R47: Bác sĩ chỉ tạo Patient records cho bệnh nhân chỉ khi bác sĩ và bệnh nhân đó đang có cuộc hẹn với nhau.
 GO
-CREATE TRIGGER PATIENT_RECORD_APPOINTMENT_CREATING ON PATIENT_RECORD
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_SERVICE_USE]'))
+DROP TRIGGER [dbo].[TRIGGER_SERVICE_USE]
+GO
+CREATE TRIGGER TRIGGER_SERVICE_USE1 ON SERVICE_USE 
 FOR INSERT, UPDATE
 AS
-IF UPDATE(customerId) or UPDATE(dentistId)
 BEGIN
-	IF NOT EXISTS (SELECT * FROM inserted JOIN APPOINTMENT on inserted.customerId = APPOINTMENT.customerId and inserted.dentistId = APPOINTMENT.dentistId  WHERE APPOINTMENT.status = N'Đang tạo hồ sơ bệnh án') 
-	BEGIN 
-		RAISERROR(N'Lỗi: Bác sĩ chỉ tạo Patient records cho bệnh nhân chỉ khi bác sĩ và bệnh nhân đó đang có cuộc hẹn với nhau.', 16, 1)
-		ROLLBACK
+	IF UPDATE(serviceId)
+	BEGIN
+		UPDATE su SET su.price = s.price FROM SERVICE_USE su JOIN INSERTED i ON su.serviceId = i.serviceId AND su.recordId = i.recordId JOIN SERVICE s ON i.serviceId = s.id
+		IF EXISTS ( SELECT * FROM INVOICE i JOIN inserted p ON i.recordId = p.recordId)
+		BEGIN
+			DECLARE @totalService FLOAT = (SELECT SUM(s.price) FROM SERVICE_USE s JOIN inserted i ON s.recordId = i.recordId)
+			DECLARE @totalMedicine FLOAT = (SELECT SUM(p.price * p.quantity) FROM PRESCRIBE_MEDICINE p JOIN inserted i ON p.recordId = i.recordId)
+			DECLARE @total FLOAT = @totalService + @totalMedicine
+			UPDATE i SET i.total = @total FROM INVOICE i JOIN inserted p ON i.recordId = p.recordId
+		END	
 	END
 END
 
---R48: Với mỗi loại thuốc được sử dụng trong đơn thuốc thì ngày hết hạn phải sau ngày khám.
+--Trigger11
 GO
-CREATE TRIGGER PRESCRIBE_MEDICINE_EXPIRATIONDATE ON PRESCRIBE_MEDICINE
-FOR INSERT, UPDATE
+IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_SERVICE_USE2]'))
+DROP TRIGGER [dbo].[TRIGGER_SERVICE_USE2]
+GO
+CREATE TRIGGER TRIGGER_SERVICE_USE2 ON SERVICE_USE 
+FOR DELETE
 AS
-IF UPDATE(medicineId)
 BEGIN
-	IF EXISTS (SELECT * FROM inserted i JOIN MEDICINE m ON i.medicineId = m.id JOIN PATIENT_RECORD pr ON i.recordId = pr.id WHERE datediff(second, pr.date_time, m.expirationDate) <= 0) 
-	BEGIN 
-		RAISERROR(N'Lỗi: Hạn sử dụng của thuốc phải sau ngày khám', 16, 1)
-		ROLLBACK
+	IF EXISTS ( SELECT * FROM INVOICE i JOIN deleted d ON i.recordId = d.recordId)
+	BEGIN
+		DECLARE @totalService FLOAT = (SELECT SUM(s.price) FROM SERVICE_USE s JOIN inserted i ON s.recordId = i.recordId)
+		DECLARE @totalMedicine FLOAT = (SELECT SUM(p.price * p.quantity) FROM PRESCRIBE_MEDICINE p JOIN inserted i ON p.recordId = i.recordId)
+		DECLARE @total FLOAT = @totalService + @totalMedicine
+		UPDATE i SET i.total = @total FROM INVOICE i JOIN inserted p ON i.recordId = p.recordId
 	END
 END

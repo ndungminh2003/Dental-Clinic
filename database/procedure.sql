@@ -1074,6 +1074,19 @@ BEGIN
 	END CATCH
 END
 
+-- v
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewDentistSchedule')
+BEGIN
+	DROP PROCEDURE sp_viewDentistSchedule
+END
+GO
+CREATE PROC sp_viewDentistSchedule
+	@dentistId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		
 --view all schedule
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllSchedule')
 BEGIN

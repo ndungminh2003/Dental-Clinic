@@ -76,6 +76,7 @@ BEGIN
 	END CATCH
 END
 
+GO
 CREATE PROC sp_customerLoginWithHash
     @phone VARCHAR(15)
 AS
@@ -273,9 +274,11 @@ BEGIN
 	END CATCH
 END
 
+GO
 sp_createDentist 'Dentist6','123123123123', '0327116216', N'Nam', '2008-11-11', 'Experienced dentist'
 
 -- dentist login
+GO
 CREATE PROC sp_dentistLogin
     @phone VARCHAR(15),
     @password VARCHAR(50)
@@ -444,6 +447,7 @@ BEGIN
 END
 
 -- staff login
+GO
 CREATE PROC sp_staffLogin
     @phone VARCHAR(15),
     @password VARCHAR(50)

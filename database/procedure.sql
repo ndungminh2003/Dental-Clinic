@@ -25,7 +25,7 @@ BEGIN
         ELSE IF EXISTS (SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Guest')
         BEGIN
             UPDATE CUSTOMER 
-            SET password = @password, name = @name, gender = @gender, birthday = @birthday, address = @address
+            SET password = @password, name = @name, gender = @gender, birthday = @birthday, address = @address, role = 'Customer'
             WHERE phoneNumber = @phone
             COMMIT TRAN
         END
@@ -49,6 +49,7 @@ BEGIN
 END
 GO
 
+--UNREPEATABLE READ
 CREATE PROC sp_customerLoginWithoutHash
     @phone VARCHAR(15),
     @password VARCHAR(50)
@@ -61,7 +62,7 @@ BEGIN
 			RAISERROR (N'Số điện thoại hoặc mật khẩu không đúng', 16, 1)
 			ROLLBACK TRAN
 		END
-		IF EXISTS (SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password and isBlocked = 1)
+		IF NOT EXISTS (SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password and isBlocked = 0)
 		BEGIN
 			RAISERROR (N'Tài khoản đã bị khóa', 16, 1)
 			ROLLBACK TRAN
@@ -104,7 +105,8 @@ BEGIN
 END
 GO
 
-CREATE PROC sp_viewOneCustomer
+--UNREPEATABLE READ
+CREATE PROC sp_viewOneCustomer --STAFF CUSTOMER ADMIN
 	@customerId INT
 AS
 BEGIN
@@ -124,7 +126,7 @@ BEGIN
 	END CATCH
 END
 
--- view all customer
+-- view all customer (ADMIN STAFF)
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllCustomer')
 BEGIN
     DROP PROCEDURE sp_viewAllCustomer
@@ -144,7 +146,8 @@ BEGIN
 	END CATCH
 END
 
--- update customer profile
+--UNREPATABLE READ
+-- update customer profile (CUSTOMER ADMIN)
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_updateCustomerProfile')
 BEGIN
 	DROP PROCEDURE sp_updateCustomerProfile
@@ -171,7 +174,7 @@ BEGIN
 			RAISERROR(N'Mã khách hàng không tồn tại',16, 1)
 			ROLLBACK TRAN
 		END
-		UPDATE CUSTOMER SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, address = @address
+		UPDATE CUSTOMER SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, address = @address WHERE id = @customerId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -216,7 +219,8 @@ BEGIN
 	END CATCH
 END
 
--- change customer password  
+--UNREPATEABLE READ -->deleteCustomer
+-- change customer password  (CUSTOMER, ADMIN)
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_changeCustomerPassword')
 BEGIN
 	DROP PROCEDURE sp_changeCustomerPassword
@@ -242,6 +246,7 @@ BEGIN
 		ROLLBACK TRAN
 	END CATCH
 END
+
 
 -- create dentist
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_createDentist')
@@ -301,7 +306,8 @@ BEGIN
 	END CATCH
 END
 
--- view one dentist
+
+-- view one dentist dirty read, unreapeatable read
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneDentist')
 BEGIN
 	DROP PROCEDURE sp_viewOneDentist
@@ -327,7 +333,8 @@ BEGIN
 	END CATCH
 END
 
--- view all dentist
+
+-- view all dentist dirty read
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllDentist')
 BEGIN
 	DROP PROCEDURE sp_viewAllDentist
@@ -347,7 +354,7 @@ BEGIN
 	END CATCH
 END
 
--- update dentist profile
+-- update dentist profile unrepatable read, 
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_updateDentistProfile')
 BEGIN
 	DROP PROCEDURE sp_updateDentistProfile
@@ -374,7 +381,7 @@ BEGIN
 			RAISERROR(N'Mã nha sĩ không tồn tại',16, 1)
 			ROLLBACK TRAN
 		END
-		UPDATE DENTIST SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, introduction = @introduction
+		UPDATE DENTIST SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, introduction = @introduction WHERE id = @dentistId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -383,7 +390,8 @@ BEGIN
 	END CATCH
 END
 
---change dentist password
+
+--change dentist password unrepateable read
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_changeDentistPassword')
 BEGIN
 	DROP PROCEDURE sp_changeDentistPassword
@@ -401,6 +409,7 @@ BEGIN
 				RAISERROR(N'Mã nha sĩ không tồn tại',16, 1)
 				ROLLBACK TRAN
 			END
+			UPDATE DENTIST SET password = @newPassword WHERE id = @dentistId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -499,7 +508,7 @@ BEGIN
 	END CATCH
 END
 
--- view One staff
+-- view One staff dirty read, Unreapeateable read
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneStaff')
 BEGIN
 	DROP PROCEDURE sp_viewOneStaff
@@ -525,7 +534,7 @@ BEGIN
 	END CATCH
 END
 
--- view all staff
+-- view all staff dirty read
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllStaff')
 BEGIN
 	DROP PROCEDURE sp_viewAllStaff
@@ -612,7 +621,8 @@ BEGIN
 END
 
 
--- make appointment
+-- make appointment 
+-- 2 user cung make dirty read, unrepeatable read
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_makeAppointment')
 BEGIN
     DROP PROCEDURE sp_makeAppointment
@@ -621,9 +631,9 @@ GO
 CREATE PROC sp_makeAppointment
 	@phone VARCHAR(15),
 	@name NVARCHAR(50),
-    @gender NVARCHAR(6),
-    @birthday DATE,
-    @address NVARCHAR(120),
+  @gender NVARCHAR(6),
+  @birthday DATE,
+  @address NVARCHAR(120),
 	@dentistId INT,
 	@staffId INT,
 	@startTime DATETIME,
@@ -646,7 +656,7 @@ BEGIN
 		BEGIN
 			INSERT INTO CUSTOMER VALUES(@name, NULL, @phone, 'Guest', @gender, @address, @birthday, 0)
 		END
-		IF EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Guest')
+		ELSE IF EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Guest')
 		BEGIN
 			UPDATE CUSTOMER SET name = @name, gender = @gender, address = @address, birthday = @birthday 
 			WHERE phoneNumber = @phone and role = 'Guest'
@@ -668,7 +678,7 @@ BEGIN
 	END CATCH
 END
 
--- cancel appointment
+-- cancel appointment, unrepeatable read
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_cancelAppointment')
 BEGIN
@@ -703,7 +713,7 @@ BEGIN
 	END CATCH
 END
 
--- delete appointment
+-- delete appointment unrepeatable read, 
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteAppointment')
 BEGIN

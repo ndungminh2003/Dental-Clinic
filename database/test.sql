@@ -27,3 +27,35 @@ SELECT * FROM APPOINTMENT
 INSERT INTO SCHEDULE VALUES(1, '2023-11-10 07:00:00.000','2023-11-10 08:00:00.000', 0)
 INSERT INTO APPOINTMENT VALUES(1, 1, '2023-11-10 07:00:00.000', '2023-11-10 08:00:00.000', N'Đang chờ', NULL, NULL)
 DELETE FROM APPOINTMENT WHERE dentistId = 1 AND customerId = 1
+
+-- test
+INSERT INTO DENTIST VALUES('Dentist1', '123123123123', '0327116251', N'Nam', '2008-11-11', NULL, 0)
+INSERT INTO SCHEDULE VALUES(2, '2024-05-15 09:00:00', '2024-05-15 10:00:00', 0)
+INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
+VALUES ('Customer4', NULL, '0327116254', 'Guest', N'Nam', '123 Main St', '1990-05-15', 0);
+
+
+SELECT * FROM SCHEDULE
+SELECT * FROM APPOINTMENT
+SELECT * FROM CUSTOMER
+DELETE FROM APPOINTMENT WHERE customerId = 71
+UPDATE SCHEDULE SET isBooked = 0 WHERE dentistId = 2 and startTime = '2024-05-15 09:00:00'
+
+EXEC sp_makeAppointment '0327116254', 'Customer4b', 'Nam', '2008-11-11', N'Hà Nội', 2, NULL, '2024-05-15 09:00:00', '2024-05-15 010:00:00'
+
+EXEC sp_customerLogin '0327116251', '123123123123'
+EXEC sp_addDentistSchedule '2023-11-15 07:00:00.000','2023-11-15 08:00:00.000',7
+EXEC sp_addPrescribeMedicine 1, 2, 100
+
+
+-- test
+DROP PROC sp_signUp
+
+EXEC sp_signUp '0327116251', '123123123123', 'Custom1234', 'Nam', '2008-11-11', N'Hà Nội'
+
+DELETE FROM CUSTOMER WHERE phoneNumber = '0327116251'
+
+SELECT * FROM CUSTOMER
+
+INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
+VALUES ('Customer2', NULL, '0327116251', 'Guest', N'Nam', '123 Main St', '1990-05-15', 0);

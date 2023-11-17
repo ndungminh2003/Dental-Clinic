@@ -42,19 +42,6 @@ BEGIN
     END CATCH
 END
 
-
--- test
-DROP PROC sp_signUp
-
-EXEC sp_signUp '0327116251', '123123123123', 'Custom1234', 'Nam', '2008-11-11', N'Hà Nội'
-
-DELETE FROM CUSTOMER WHERE phoneNumber = '0327116251'
-
-SELECT * FROM CUSTOMER
-
-INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
-VALUES ('Customer2', NULL, '0327116251', 'Guest', N'Nam', '123 Main St', '1990-05-15', 0);
-
 -- customer login without hashing
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_customerLoginWithoutHash')
 BEGIN
@@ -109,8 +96,7 @@ BEGIN
 	END CATCH
 END
 
-EXEC sp_customerLogin '0327116251', '123123123123'
-
+-- view one customer
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneCustomer')
 BEGIN
     DROP PROCEDURE sp_viewOneCustomer
@@ -129,6 +115,26 @@ BEGIN
 			ROLLBACK TRAN
 		END
 		SELECT * FROM CUSTOMER WHERE id = @customerId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view all customer
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllCustomer')
+BEGIN
+    DROP PROCEDURE sp_viewAllCustomer
+END
+GO
+CREATE PROC sp_viewAllCustomer
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			SELECT * FROM CUSTOMER
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -318,6 +324,26 @@ BEGIN
 	END CATCH
 END
 
+-- view all dentist
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllDentist')
+BEGIN
+	DROP PROCEDURE sp_viewAllDentist
+END
+GO
+CREATE PROC sp_viewAllDentist
+AS
+BEGIN
+	BEGIN TRY
+	 	BEGIN TRAN
+			SELECT * FROM DENTIST
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
 -- update dentist profile
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_updateDentistProfile')
 BEGIN
@@ -495,7 +521,28 @@ BEGIN
 	END CATCH
 END
 
+-- view all staff
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllStaff')
+BEGIN
+	DROP PROCEDURE sp_viewAllStaff
+END
+GO
+CREATE PROC sp_viewAllStaff
+AS
+BEGIN
+	BEGIN TRY
+	 	BEGIN TRAN
+			SELECT * FROM STAFF
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
 --block staff
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockStaff')
 BEGIN
 	DROP PROCEDURE sp_blockStaff
@@ -532,7 +579,12 @@ BEGIN
 END
 
 -- admin login
-
+GO
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockStaff')
+BEGIN
+	DROP PROCEDURE sp_blockStaff
+END
+GO
 CREATE PROC sp_adminLogin
     @phone VARCHAR(15),
     @password VARCHAR(50)
@@ -612,23 +664,8 @@ BEGIN
 	END CATCH
 END
 
--- test
-INSERT INTO DENTIST VALUES('Dentist1', '123123123123', '0327116251', N'Nam', '2008-11-11', NULL, 0)
-INSERT INTO SCHEDULE VALUES(2, '2024-05-15 09:00:00', '2024-05-15 10:00:00', 0)
-INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
-VALUES ('Customer4', NULL, '0327116254', 'Guest', N'Nam', '123 Main St', '1990-05-15', 0);
-
-
-SELECT * FROM SCHEDULE
-SELECT * FROM APPOINTMENT
-SELECT * FROM CUSTOMER
-DELETE FROM APPOINTMENT WHERE customerId = 71
-UPDATE SCHEDULE SET isBooked = 0 WHERE dentistId = 2 and startTime = '2024-05-15 09:00:00'
-
-EXEC sp_makeAppointment '0327116254', 'Customer4b', 'Nam', '2008-11-11', N'Hà Nội', 2, NULL, '2024-05-15 09:00:00', '2024-05-15 010:00:00'
-
-
 -- cancel appointment
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_cancelAppointment')
 BEGIN
     DROP PROCEDURE sp_cancelAppointment
@@ -663,6 +700,7 @@ BEGIN
 END
 
 -- delete appointment
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteAppointment')
 BEGIN
     DROP PROCEDURE sp_deleteAppointment
@@ -722,6 +760,7 @@ BEGIN
 		ROLLBACK TRAN
 	END CATCH
 END
+
 -- view one appointment
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneAppointment')
@@ -749,6 +788,28 @@ BEGIN
 		ROLLBACK TRAN
 	END CATCH
 END
+
+-- view all appointment
+GO
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllAppointment')
+BEGIN
+	DROP PROCEDURE sp_viewAllAppointment
+END
+GO
+CREATE PROC sp_viewAllAppointment
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			SELECT * FROM APPOINTMENT
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
 -- view customer's appointment
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewCustomerAppointment')
@@ -780,6 +841,7 @@ BEGIN
 		ROLLBACK TRAN
 	END CATCH
 END
+
 -- view dentist's appointment
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewDentistAppointment')
@@ -812,15 +874,16 @@ BEGIN
 	END CATCH
 END
 
+
 -- create patient record
 GO
-IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updateAppointmentStatus')
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_createPatientRecord')
 BEGIN
 	DROP PROCEDURE sp_createPatientRecord
 END
 GO
-CREATE PROC themHoSoBenhNhan
-	@PHONE_NUMBER NVARCHAR(15), 
+CREATE PROC sp_createPatientRecord
+	@CUSTOMER_ID INT, 
 	@DENTIST_ID INT,
 	@DATE_TIME DATETIME,
 	@DIAGNOSTIC NVARCHAR(100),
@@ -830,9 +893,6 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-			DECLARE @CUSTOMER_ID INT;
-			SELECT @CUSTOMER_ID = ID FROM CUSTOMER C WHERE C.phoneNumber = @PHONE_NUMBER;
-			--CHECK CUSTOMER
 			IF NOT EXISTS (
 				SELECT 1
 				FROM CUSTOMER C WHERE C.id = @CUSTOMER_ID	
@@ -841,7 +901,6 @@ BEGIN
 				PRINT N'LỖI: KHÔNG TỒN TẠI ID KHÁCH HÀNG'
 				ROLLBACK TRAN
 			END
-			--CHECK DENTIST
 			IF NOT EXISTS (
 				SELECT 1
 				FROM DENTIST D WHERE D.id = @DENTIST_ID	
@@ -858,6 +917,156 @@ BEGIN
 		ROLLBACK TRAN
 	END CATCH
 END
+
+-- update patient record
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updatePatientRecord')
+BEGIN
+	DROP PROCEDURE sp_updatePatientRecord
+END
+GO
+CREATE PROC sp_updatePatientRecord
+	@recordId INT,
+	@date_time DATETIME,
+	@diagnostic NVARCHAR(100),
+	@sympton NVARCHAR(50),
+	@advice NVARCHAR(100)
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (
+				SELECT 1
+				FROM PATIENT_RECORD p WHERE p.id = @recordId	
+			)
+			BEGIN
+				PRINT N'Lỗi: mã hồ sơ bệnh án không tồn tại'
+				ROLLBACK TRAN
+			END
+			UPDATE PATIENT_RECORD 
+			SET symptom = @sympton, advice = @advice, diagnostic = @diagnostic, date_time = @date_time
+			WHERE id = @recordId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- delete patient record
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deletePatientRecord')
+BEGIN
+	DROP PROCEDURE sp_deletePatientRecord
+END
+GO
+CREATE PROC sp_deletePatientRecord
+	@recordId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (
+				SELECT 1
+				FROM PATIENT_RECORD p WHERE p.id = @recordId	
+			)
+			BEGIN
+				PRINT N'Lỗi: mã hồ sơ bệnh án không tồn tại'
+				ROLLBACK TRAN
+			END
+			DELETE FROM PATIENT_RECORD WHERE id = @recordId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view one patient record
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOnePatientRecord')
+BEGIN
+	DROP PROCEDURE sp_viewOnePatientRecord
+END
+GO
+CREATE PROC sp_viewOnePatientRecord
+	@recordId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (
+				SELECT 1
+				FROM PATIENT_RECORD p WHERE p.id = @recordId	
+			)
+			BEGIN
+				PRINT N'Lỗi: mã hồ sơ bệnh án không tồn tại'
+				ROLLBACK TRAN
+			END
+			SELECT * FROM PATIENT_RECORD WHERE id = @recordId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view all patient record
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllPatientRecord')
+BEGIN
+	DROP PROCEDURE sp_viewAllPatientRecord
+END
+GO
+CREATE PROC sp_viewAllPatientRecord
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			SELECT * FROM PATIENT_RECORD
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view patient record by customer id
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewCustomerPatientRecord')
+BEGIN
+	DROP PROCEDURE sp_viewCustomerPatientRecord
+END
+GO
+CREATE PROC sp_viewCustomerPatientRecord
+	@customerId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS ( SELECT 1 FROM CUSTOMER WHERE id = @customerId)
+			BEGIN
+				PRINT N'Lỗi: mã khách hàng không tồn tại'
+				ROLLBACK TRAN
+			END
+			IF NOT EXISTS ( SELECT 1 FROM PATIENT_RECORD WHERE id = @customerId)
+			BEGIN
+				PRINT N'Lỗi: không có hồ sơ bệnh án nào'
+				ROLLBACK TRAN
+			END
+			SELECT * FROM PATIENT_RECORD WHERE customerId = @customerId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN
+	END CATCH
+END
+
 
 -- add medicine
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_createMedicine')
@@ -912,7 +1121,12 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM MEDICINE WHERE id = @medicineId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã Thuốc '+ @medicineId + N'không tồn tại', 16, 1)
+			RAISERROR(N'Lỗi: Mã Thuốc không tồn tại', 16, 1)
+			ROLLBACK TRAN
+		END
+		IF EXISTS (SELECT 1 FROM MEDICINE WHERE name = @name)
+		BEGIN
+			RAISERROR(N'Lỗi: Tên thuốc đã tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
 		UPDATE MEDICINE 
@@ -926,12 +1140,595 @@ BEGIN
 	END CATCH
 END
 
-SELECT * FROM SCHEDULE
-SELECT * FROM APPOINTMENT
-SELECT * FROM CUSTOMER
-SELECT * FROM DENTIST
+-- delete medicine
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteMedicine')
+BEGIN
+	DROP PROCEDURE sp_deleteMedicine
+END
+GO
+CREATE PROC sp_deleteMedicine
+	@medicineId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		IF NOT EXISTS (SELECT 1 FROM MEDICINE WHERE id = @medicineId)
+		BEGIN
+			RAISERROR(N'Lỗi: Mã Thuốc không tồn tại', 16, 1)
+			ROLLBACK TRAN
+		END
+		UPDATE PRESCRIBE_MEDICINE SET medicineId = NULL WHERE medicineId = @medicineId 
+		DELETE FROM MEDICINE WHERE id = @medicineId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view one medicine
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneMedicine')
+BEGIN
+	DROP PROCEDURE sp_viewOneMedicine
+END
+GO
+CREATE PROC sp_viewOneMedicine
+	@medicineId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		IF NOT EXISTS (SELECT 1 FROM MEDICINE WHERE id = @medicineId)
+		BEGIN
+			RAISERROR(N'Lỗi: Mã Thuốc không tồn tại', 16, 1)
+			ROLLBACK TRAN
+		END
+		SELECT * FROM MEDICINE WHERE id = @medicineId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view all medicine
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllMedicine')
+BEGIN
+	DROP PROCEDURE sp_viewAllMedicine
+END
+GO
+CREATE PROC sp_viewAllMedicine
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			SELECT * FROM MEDICINE
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- add Prescribe Medicine
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addPrescribeMedicine')
+BEGIN
+	DROP PROCEDURE sp_addPrescribeMedicine
+END
+GO
+CREATE PROC sp_addPrescribeMedicine
+    @RECORD_ID INT,
+    @MEDICINE_ID INT,
+    @QUANTITY INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			DECLARE @PRICE FLOAT;
+			SELECT @PRICE = price FROM MEDICINE M WHERE M.ID = @MEDICINE_ID;
+	
+			DECLARE @MEDICINE_NAME NVARCHAR(30);
+			SELECT @MEDICINE_NAME = name FROM MEDICINE M WHERE M.id = @MEDICINE_ID
+	
+			DECLARE @MEDICINE_STOCK INT;
+			SELECT @MEDICINE_STOCK = quantity FROM MEDICINE M WHERE M.ID = @MEDICINE_ID;
+			-- CHECK PATIENT RECORD ID
+			IF NOT EXISTS (
+				SELECT 1
+				FROM PATIENT_RECORD PR
+				WHERE PR.ID = @RECORD_ID
+			)
+			BEGIN
+				PRINT N'LỖI: KHÔNG TỒN TẠI RECORD ID';
+				ROLLBACK TRAN;
+			END
+
+			-- CHECK MEDICINE ID
+			IF NOT EXISTS (
+				SELECT 1
+				FROM MEDICINE M
+				WHERE M.ID = @MEDICINE_ID
+			)
+			BEGIN
+				PRINT N'LỖI: KHÔNG TỒN TẠI MEDICINE ID';
+				ROLLBACK TRAN;		
+			END
+			-- INSERT INTO PRESCRIBE_MEDICINE
+			INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, medicineName, price, quantity) VALUES (@RECORD_ID, @MEDICINE_ID, @MEDICINE_NAME, @PRICE, @QUANTITY);
+			-- UPDATE QUANTITY OF MEDICINE IN STOCK
+			UPDATE MEDICINE SET quantity = CASE WHEN @MEDICINE_STOCK >= @QUANTITY THEN @MEDICINE_STOCK - @QUANTITY ELSE 0 END WHERE ID = @MEDICINE_ID;
+			
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN;		
+	END CATCH
+END
+
+--delete Prescribe Medicine
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deletePrescribeMedicine')
+BEGIN
+	DROP PROCEDURE sp_deletePrescribeMedicine
+END
+GO
+CREATE PROC sp_deletePrescribeMedicine
+	@medicineId INT,
+	@recordId INT,
+	@medicineName NVARCHAR(30)
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		IF EXISTS (SELECT 1 FROM PRESCRIBE_MEDICINE WHERE medicineId = @medicineId AND recordId = @recordId)
+		BEGIN
+		 	DELETE FROM PRESCRIBE_MEDICINE WHERE medicineId = @medicineId AND recordId = @recordId
+		END
+		ELSE IF EXISTS (SELECT 1 FROM PRESCRIBE_MEDICINE WHERE medicineName = @medicineName AND recordId = @recordId)
+		BEGIN
+			DELETE FROM PRESCRIBE_MEDICINE WHERE medicineName = @medicineName AND recordId = @recordId
+		END
+		ELSE
+		BEGIN
+			RAISERROR(N'Đơn thuốc không tồn tại' ,16, 1)
+			ROLLBACK TRAN
+		END
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN;		
+	END CATCH
+END
+
+-- update prescribe medicine
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updatePrescribeMedicine')
+BEGIN
+	DROP PROCEDURE sp_updatePrescribeMedicine
+END
+GO
+CREATE PROC sp_updatePrescribeMedicine
+    @RECORD_ID INT,
+    @MEDICINE_ID INT,
+    @QUANTITY INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		--CHECK PRESCRIBE MEDICINE
+			IF NOT EXISTS (
+				SELECT 1
+				FROM PRESCRIBE_MEDICINE pm 
+				WHERE pm.medicineId = @MEDICINE_ID AND pm.recordId = @RECORD_ID
+			)
+			BEGIN
+				PRINT N'LỖI: KHÔNG TỒN TẠI PRESCRIBE MEDICINE';
+				ROLLBACK TRAN;		
+			END
+		--GET OLD QUANTITY
+			DECLARE @OLD_QUANTITY INT;
+			SELECT @OLD_QUANTITY = quantity FROM PRESCRIBE_MEDICINE pm WHERE pm.medicineId = @MEDICINE_ID AND pm.recordId = @RECORD_ID
+		IF(@OLD_QUANTITY > @QUANTITY)
+		BEGIN 
+			UPDATE PRESCRIBE_MEDICINE SET quantity = @QUANTITY WHERE medicineId = @MEDICINE_ID AND recordId = @RECORD_ID
+			UPDATE MEDICINE SET quantity = quantity + (@OLD_QUANTITY - @QUANTITY) WHERE id = @MEDICINE_ID
+		END
+		IF(@OLD_QUANTITY < @QUANTITY)
+		BEGIN
+			UPDATE PRESCRIBE_MEDICINE SET quantity = @QUANTITY WHERE medicineId = @MEDICINE_ID AND recordId = @RECORD_ID
+			UPDATE MEDICINE SET quantity = quantity - (@QUANTITY - @OLD_QUANTITY) WHERE id = @MEDICINE_ID
+		END
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN;		
+	END CATCH
+END
+
+-- view one record's prescribe Medicine 
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewPrescribeMedicine')
+BEGIN
+	DROP PROCEDURE sp_viewPrescribeMedicine
+END
+GO
+CREATE PROC sp_viewPrescribeMedicine
+	@recordId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
+		BEGIN
+			RAISERROR(N'Lỗi: Mã hồ sơ bệnh án không tồn tại' ,16, 1)
+			ROLLBACK TRAN
+		END
+		IF NOT EXISTS (SELECT 1 FROM PRESCRIBE_MEDICINE WHERE recordId = @recordId)
+		BEGIN
+			RAISERROR(N'Lỗi: Không có đơn thuốc nào' ,16, 1)
+			ROLLBACK TRAN
+		END
+		SELECT * FROM PRESCRIBE_MEDICINE WHERE recordId = @recordId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN;		
+	END CATCH
+END
 
 
+
+-- add service
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addService')
+BEGIN
+	DROP PROCEDURE sp_addService
+END
+GO
+CREATE PROC sp_addService
+	@name NVARCHAR(50),
+	@price FLOAT,
+	@description NVARCHAR(100)
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF EXISTS (SELECT 1 FROM SERVICE WHERE name = @name)
+			BEGIN
+				RAISERROR(N'Lỗi: tên dịch vụ đã tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			INSERT INTO SERVICE VALUES(@name, @price, @description)
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- update service
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updateService')
+BEGIN
+	DROP PROCEDURE sp_updateService
+END
+GO
+CREATE PROC sp_updateService
+	@serviceId INT,
+	@name NVARCHAR(50),
+	@price FLOAT,
+	@description NVARCHAR(100)
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã dịch vụ không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			IF EXISTS (SELECT 1 FROM SERVICE WHERE id != @serviceId AND name = @name)
+			BEGIN
+				RAISERROR(N'Lỗi: tên dịch vụ đã tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			UPDATE SERVICE 
+			SET name = @name, price = @price, description = @description
+			WHERE id = @serviceId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view one service
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneService')
+BEGIN
+	DROP PROCEDURE sp_viewOneService
+END
+GO
+CREATE PROC sp_viewOneService
+	@serviceId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã dịch vụ không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			SELECT * FROM SERVICE WHERE id = @serviceId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view all service
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllService')
+BEGIN
+	DROP PROCEDURE sp_viewAllService
+END
+GO
+CREATE PROC sp_viewAllService
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			SELECT * FROM SERVICE
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- add service use
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addServiceUse')
+BEGIN
+	DROP PROCEDURE sp_addServiceUse
+END
+GO
+CREATE PROC sp_addServiceUse
+	@serviceId INT,
+	@recordId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã dịch vụ không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã hồ sơ bệnh án không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			DECLARE @price FLOAT = (SELECT price FROM SERVICE WHERE id = @serviceId)
+			INSERT INTO SERVICE_USE VALUES(@recordId, @serviceId, @price)
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- delete service use
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteServiceUse')
+BEGIN
+	DROP PROCEDURE sp_deleteServiceUse
+END
+GO
+CREATE PROC sp_deleteServiceUse
+	@serviceId INT,
+	@recordId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã dịch vụ không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã hồ sơ bệnh án không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			IF NOT EXISTS (SELECT 1 FROM SERVICE_USE WHERE recordId = @recordId AND serviceId = @serviceId)
+			BEGIN
+				RAISERROR(N'Lỗi: dịch vụ sử dụng không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			DELETE FROM SERVICE_USE WHERE serviceId = @serviceId AND recordId = @recordId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view service use
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewServiceUse')
+BEGIN
+	DROP PROCEDURE sp_viewServiceUse
+END
+GO
+CREATE PROC sp_viewServiceUse
+	@recordId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã hồ sơ bệnh án không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			IF NOT EXISTS (SELECT 1 FROM SERVICE_USE WHERE recordId = @recordId)
+			BEGIN
+				RAISERROR(N'Lỗi: không có dịch vụ nào được sử dụng', 16, 1)
+				ROLLBACK TRAN
+			END
+			SELECT * FROM SERVICE_USE WHERE recordId = @recordId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+
+-- add invoice
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addInvoice')
+BEGIN
+	DROP PROCEDURE sp_addInvoice
+END
+GO
+CREATE PROC sp_addInvoice
+	@RECORD_ID INT, 
+	@DATE_TIME DATETIME,
+	@STATUS NVARCHAR(30),
+	@TOTAL FLOAT,
+	@STAFFID INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			--CHECK RECORD ID
+			IF NOT EXISTS (
+				SELECT 1
+				FROM PATIENT_RECORD PR WHERE PR.id = @RECORD_ID	
+			)
+			BEGIN
+				PRINT N'LỖI: KHÔNG TỒN TẠI HỒ SƠ BỆNH NHÂN'
+				ROLLBACK TRAN
+			END
+			INSERT INTO INVOICE(recordId, date_time, status, total, staffId) VALUES (@RECORD_ID, @DATE_TIME, @STATUS, @TOTAL, @STAFFID)
+			COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE();
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- update invoice status
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updateInvoiceStatus')
+BEGIN
+	DROP PROCEDURE sp_updateInvoiceStatus
+END
+GO
+CREATE PROC sp_updateInvoiceStatus
+	@invoiceId INT,
+	@status NVARCHAR(30)
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM INVOICE WHERE id = @invoiceId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã hóa đơn không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			UPDATE INVOICE SET status = @status WHERE id = @invoiceId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view invoice by id
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewInvoiceById')
+BEGIN
+	DROP PROCEDURE sp_viewInvoiceById
+END
+GO
+CREATE PROC sp_viewInvoiceById
+	@invoiceId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM INVOICE WHERE id = @invoiceId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã hóa đơn không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			SELECT * FROM INVOICE WHERE id = @invoiceId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view invoice by record id
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewInvoiceByRecordId')
+BEGIN
+	DROP PROCEDURE sp_viewInvoiceByRecordId
+END
+GO
+CREATE PROC sp_viewInvoiceByRecordId
+	@recordId INT
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã hồ sơ bệnh nhân không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			SELECT * FROM INVOICE WHERE recordId = @recordId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
+
+-- view all invoice 
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllInvoice')
+BEGIN
+	DROP PROCEDURE sp_viewAllInvoice
+END
+GO
+CREATE PROC sp_viewAllInvoice
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			SELECT * FROM INVOICE
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		PRINT ERROR_MESSAGE()
+		ROLLBACK TRAN
+	END CATCH
+END
 
 -- add dentist schedule 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addDentistSchedule')
@@ -960,16 +1757,6 @@ BEGIN
 		ROLLBACK TRAN
 	END CATCH
 END
-
-EXEC sp_addDentistSchedule '2023-11-15 07:00:00.000','2023-11-15 08:00:00.000',7
-
-
-SELECT * FROM SCHEDULE
-SELECT * FROM APPOINTMENT
-SELECT * FROM CUSTOMER
-SELECT * FROM DENTIST
-SELECT * FROM SCHEDULE
-
 
 -- update schedule
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updateDentistSchedule')
@@ -1065,7 +1852,7 @@ BEGIN
 			RAISERROR(N'Mã nha sĩ không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
-		SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId
+		SELECT * FROM SCHEDULE WHERE dentistId = @dentistId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1073,20 +1860,7 @@ BEGIN
 		ROLLBACK TRAN
 	END CATCH
 END
-
--- v
-IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewDentistSchedule')
-BEGIN
-	DROP PROCEDURE sp_viewDentistSchedule
-END
-GO
-CREATE PROC sp_viewDentistSchedule
-	@dentistId INT
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-		
+	
 --view all schedule
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllSchedule')
 BEGIN
@@ -1098,7 +1872,7 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		SELECT 1 FROM SCHEDULE
+		SELECT * FROM SCHEDULE
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1119,7 +1893,7 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		SELECT 1 FROM SCHEDULE WHERE isBooked = 0
+		SELECT * FROM SCHEDULE WHERE isBooked = 0
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1127,35 +1901,3 @@ BEGIN
 		ROLLBACK TRAN
 	END CATCH
 END
-
-IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'themHoaDon')
-BEGIN
-	DROP PROCEDURE themHoaDon
-END
-GO
-CREATE PROC themHoaDon
-	@RECORD_ID INT, 
-	@DATE_TIME DATETIME,
-	@STATUS NVARCHAR(30),
-	@TOTAL FLOAT
-AS
-BEGIN TRAN
-	BEGIN TRY
-		IF NOT EXISTS (
-			SELECT 1
-			FROM PATIENT_RECORD PR WHERE PR.id = @RECORD_ID	
-		)
-		BEGIN
-			PRINT N'LỖI: KHÔNG TỒN TẠI HỒ SƠ BỆNH NHÂN'
-			ROLLBACK TRAN
-		END
-
-		INSERT INTO INVOICE(recordId, date_time, status, total) VALUES (@RECORD_ID, @DATE_TIME, @STATUS, @TOTAL)
-	END TRY
-	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN
-	END CATCH
-COMMIT TRAN
-
-EXEC themHoaDon 1, '2021-05-15 09:00:00', N'Đã thanh toán', 1000000

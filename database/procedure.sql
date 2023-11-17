@@ -17,12 +17,12 @@ BEGIN
     BEGIN TRY
         BEGIN TRAN
 
-        IF EXISTS (SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer')
+        IF EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer')
         BEGIN
             RAISERROR (N'Lỗi: Số điện thoại đã được đăng ký', 16, 1)
             ROLLBACK TRAN
         END
-        ELSE IF EXISTS (SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Guest')
+        ELSE IF EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Guest')
         BEGIN
             UPDATE CUSTOMER 
             SET password = @password, name = @name, gender = @gender, birthday = @birthday, address = @address
@@ -56,12 +56,12 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		IF NOT EXISTS (SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password )
+		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password )
 		BEGIN
 			RAISERROR (N'Số điện thoại hoặc mật khẩu không đúng', 16, 1)
 			ROLLBACK TRAN
 		END
-		IF EXISTS (SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password and isBlocked = 1)
+		IF EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password and isBlocked = 1)
 		BEGIN
 			RAISERROR (N'Tài khoản đã bị khóa', 16, 1)
 			ROLLBACK TRAN
@@ -82,7 +82,7 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		IF NOT EXISTS (SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer')
+		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer')
 		BEGIN
 			RAISERROR (N'Người dùng không tồn tại', 16, 1)
 			ROLLBACK TRAN

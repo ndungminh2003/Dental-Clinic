@@ -13,39 +13,41 @@ CREATE PROC sp_signUp
     @birthday DATE,
     @address NVARCHAR(120)
 AS
+-- SET XACT_ABORT, NOCOUNT ON
 BEGIN
     BEGIN TRY
         BEGIN TRAN
-
+		IF LEN(@password) < 10
+		BEGIN
+			RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+		END
         IF EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer')
         BEGIN
             RAISERROR (N'Lỗi: Số điện thoại đã được đăng ký', 16, 1)
-            ROLLBACK TRAN
         END
         ELSE IF EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Guest')
         BEGIN
             UPDATE CUSTOMER 
             SET password = @password, name = @name, gender = @gender, birthday = @birthday, address = @address, role = 'Customer'
             WHERE phoneNumber = @phone
-            COMMIT TRAN
         END
         ELSE
         BEGIN
             INSERT INTO CUSTOMER 
             VALUES(@name, @password, @phone, 'Customer', @gender, @address, @birthday, 0)
-            COMMIT TRAN
         END
+        COMMIT TRAN
     END TRY
     BEGIN CATCH
-        PRINT ERROR_MESSAGE()
-        ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
     END CATCH
 END
 
 -- customer login without hashing
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_customerLoginWithoutHash')
 BEGIN
-    DROP PROCEDURE sp_signUp
+    DROP PROCEDURE sp_customerLoginWithoutHash
 END
 GO
 
@@ -59,21 +61,19 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password )
 		BEGIN
-			RAISERROR (N'Số điện thoại hoặc mật khẩu không đúng', 16, 1)
-			ROLLBACK TRAN
+			RAISERROR (N'Lỗi: Số điện thoại hoặc mật khẩu không đúng', 16, 1)
 		END
 		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password and isBlocked = 0)
 		BEGIN
-			RAISERROR (N'Tài khoản đã bị khóa', 16, 1)
-			ROLLBACK TRAN
+			RAISERROR (N'Lỗi: Tài khoản đã bị khóa', 16, 1)
 		END
 		SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password and isBlocked = 0
-		 PRINT N'Đăng nhập thành công'
+		PRINT N'Đăng nhập thành công'
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -86,15 +86,14 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer')
 		BEGIN
-			RAISERROR (N'Người dùng không tồn tại', 16, 1)
-			ROLLBACK TRAN
+			RAISERROR (N'Lỗi: Người dùng không tồn tại', 16, 1)
 		END
 		SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer'
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -114,15 +113,15 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 		BEGIN
-			RAISERROR(N'Mã khách hàng không tồn tại', 16, 1)
+			RAISERROR(N'Lỗi: Mã khách hàng không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM CUSTOMER WHERE id = @customerId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -141,8 +140,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -164,22 +163,24 @@ AS
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
-		IF EXISTS (SELECT 1 FROM CUSTOMER WHERE id != @customerId AND phoneNumber = @phoneNumber)
-		BEGIN
-			RAISERROR(N'Số điện thoại đã được đăng ký',16, 1)
-			ROLLBACK TRAN
-		END
 		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 		BEGIN
-			RAISERROR(N'Mã khách hàng không tồn tại',16, 1)
+			RAISERROR(N'Lỗi: Mã khách hàng không tồn tại',16, 1)
 			ROLLBACK TRAN
 		END
-		UPDATE CUSTOMER SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, address = @address WHERE id = @customerId
+		IF EXISTS (SELECT 1 FROM CUSTOMER WHERE id != @customerId AND phoneNumber = @phoneNumber)
+		BEGIN
+			RAISERROR(N'Lỗi: Số điện thoại đã được đăng ký',16, 1)
+			ROLLBACK TRAN
+		END
+		UPDATE CUSTOMER 
+		SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, address = @address 
+		WHERE id = @customerId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -197,7 +198,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 		BEGIN
-			RAISERROR(N'Số điện thoại không tồn tại', 16, 1)
+			RAISERROR(N'Lỗi: Mã khách hàng không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
 		DECLARE @isBlocked BIT
@@ -214,8 +215,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -235,15 +236,20 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 			BEGIN
-				RAISERROR(N'Mã khách hàng không tồn tại', 16, 1)
+				RAISERROR(N'Lỗi: Mã khách hàng không tồn tại', 16, 1)
 				ROLLBACK TRAN				
+			END
+			IF LEN(@newPassword) <= 10
+			BEGIN
+				RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+				ROLLBACK TRAN
 			END
 			UPDATE CUSTOMER SET password = @newPassword WHERE id = @customerId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -270,12 +276,17 @@ BEGIN
 			RAISERROR(N'Số điện thoại đã được đăng ký',16, 1)
 			ROLLBACK TRAN
 		END
+		IF LEN(@password) <= 10
+		BEGIN
+			RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+			ROLLBACK TRAN
+		END
 		INSERT INTO DENTIST VALUES(@name, @password, @phoneNumber, @gender, @birthday, @introduction, 0)
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -283,6 +294,11 @@ GO
 sp_createDentist 'Dentist6','123123123123', '0327116216', N'Nam', '2008-11-11', 'Experienced dentist'
 
 -- dentist login
+GO
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_dentistLogin')
+BEGIN
+	DROP PROCEDURE sp_dentistLogin
+END
 GO
 CREATE PROC sp_dentistLogin
     @phone VARCHAR(15),
@@ -293,7 +309,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE phoneNumber = @phone and password = @password )
 		BEGIN
-			RAISERROR (N'Số điện thoại hoặc mật khẩu không đúng', 16, 1)
+			RAISERROR (N'Lỗi: Số điện thoại hoặc mật khẩu không đúng', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM DENTIST WHERE phoneNumber = @phone and password = @password
@@ -301,8 +317,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -321,15 +337,15 @@ BEGIN
 	 	BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Mã nha sĩ không tồn tại', 16, 1)
+			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM DENTIST WHERE id = @dentistId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -349,12 +365,13 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
 -- update dentist profile unrepatable read, 
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_updateDentistProfile')
 BEGIN
 	DROP PROCEDURE sp_updateDentistProfile
@@ -371,27 +388,28 @@ AS
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
-		IF EXISTS (SELECT 1 FROM DENTIST WHERE id != @dentistId AND phoneNumber = @phoneNumber)
-		BEGIN
-			RAISERROR(N'Số điện thoại đã được đăng ký',16, 1)
-			ROLLBACK TRAN
-		END
 		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Mã nha sĩ không tồn tại',16, 1)
+			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại',16, 1)
+			ROLLBACK TRAN
+		END
+		IF EXISTS (SELECT 1 FROM DENTIST WHERE id != @dentistId AND phoneNumber = @phoneNumber)
+		BEGIN
+			RAISERROR(N'Lỗi: Số điện thoại đã được đăng ký',16, 1)
 			ROLLBACK TRAN
 		END
 		UPDATE DENTIST SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, introduction = @introduction WHERE id = @dentistId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
 
 --change dentist password unrepateable read
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_changeDentistPassword')
 BEGIN
 	DROP PROCEDURE sp_changeDentistPassword
@@ -406,15 +424,20 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId)
 			BEGIN
-				RAISERROR(N'Mã nha sĩ không tồn tại',16, 1)
+				RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại',16, 1)
+				ROLLBACK TRAN
+			END
+			IF LEN(@newPassword) <= 10
+			BEGIN
+				RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
 				ROLLBACK TRAN
 			END
 			UPDATE DENTIST SET password = @newPassword WHERE id = @dentistId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -433,7 +456,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Mã nha sĩ không tồn tại', 16, 1)
+			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
 		DECLARE @isBlocked BIT
@@ -450,12 +473,16 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
 -- staff login
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_staffLogin')
+BEGIN
+	DROP PROCEDURE sp_staffLogin
+END
 GO
 CREATE PROC sp_staffLogin
     @phone VARCHAR(15),
@@ -466,7 +493,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM STAFF WHERE phoneNumber = @phone and password = @password )
 		BEGIN
-			RAISERROR (N'Số điện thoại hoặc mật khẩu không đúng', 16, 1)
+			RAISERROR (N'Lỗi: Số điện thoại hoặc mật khẩu không đúng', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM STAFF WHERE phoneNumber = @phone and password = @password
@@ -474,8 +501,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -496,15 +523,20 @@ BEGIN
 	 	BEGIN TRAN
 		IF EXISTS (SELECT 1 FROM STAFF WHERE phoneNumber = @phoneNumber)
 		BEGIN
-			RAISERROR(N'Số điện thoại đã được đăng ký',16, 1)
+			RAISERROR(N'Lỗi: Số điện thoại đã được đăng ký',16, 1)
+			ROLLBACK TRAN
+		END
+		IF LEN(@password) <= 10
+		BEGIN
+			RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
 			ROLLBACK TRAN
 		END
 		INSERT INTO STAFF VALUES(@name, @password, @phoneNumber, @gender, 0)
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -522,15 +554,15 @@ BEGIN
 	 	BEGIN TRAN
 		IF EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
 		BEGIN
-			RAISERROR(N'Mã nhân viên không tồn tại',16, 1)
+			RAISERROR(N'Lỗi: Mã nhân viên không tồn tại',16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM STAFF WHERE id = @staffId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -549,8 +581,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -569,7 +601,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
 		BEGIN
-			RAISERROR(N'Mã nhân viên không tồn tại', 16, 1)
+			RAISERROR(N'Lỗi: Mã nhân viên không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
 		DECLARE @isBlocked BIT
@@ -586,16 +618,16 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
 -- admin login
 GO
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockStaff')
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_adminLogin')
 BEGIN
-	DROP PROCEDURE sp_blockStaff
+	DROP PROCEDURE sp_adminLogin
 END
 GO
 CREATE PROC sp_adminLogin
@@ -607,7 +639,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM ADMIN WHERE phoneNumber = @phone and password = @password )
 		BEGIN
-			RAISERROR (N'Số điện thoại hoặc mật khẩu không đúng', 16, 1)
+			RAISERROR (N'Lỗi: Số điện thoại hoặc mật khẩu không đúng', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM ADMIN WHERE phoneNumber = @phone and password = @password
@@ -615,8 +647,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -647,6 +679,14 @@ BEGIN
 			RAISERROR (N'Lỗi: Cuộc hẹn được đặt phải có thời gian bắt đầu sau thời gian hiện tại', 16, 1)
 			ROLLBACK TRAN
 		END
+		IF @staffId IS NOT NULL
+		BEGIN
+			IF NOT EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
+			BEGIN
+				RAISERROR (N'Lỗi: Mã nhân viên không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+		END
 		IF NOT EXISTS (SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId and startTime = @startTime and endTime = @endTime and isBooked = 0)
 		BEGIN
 			RAISERROR (N'Lỗi: Lịch trình không tồn tại hoặc đã được đặt', 16, 1)
@@ -668,13 +708,13 @@ BEGIN
 			RAISERROR (N'Lỗi: Số điện thoại không đặt được cuộc hẹn vì đã bị khóa', 16, 1)
 			ROLLBACK TRAN
 		END
-		INSERT INTO APPOINTMENT VALUES(@dentistId, @startTime, @customerId, @endTime, N'Đang chờ', @staffId, NULL)
+		INSERT INTO APPOINTMENT VALUES(@dentistId, @customerId, @startTime, @endTime, N'Đang chờ', @staffId, NULL)
 		UPDATE SCHEDULE SET isBooked = 1 WHERE dentistId = @dentistId and startTime = @startTime and endTime = @endTime
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -708,8 +748,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -740,8 +780,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -770,8 +810,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -798,8 +838,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -819,8 +859,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -851,8 +891,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -883,8 +923,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -912,7 +952,7 @@ BEGIN
 				FROM CUSTOMER C WHERE C.id = @CUSTOMER_ID	
 			)
 			BEGIN
-				PRINT N'LỖI: KHÔNG TỒN TẠI ID KHÁCH HÀNG'
+				RAISERROR (N'LỖI: KHÔNG TỒN TẠI ID KHÁCH HÀNG', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF NOT EXISTS (
@@ -920,16 +960,15 @@ BEGIN
 				FROM DENTIST D WHERE D.id = @DENTIST_ID	
 			)
 			BEGIN
-				PRINT N'LỖI: KHÔNG TỒN TẠI ID BÁC SĨ'
+				RAISERROR (N'LỖI: KHÔNG TỒN TẠI ID BÁC SĨ', 16, 1)
 				ROLLBACK TRAN
 			END
 			INSERT INTO PATIENT_RECORD(symptom, advice, diagnostic, date_time, dentistId, customerId) VALUES (@SYMPTOM, @ADVICE, @DIAGNOSTIC, @DATE_TIME, @DENTIST_ID, @CUSTOMER_ID)
-			UPDATE a SET a.recordId = @recordId, a.status = N'Hoàn thành' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án'
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -955,7 +994,7 @@ BEGIN
 				FROM PATIENT_RECORD p WHERE p.id = @recordId	
 			)
 			BEGIN
-				PRINT N'Lỗi: mã hồ sơ bệnh án không tồn tại'
+				RAISERROR (N'Lỗi: mã hồ sơ bệnh án không tồn tại', 16, 1)
 				ROLLBACK TRAN
 			END
 			UPDATE PATIENT_RECORD 
@@ -964,8 +1003,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -994,8 +1033,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1024,8 +1063,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1045,8 +1084,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1065,20 +1104,20 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS ( SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 			BEGIN
-				PRINT N'Lỗi: mã khách hàng không tồn tại'
+				RAISERROR(N'Lỗi: mã khách hàng không tồn tại', 16, 1)
 				ROLLBACK TRAN
 			END
-			IF NOT EXISTS ( SELECT 1 FROM PATIENT_RECORD WHERE id = @customerId)
-			BEGIN
-				PRINT N'Lỗi: không có hồ sơ bệnh án nào'
-				ROLLBACK TRAN
-			END
+			-- IF NOT EXISTS ( SELECT 1 FROM PATIENT_RECORD WHERE id = @customerId)
+			-- BEGIN
+			-- 	RAISERROR(N'Lỗi: không có hồ sơ bệnh án nào', 16, 1)
+			-- 	ROLLBACK TRAN
+			-- END
 			SELECT * FROM PATIENT_RECORD WHERE customerId = @customerId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1110,8 +1149,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1150,8 +1189,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1177,8 +1216,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1203,8 +1242,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1223,8 +1262,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1258,7 +1297,7 @@ BEGIN
 				WHERE PR.ID = @RECORD_ID
 			)
 			BEGIN
-				PRINT N'LỖI: KHÔNG TỒN TẠI RECORD ID';
+				RAISERROR(N'LỖI: KHÔNG TỒN TẠI RECORD ID', 16, 1);
 				ROLLBACK TRAN;
 			END
 
@@ -1269,7 +1308,7 @@ BEGIN
 				WHERE M.ID = @MEDICINE_ID
 			)
 			BEGIN
-				PRINT N'LỖI: KHÔNG TỒN TẠI MEDICINE ID';
+				RAISERROR(N'LỖI: KHÔNG TỒN TẠI MEDICINE ID', 16, 1);
 				ROLLBACK TRAN;		
 			END
 			-- INSERT INTO PRESCRIBE_MEDICINE
@@ -1280,12 +1319,13 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN;		
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW	
 	END CATCH
 END
 
 --delete Prescribe Medicine
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deletePrescribeMedicine')
 BEGIN
 	DROP PROCEDURE sp_deletePrescribeMedicine
@@ -1315,8 +1355,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN;		
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW	
 	END CATCH
 END
 
@@ -1361,8 +1401,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN;		
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW	
 	END CATCH
 END
 
@@ -1392,8 +1432,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN;		
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW	
 	END CATCH
 END
 
@@ -1422,8 +1462,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1458,8 +1498,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1484,8 +1524,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1504,8 +1544,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1532,13 +1572,17 @@ BEGIN
 				RAISERROR(N'Lỗi: mã hồ sơ bệnh án không tồn tại', 16, 1)
 				ROLLBACK TRAN
 			END
-			DECLARE @price FLOAT = (SELECT price FROM SERVICE WHERE id = @serviceId)
-			INSERT INTO SERVICE_USE VALUES(@recordId, @serviceId, @price)
+			IF EXISTS (SELECT 1 FROM SERVICE_USE WHERE recordId = @recordId AND serviceId = @serviceId)
+			BEGIN
+				RAISERROR(N'Lỗi: dịch vụ sử dụng đã tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			INSERT INTO SERVICE_USE (recordId, serviceId) VALUES(@recordId, @serviceId)
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1574,8 +1618,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1605,8 +1649,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1634,15 +1678,23 @@ BEGIN
 				FROM PATIENT_RECORD PR WHERE PR.id = @RECORD_ID	
 			)
 			BEGIN
-				PRINT N'LỖI: KHÔNG TỒN TẠI HỒ SƠ BỆNH NHÂN'
+				RAISERROR(N'LỖI: KHÔNG TỒN TẠI HỒ SƠ BỆNH NHÂN', 16, 1)
+				ROLLBACK TRAN
+			END
+			IF EXISTS (
+				SELECT 1
+				FROM INVOICE I WHERE I.recordId = @RECORD_ID	
+			)
+			BEGIN
+				RAISERROR(N'LỖI: HỒ SƠ BỆNH NHÂN ĐÃ CÓ HÓA ĐƠN', 16, 1)
 				ROLLBACK TRAN
 			END
 			INSERT INTO INVOICE(recordId, date_time, status, total, staffId) VALUES (@RECORD_ID, @DATE_TIME, @STATUS, @TOTAL, @STAFFID)
 			COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE();
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1668,8 +1720,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1694,8 +1746,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1720,8 +1772,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1740,8 +1792,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1764,12 +1816,17 @@ BEGIN
 			RAISERROR(N'Mã nha sĩ không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
+		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime)
+		BEGIN
+			RAISERROR(N'Lịch rảnh đã tồn tại', 16, 1)
+			ROLLBACK TRAN
+		END
 		INSERT INTO SCHEDULE VALUES(@dentistId, @startTime, @endTime, 0)
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1789,17 +1846,22 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Mã nha sĩ không tồn tại', 16, 1)
+			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
 		IF NOT EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime1)
 		BEGIN
-			RAISERROR(N'Lịch rảnh không tồn tại', 16, 1)
+			RAISERROR(N'Lỗi: Lịch rảnh muốn chỉnh sửa không tồn tại', 16, 1)
+			ROLLBACK TRAN
+		END
+		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime2)
+		BEGIN
+			RAISERROR(N'Lỗi: Lịch rảnh đã tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
 		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime1 AND isBooked = 1)
 		BEGIN
-			RAISERROR(N'Không thể chỉnh sửa lịch đã được đặt', 16, 1)
+			RAISERROR(N'Lỗi: Không thể chỉnh sửa lịch đã được đặt', 16, 1)
 			ROLLBACK TRAN
 		END
 		DECLARE @endTime DATETIME
@@ -1808,8 +1870,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1845,8 +1907,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1871,8 +1933,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 	
@@ -1891,8 +1953,8 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
 
@@ -1912,7 +1974,16 @@ BEGIN
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
-		PRINT ERROR_MESSAGE()
-		ROLLBACK TRAN
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
 	END CATCH
 END
+
+EXEC sp_signUp '01234567892', '123123123123', 'Customer2', 'Nam', '2008-11-11', N'Hà Nội'
+EXEC sp_customerLoginWithoutHash '01234567891', '123123123123'
+EXEC sp_viewOneCustomer 1
+EXEC sp_viewAllCustomer
+EXEC sp_updateCustomerProfile 1, 'Customer1', '01234567891', N'Nữ', 'TP HCM', '2008-11-11'
+EXEC sp_makeAppointment '0327116254', 'Customer4b', 'Nam', '2008-11-11', N'Hà Nội', 2, NULL, '2024-05-15 09:00:00', '2024-05-15 010:00:00'
+EXEC sp_addDentistSchedule '2023-11-15 07:00:00.000','2023-11-15 08:00:00.000',7
+EXEC sp_addPrescribeMedicine 1, 2, 100

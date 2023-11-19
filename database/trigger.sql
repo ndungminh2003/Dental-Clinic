@@ -1,65 +1,6 @@
 USE QLPhongKham
 GO
 
---Trigger1
-GO
-IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_CUSTOMER1]'))
-DROP TRIGGER [dbo].[TRIGGER_CUSTOMER1]
-GO
-CREATE TRIGGER TRIGGER_CUSTOMER1 ON CUSTOMER
-FOR INSERT, UPDATE
-AS
-IF UPDATE(password) or UPDATE(role)
-BEGIN
-    IF EXISTS (SELECT 1 FROM inserted WHERE role = N'Guest' and password IS NOT NULL) 
-    BEGIN 
-        RAISERROR(N'Lỗi: Không thể đặt mật khẩu cho Guest', 16, 1)
-        ROLLBACK TRAN
-    END
-	IF EXISTS (SELECT 1 FROM inserted WHERE LEN(password) <= 10) 
-    BEGIN 
-        RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
-        ROLLBACK TRAN
-    END
-END
-
---Trigger2
-GO
-IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_CUSTOMER2]'))
-DROP TRIGGER [dbo].[TRIGGER_CUSTOMER2]
-GO
-CREATE TRIGGER TRIGGER_CUSTOMER2 ON CUSTOMER
-INSTEAD OF UPDATE
-AS 
-BEGIN
-  IF(UPDATE(password))
-  BEGIN
-    DECLARE @newPassword NVARCHAR(30);
-  
-    SELECT @newPassword = i.password
-    FROM inserted i
-    JOIN CUSTOMER c ON c.id = i.id;
-  
-    IF LEN(@newPassword) > 10
-    BEGIN
-      UPDATE c
-      SET role = 'Customer', password = @newPassword, name = i.name, gender = i.gender, birthday = i.birthday, address = i.address
-      FROM CUSTOMER c
-      JOIN inserted i ON c.id = i.id;
-    END
-    ELSE
-    BEGIN
-      RAISERROR('Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
-      ROLLBACK TRAN
-    END
-  END
-  ELSE
-	UPDATE c
-    SET name = i.name, gender = i.gender, birthday = i.birthday, address = i.address
-    FROM CUSTOMER c
-    JOIN inserted i ON c.id = i.id;
-END
-
 --Trigger3
 --R21: Chỉ có tối đa 5 bác sĩ có lịch làm việc cùng thời gian bắt đầu
 --R26: Với mọi lịch trình, thời gian bắt đầu phải nhỏ hơn thời gian kết thúc
@@ -243,9 +184,8 @@ BEGIN
 		RAISERROR (N'Lỗi: Thời gian tạo hồ sơ bệnh án phải sau thời gian bắt đầu của cuộc hẹn.', 16, 1)
 		ROLLBACK TRAN
 	END
-	--UPDATE a SET a.recordId = @recordId, a.status = N'Hoàn thành' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án'
-	-- DECLARE @price INT = (SELECT price FROM SERVICE WHERE id = 1)
-	-- INSERT INTO SERVICE_USE (recordId, serviceId, price) VALUES(@recordId, 1, @price)
+	UPDATE a SET a.recordId = @recordId, a.status = N'Hoàn thành' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án'
+	INSERT INTO SERVICE_USE (recordId, serviceId) VALUES(@recordId, 1)
 END
 
 GO
@@ -265,17 +205,6 @@ BEGIN
 END
 
 SELECT * FROM PATIENT_RECORD
-
-
---Trigger8*
--- GO
--- IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PATIENT_RECORD3]'))
--- DROP TRIGGER [dbo].[TRIGGER_PATIENT_RECORD3]
--- GO
--- CREATE TRIGGER TRIGGER_PATIENT_RECORD3 ON PATIENT_RECORD
--- FOR DELETE
--- AS
--- BEGIN
 
 --Trigger8
 --R30: Số lượng của một loại thuốc trong đơn thuốc phải bé hơn hoặc bằng số lượng của loại thuốc đó ở trong kho.
@@ -328,3 +257,63 @@ BEGIN
 		UPDATE su SET su.price = s.price FROM SERVICE_USE su JOIN INSERTED i ON su.serviceId = i.serviceId AND su.recordId = i.recordId JOIN SERVICE s ON i.serviceId = s.id
 	END
 END
+
+--Trigger1
+-- GO
+-- IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_CUSTOMER1]'))
+-- DROP TRIGGER [dbo].[TRIGGER_CUSTOMER1]
+-- GO
+-- CREATE TRIGGER TRIGGER_CUSTOMER1 ON CUSTOMER
+-- FOR INSERT, UPDATE
+-- AS
+-- IF UPDATE(password) or UPDATE(role)
+-- BEGIN
+--     IF EXISTS (SELECT 1 FROM inserted WHERE role = N'Guest' and password IS NOT NULL) 
+--     BEGIN 
+--         RAISERROR(N'Lỗi: Không thể đặt mật khẩu cho Guest', 16, 1)
+--         ROLLBACK TRAN
+--     END
+-- 	IF EXISTS (SELECT 1 FROM inserted WHERE LEN(password) <= 10) 
+--     BEGIN 
+--         RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+--         ROLLBACK TRAN
+--     END
+-- END
+
+-- --Trigger2
+-- GO
+-- IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_CUSTOMER2]'))
+-- DROP TRIGGER [dbo].[TRIGGER_CUSTOMER2]
+-- GO
+-- CREATE TRIGGER TRIGGER_CUSTOMER2 ON CUSTOMER
+-- INSTEAD OF UPDATE
+-- AS 
+-- BEGIN
+--   IF(UPDATE(password))
+--   BEGIN
+--     DECLARE @newPassword NVARCHAR(30);
+  
+--     SELECT @newPassword = i.password
+--     FROM inserted i
+--     JOIN CUSTOMER c ON c.id = i.id;
+  
+--     IF LEN(@newPassword) > 10
+--     BEGIN
+--       UPDATE c
+--       SET role = 'Customer', password = @newPassword, name = i.name, gender = i.gender, birthday = i.birthday, address = i.address
+--       FROM CUSTOMER c
+--       JOIN inserted i ON c.id = i.id;
+--     END
+--     ELSE
+--     BEGIN
+--       RAISERROR('Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+--       ROLLBACK TRAN
+--     END
+--   END
+--   ELSE
+-- 	UPDATE c
+--     SET name = i.name, gender = i.gender, birthday = i.birthday, address = i.address
+--     FROM CUSTOMER c
+--     JOIN inserted i ON c.id = i.id;
+-- END
+--

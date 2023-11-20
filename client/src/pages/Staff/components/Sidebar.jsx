@@ -11,7 +11,7 @@ const Sidebar = () => {
   const { pathname } = location;
 
   return (
-    <div className="h-screen w-[300px] z-10 bg-Topaz p-3	">
+    <div className="h-screen w-[300px] z-10 bg-dirty-blue p-3	">
       <div className="mx-2 mb-10 mt-5">
         <h1 className="text-3xl font-bold uppercase text-center text-white		">
           Dencare
@@ -20,7 +20,7 @@ const Sidebar = () => {
       <div>
         <ul>
           <li>
-            <NavLink to="appointment/all" className="bg-light-Topaz side">
+            <NavLink to="appointment/all" className="bg-light-dirty-blue side">
               <TodayIcon style={{ color: "white" }} />
               <span className="ml-2 mr-3 text-white	">
                 Appointment management
@@ -41,7 +41,7 @@ const Sidebar = () => {
                     ${
                       pathname.includes("appointment/all")
                         ? "text-white"
-                        : "text-dark-Topaz"
+                        : "text-dark-dirty-blue"
                     }`}
                   >
                     All appointment
@@ -55,7 +55,7 @@ const Sidebar = () => {
                     ${
                       pathname.includes("appointment/add")
                         ? "text-white"
-                        : "text-dark-Topaz"
+                        : "text-dark-dirty-blue"
                     }`}
                   >
                     Add appointment
@@ -64,6 +64,14 @@ const Sidebar = () => {
               </li>
             </div>
           )}
+          <li>
+            <NavLink to="record/all" className="mt-2 side">
+              {" "}
+              <DocumentScannerIcon style={{ color: "white" }} />
+              <span className="ml-2 mr-14 text-white">All Records</span>
+              
+            </NavLink>
+          </li>
         </ul>
       </div>
     </div>

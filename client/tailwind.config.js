@@ -4,7 +4,9 @@ module.exports = {
   theme: {
     extend: {
       colors:{
-        "ebony-clay":"#232845",
+        "dark-ebony-clay":"#232845",
+        "ebony-clay":"#354073",
+        "light-ebony-clay":"#3d4990",
         "blue-hosta":"#75BBC9",
         "dirty-blue":"#3E80AC",
         "mercury":"#DEE9ED",

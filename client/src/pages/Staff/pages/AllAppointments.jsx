@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 
 const AllAppointments = () => {
-  const columns = ["Appointment date", "Patient name",  "Number" , "Adress"];
+  const columns = ["Appointment date","Appointment time", "Patient name" , "Adress",  "Number"];
   const options = {
     filterType: 'checkbox',
     download: false,
@@ -23,7 +23,7 @@ const AllAppointments = () => {
       MUIDataTableBodyCell: {
         styleOverrides:{
           root: {
-              marginLeft:"15px",
+              marginLeft:"0px",
           }
         }
       }

@@ -203,7 +203,7 @@ function SimpleDialog(props) {
           ></input>
         </div>
         <div className ="text-right mt-5">
-          <button onClick={handleListItemClick()} className ="bg-sky-500 rounded-md px-3 py-2">Save</button>
+          <button onClick={() => handleListItemClick("hi")} className ="bg-sky-500 rounded-md px-3 py-2">Save</button>
         </div>
       </div>
     </Dialog>

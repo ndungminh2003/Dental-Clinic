@@ -30,6 +30,7 @@ const InputWrapper = styled('div')(
   padding: 1px;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
 
   &:hover {
     border-color: ${theme.palette.mode === 'dark' ? '#177ddc' : '#40a9ff'};
@@ -40,7 +41,7 @@ const InputWrapper = styled('div')(
     box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
   }
 
-  & input {
+  & select {
     background-color: ${theme.palette.mode === 'dark' ? '#141414' : '#fff'};
     color: ${
       theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,.85)'
@@ -48,25 +49,39 @@ const InputWrapper = styled('div')(
     height: 30px;
     box-sizing: border-box;
     padding: 4px 6px;
-    width: 0;
-    min-width: 30px;
-    flex-grow: 1;
+    width: 100%;
     border: 0;
     margin: 0;
     outline: 0;
+    cursor: pointer; // Add cursor style
   }
 `,
 );
 
+
+
 function Tag(props) {
   const { label, onDelete, ...other } = props;
+  const [selectedOption, setSelectedOption] = React.useState('');
+  const service = [
+    { name: 'Service 1' },
+    { name: 'Service 2' },
+    { name: 'Service 3' },
+    // Add more services as needed
+  ];
   return (
     <div {...other}>
+      <select
+        value={selectedOption}
+        onChange={(e) => setSelectedOption(e.target.value)}
+      >
+        {service.map((data) => (
+          <option key={data.name} value={data.name}>
+            {data.name}
+          </option>
+        ))}
+      </select>
       <span>{label}</span>
-    <select>
-      <option value="someOption">Some option</option>
-      <option value="otherOption">Other option</option>
-    </select>
       <CloseIcon onClick={onDelete} />
     </div>
   );

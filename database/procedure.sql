@@ -51,7 +51,8 @@ BEGIN
 END
 GO
 
---UNREPEATABLE READ
+-- DIRTY READ this situation can occur when a transaction modifies a data item and then fails to commit the changes due to a system failure, network error, or other issue.
+-- DIRTY READ(Admin thay đổi thông tin người dùng và fails trong lúc commit), PHANTOM READ(Admin xóa người dùng sau khi check tài khoản và mật khẩu), UNREPEATABLE READ(Admin thay đổi thông tin người dùng sau khi check tài khoản mật khẩu và block)
 CREATE PROC sp_customerLoginWithoutHash
     @phone VARCHAR(15),
     @password VARCHAR(50)
@@ -97,6 +98,7 @@ BEGIN
 	END CATCH
 END
 
+
 -- view one customer
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneCustomer')
 BEGIN
@@ -104,7 +106,7 @@ BEGIN
 END
 GO
 
---UNREPEATABLE READ
+-- UNREPEATABLE READ, PHANTOM READ, DIRTY READ (SAME LOGIN)
 CREATE PROC sp_viewOneCustomer --STAFF CUSTOMER ADMIN
 	@customerId INT
 AS
@@ -126,6 +128,7 @@ BEGIN
 END
 
 -- view all customer (ADMIN STAFF)
+-- DIRTY READ (Admin thêm người dùng hoặc xóa người dùng, hoặc cập nhật người dùng nhưng lỗi commit)
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllCustomer')
 BEGIN
     DROP PROCEDURE sp_viewAllCustomer
@@ -145,7 +148,8 @@ BEGIN
 	END CATCH
 END
 
---UNREPATABLE READ
+
+-- DIRTY READ, LOST UPDATE, TỪ ADMIN
 -- update customer profile (CUSTOMER ADMIN)
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_updateCustomerProfile')
 BEGIN
@@ -220,7 +224,7 @@ BEGIN
 	END CATCH
 END
 
---UNREPATEABLE READ -->deleteCustomer
+-- LOST UPDATE (Admin cùng cập nhật password sẽ bị ghi đè) 
 -- change customer password  (CUSTOMER, ADMIN)
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_changeCustomerPassword')
 BEGIN
@@ -293,6 +297,8 @@ END
 GO
 sp_createDentist 'Dentist6','123123123123', '0327116216', N'Nam', '2008-11-11', 'Experienced dentist'
 
+
+--DIRTY READ(Admin thay đổi thông tin bác sĩ và fails trong lúc commit), PHANTOM READ(Admin xóa bác sĩ sau khi check tài khoản và mật khẩu), UNREPEATABLE READ(Admin thay đổi thông tin bác sĩ sau khi check tài khoản mật khẩu và block)
 -- dentist login
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_dentistLogin')
@@ -323,7 +329,7 @@ BEGIN
 END
 
 
--- view one dentist dirty read, unreapeatable read
+-- view one dentist dirty read, phantom read, unrepeatable read
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneDentist')
 BEGIN
 	DROP PROCEDURE sp_viewOneDentist
@@ -370,7 +376,7 @@ BEGIN
 	END CATCH
 END
 
--- update dentist profile unrepatable read, 
+-- update dentist profile, lost update(Admin cùng sửa profile), dirty read(khi 2 người bác sĩ cùng sửa đổi số điện thoại cùng 1 lúc nhưng 1 người được cập nhật số điện thoại mới 1 người không nhưng đến cuối người được cập nhật số điện thoại lại fail commit)
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_updateDentistProfile')
 BEGIN
@@ -408,7 +414,7 @@ BEGIN
 END
 
 
---change dentist password unrepateable read
+--change dentist password Lost update(Admin cùng thay đổi), Dirty read 
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_changeDentistPassword')
 BEGIN
@@ -478,6 +484,7 @@ BEGIN
 	END CATCH
 END
 
+--DIRTY READ(Admin thay đổi thông tin nhân viên và fails trong lúc commit), PHANTOM READ(Admin xóa nhân viên sau khi check tài khoản và mật khẩu), UNREPEATABLE READ(Admin thay đổi thông tin nhân viên sau khi check tài khoản mật khẩu và block)
 -- staff login
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_staffLogin')
 BEGIN
@@ -654,7 +661,7 @@ END
 
 
 -- make appointment 
--- 2 user cung make dirty read, unrepeatable read
+-- 2 user cung make dirty read, lost update
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_makeAppointment')
 BEGIN
     DROP PROCEDURE sp_makeAppointment
@@ -718,7 +725,7 @@ BEGIN
 	END CATCH
 END
 
--- cancel appointment, unrepeatable read
+-- cancel appointment, 
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_cancelAppointment')
 BEGIN
@@ -753,7 +760,7 @@ BEGIN
 	END CATCH
 END
 
--- delete appointment unrepeatable read, 
+-- delete appointment  
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteAppointment')
 BEGIN
@@ -815,7 +822,8 @@ BEGIN
 	END CATCH
 END
 
--- view one appointment
+
+-- view one appointment, dirty read, phantom read, 
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneAppointment')
 BEGIN
@@ -843,7 +851,7 @@ BEGIN
 	END CATCH
 END
 
--- view all appointment
+-- view all appointment dirty read, 
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllAppointment')
 BEGIN
@@ -864,7 +872,7 @@ BEGIN
 	END CATCH
 END
 
--- view customer's appointment
+-- view customer's appointment dirty read, phantom read (khi customer thêm vào 1 appointment mới hoặc hủy)
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewCustomerAppointment')
 BEGIN
@@ -896,6 +904,8 @@ BEGIN
 	END CATCH
 END
 
+
+-- dirty read, phantom read (khi customer thêm vào 1 appointment mới hoặc hủy)
 -- view dentist's appointment
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewDentistAppointment')
@@ -929,7 +939,7 @@ BEGIN
 END
 
 
--- create patient record
+-- create patient record dirty read(khi admin xóa Customer id hoặc dentist id)
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_createPatientRecord')
 BEGIN
@@ -1038,7 +1048,7 @@ BEGIN
 	END CATCH
 END
 
--- view one patient record
+-- view one patient record dirty read (khi xóa, cập nhật nhưng lỗi commit), phantom read, 
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOnePatientRecord')
 BEGIN
@@ -1068,7 +1078,7 @@ BEGIN
 	END CATCH
 END
 
--- view all patient record
+-- view all patient record, dirty read (khi thêm vào 1 patient record mới hoặc xóa đi)
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllPatientRecord')
 BEGIN
@@ -1089,7 +1099,7 @@ BEGIN
 	END CATCH
 END
 
--- view patient record by customer id
+-- view patient record by customer id, dirty read
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewCustomerPatientRecord')
 BEGIN
@@ -1122,7 +1132,7 @@ BEGIN
 END
 
 
--- add medicine
+-- create medicine
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_createMedicine')
 BEGIN
 	DROP PROCEDURE sp_createMedicine
@@ -1221,7 +1231,7 @@ BEGIN
 	END CATCH
 END
 
--- view one medicine
+-- view one medicine dirty read, phantom read (thêm xóa sửa medicine), 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneMedicine')
 BEGIN
 	DROP PROCEDURE sp_viewOneMedicine
@@ -1247,7 +1257,7 @@ BEGIN
 	END CATCH
 END
 
--- view all medicine
+-- view all medicine dirty read 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllMedicine')
 BEGIN
 	DROP PROCEDURE sp_viewAllMedicine
@@ -1267,7 +1277,7 @@ BEGIN
 	END CATCH
 END
 
--- add Prescribe Medicine
+-- add Prescribe Medicine, dirty read, lost update, 
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addPrescribeMedicine')
 BEGIN
@@ -1311,11 +1321,9 @@ BEGIN
 				RAISERROR(N'LỖI: KHÔNG TỒN TẠI MEDICINE ID', 16, 1);
 				ROLLBACK TRAN;		
 			END
-			-- INSERT INTO PRESCRIBE_MEDICINE
+
 			INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, medicineName, price, quantity) VALUES (@RECORD_ID, @MEDICINE_ID, @MEDICINE_NAME, @PRICE, @QUANTITY);
-			-- UPDATE QUANTITY OF MEDICINE IN STOCK
-			UPDATE MEDICINE SET quantity = CASE WHEN @MEDICINE_STOCK >= @QUANTITY THEN @MEDICINE_STOCK - @QUANTITY ELSE 0 END WHERE ID = @MEDICINE_ID;
-			
+		
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1385,19 +1393,9 @@ BEGIN
 				PRINT N'LỖI: KHÔNG TỒN TẠI PRESCRIBE MEDICINE';
 				ROLLBACK TRAN;		
 			END
-		--GET OLD QUANTITY
-			DECLARE @OLD_QUANTITY INT;
-			SELECT @OLD_QUANTITY = quantity FROM PRESCRIBE_MEDICINE pm WHERE pm.medicineId = @MEDICINE_ID AND pm.recordId = @RECORD_ID
-		IF(@OLD_QUANTITY > @QUANTITY)
-		BEGIN 
-			UPDATE PRESCRIBE_MEDICINE SET quantity = @QUANTITY WHERE medicineId = @MEDICINE_ID AND recordId = @RECORD_ID
-			UPDATE MEDICINE SET quantity = quantity + (@OLD_QUANTITY - @QUANTITY) WHERE id = @MEDICINE_ID
-		END
-		IF(@OLD_QUANTITY < @QUANTITY)
-		BEGIN
-			UPDATE PRESCRIBE_MEDICINE SET quantity = @QUANTITY WHERE medicineId = @MEDICINE_ID AND recordId = @RECORD_ID
-			UPDATE MEDICINE SET quantity = quantity - (@QUANTITY - @OLD_QUANTITY) WHERE id = @MEDICINE_ID
-		END
+			DECLARE @OLD_QUANTITY INT = (SELECT quantity FROM PRESCRIBE_MEDICINE pm WHERE pm.medicineId = @MEDICINE_ID AND pm.recordId = @RECORD_ID);
+			UPDATE MEDICINE SET quantity = quantity + @OLD_QUANTITY WHERE id = @MEDICINE_ID
+			UPDATE PRESCRIBE_MEDICINE SET quantity = @QUANTITY WHERE medicineId = @MEDICINE_ID
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1405,6 +1403,9 @@ BEGIN
         ;THROW	
 	END CATCH
 END
+
+
+
 
 -- view one record's prescribe Medicine 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewPrescribeMedicine')
@@ -1436,7 +1437,6 @@ BEGIN
         ;THROW	
 	END CATCH
 END
-
 
 
 -- add service

@@ -80,7 +80,6 @@ BEGIN
 END
 
 
-
 --Trigger5
 --R27: Thời gian hóa đơn được tạo phải sau thời gian hồ sơ bệnh án được tạo.
 GO
@@ -217,7 +216,7 @@ CREATE TRIGGER TRIGGER_PRESCRIBE_MEDICINE ON PRESCRIBE_MEDICINE
 FOR INSERT, UPDATE
 AS
 BEGIN
-	IF UPDATE(quantity) or UPDATE(price)
+	IF UPDATE(quantity)
 	BEGIN
 		IF EXISTS (
 			SELECT 1
@@ -229,7 +228,27 @@ BEGIN
 			RAISERROR(N'Lỗi: Số lượng của một loại thuốc trong đơn thuốc phải bé hơn hoặc bằng số lượng của loại thuốc đó ở trong kho.', 16, 1)
 			ROLLBACK TRANSACTION;
 		END;
+
+		DECLARE @MEDICINE_ID INT = (SELECT medicineId FROM INSERTED)
+		DECLARE @QUANTITY INT = (SELECT quantity FROM INSERTED)
+		DECLARE @MEDICINE_STOCK FLOAT = (SELECT quantity FROM MEDICINE m WHERE m.id = @MEDICINE_ID)
+		UPDATE MEDICINE SET quantity = @MEDICINE_STOCK - @QUANTITY WHERE id = @MEDICINE_ID;
 	END
+
+	IF UPDATE(price)
+	BEGIN
+		IF EXISTS (
+			SELECT 1
+			FROM INSERTED as i
+			JOIN MEDICINE as m ON i.medicineId = m.id
+			WHERE m.price != i.price
+		)
+		BEGIN 
+			RAISERROR(N'Lỗi: Giá của 1 loại thuốc trong hóa đơn phải giống với giá của loại thuốc đó ở trong kho.', 16, 1)
+			ROLLBACK TRANSACTION;
+		END;
+	END
+
 	IF UPDATE(medicineId)
 	BEGIN
 		IF EXISTS (SELECT 1 FROM inserted i JOIN MEDICINE m ON i.medicineId = m.id JOIN PATIENT_RECORD pr ON i.recordId = pr.id WHERE datediff(second, pr.date_time, m.expirationDate) <= 0) 

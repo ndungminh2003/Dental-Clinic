@@ -1,8 +1,11 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import fb_pic from '../images/facebook.png'
 import ig_pic from '../images/instagram.png'
 import tw_pic from '../images/twitter.png'
+import phone from '../images/phone.png'
 import clock from '../images/clock.png'
+import address from '../images/address.png'
 
 
 export default function Footer() {
@@ -49,24 +52,29 @@ export default function Footer() {
         </div>
         <div className=" flex flex-col gap-5  text-grullo">
           <h1 className="flex justify-center font-extrabold">QUICK LINKS</h1>
-          <p className=" cursor-pointer ml-2">About Us</p>
-          <p className=" cursor-pointer ml-2">Dental Services</p>
-          <p className=" cursor-pointer ml-2">Dentists</p>
-          <p className=" cursor-pointer ml-2">FAQs</p>
+          <Link to="/about" className=" cursor-pointer ml-2 hover:underline">About Us</Link>
+          <Link to="/service" className=" cursor-pointer ml-2 hover:underline">Dental Services</Link>
+          <Link to="/our-dentist" className=" cursor-pointer ml-2 hover:underline">Dentists</Link>
+          <p className=" cursor-pointer ml-2 hover:underline">FAQs</p>
         </div>
 
         <div className=" flex flex-col gap-3 justify-center ">
           <h1 className="font-extrabold text-grullo">CONTACT & INFORMATION</h1>
           <div className="flex flex-row items-center gap-1">
-            <img src={fb_pic} alt="Facebook" className=" w-10 h-10"/>
+            <div className=" w-12 h-12 bg-white rounded-xl flex justify-center items-center ">
+              <img src={phone} alt="Facebook" className="w-10 h-10 "/>
+            </div>
             <div className="flex flex-col ">
                 <p className="  ml-2 text-grullo">Phone number</p>
                 <p className="  ml-2 text-white text-xl">0989 123 456</p>
             </div>
           </div>
           
-          <div className="flex flex-row items-center gap-1">
-            <img src={clock} alt="Facebook" className=" w-10 h-10  "/>
+          <div className="flex flex-row items-center gap-1 ">
+            <div className=" w-12 h-12 bg-white rounded-xl flex justify-center items-center ">
+              <img src={clock} alt="Facebook" className="w-10 h-10 "/>
+            </div>
+            
             <div className="flex flex-col ">
                 <p className="  ml-2 text-grullo">Opening Hour</p>
                 <p className="  ml-2 text-white text-xl">07:30 AM - 17:10 PM</p>
@@ -74,7 +82,9 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-row items-center gap-1">
-            <img src={fb_pic} alt="Facebook" className=" w-10 h-10 "/>
+            <div className=" w-12 h-12 bg-white rounded-xl flex justify-center items-center ">
+              <img src={address} alt="Facebook" className="w-10 h-10 "/>
+            </div>
             <div className="flex flex-col ">
                 <p className="  ml-2 text-grullo">Clinic Address</p>
                 <p className="  ml-2 text-white text-xl">227 Nguyen Van Cu, Ward 4, District 10, HCMC</p>

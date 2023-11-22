@@ -3,8 +3,6 @@ import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import PropTypes from "prop-types";
-import ChangeMedication from "../../Admin/components/ChangeMedication";
-import { TextField, Autocomplete } from "@mui/material";
 import Invoice from "../components/Invoice";
 const emails = ["username@gmail.com", "user02@gmail.com"];
 

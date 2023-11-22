@@ -1,10 +1,19 @@
-import React from 'react'
+import React from "react";
+import Dialog from "@mui/material/Dialog";
+import PropTypes from "prop-types";
 
-export default function AddMedication (){
+export default function ChangeMedication(props) {
+  const { onClose, open, values } = props;
+
+  const handleClose = () => {
+    onClose();
+  };
+
   return (
-    <div className="px-14 py-10">
-        <h1 className=" text-2xl font-semibold pb-5">
-          ADD MEDICATION
+    <Dialog onClose={handleClose} open={open}>
+      <div className="w-[600px] p-10">
+        <h1 className=" text-center text-2xl font-semibold pb-10">
+          CHANGE MEDICATIONS
         </h1>
         <div className="flex  grow mt-3">
           <div className="flex w-1/2 items-center">
@@ -13,6 +22,7 @@ export default function AddMedication (){
             </div>
             <input
               type="text"
+              value={values[0]}
               className={` w-3/4 ml-2 px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
@@ -22,18 +32,20 @@ export default function AddMedication (){
             </div>
             <input
               type="text"
+              value={values[1]}
               className={`w-3/4 px-3 py-2 rounded-md  border border-gray-300	`}
             ></input>
           </div>
         </div>
         <div className="flex  grow mt-3">
           <div className="flex w-1/2 items-center">
-            <div className="w-1/4">
-              <label className="font-mono rounded-md text-center	">Quantity</label>
+            <div className="w-1/3">
+              <label className="font-mono rounded-md text-center">Quantity</label>
             </div>
             <input
               type="text"
-              className={` w-3/4 ml-2 px-3 py-2 rounded-md border border-gray-300	`}
+              value={values[5]}
+              className={` w-2/3 ml-2 px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
           <div className="flex w-1/2 items-center ml-7">
@@ -42,6 +54,7 @@ export default function AddMedication (){
             </div>
             <input
               type="text"
+              value={values[6]}
               className={`w-3/4 px-3 py-2 rounded-md  border border-gray-300	`}
             ></input>
           </div>
@@ -53,6 +66,7 @@ export default function AddMedication (){
             </label>
           </div>
           <textarea
+            value={values[2]}
             className={`w-3/4 px-3 py-2 rounded-md border border-gray-300 resize-none`}
           ></textarea>
         </div>
@@ -63,6 +77,7 @@ export default function AddMedication (){
             </label>
           </div>
           <textarea
+            value={values[3]}
             className={`w-3/4 px-3 py-2 rounded-md border border-gray-300 resize-none`}
           ></textarea>
         </div>
@@ -74,16 +89,22 @@ export default function AddMedication (){
           </div>
           <input
             type="text"
+            value={values[4]}
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>
-
         <div className="text-right mt-5">
-          <button className="bg-sky-500 rounded-md px-3 py-2">
+          <button onClick={onClose} className="bg-sky-500 rounded-md px-3 py-2">
             Save
           </button>
         </div>
       </div>
-  )
+    </Dialog>
+  );
 }
 
+ChangeMedication.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+  values: PropTypes.array.isRequired,
+};

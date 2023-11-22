@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from 'react';
 import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PropTypes from "prop-types";
@@ -84,7 +84,16 @@ const data = [
 
 function SimpleDialog(props) {
   const { onClose, selectedValue, open, values } = props;
-
+  const [medicineRows, setMedicineRows] = useState([]);
+  const addMedicineRow = () => {
+    setMedicineRows([...medicineRows, { medicine: '', quantity: 1 }]);
+  };
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    // Implement submission logic here
+    console.log('Form data:', medicineRows);
+  };
+  
   const handleClose = () => {
     onClose(selectedValue);
   };
@@ -201,6 +210,52 @@ function SimpleDialog(props) {
             type="text"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
+        </div>
+        <div className="flex items-center grow mt-3">
+          <div className="w-1/4">
+            <label className="font-mono rounded-md text-center	">Medicine</label>
+          </div>
+          <div>
+            <div id="medicineSection">
+              {medicineRows.map((row, idx) => (
+                <div key={idx} className="flex mb-3">
+                  <select
+                    name={`medicine-${idx}`}
+                    value={row.medicine}
+                    onChange={(e) => {
+                      const newRows = [...medicineRows];
+                      newRows[idx].medicine = e.target.value;
+                      setMedicineRows(newRows);
+                    }}
+                    className="block w-2/3 mt-1 mr-2 p-2  border border-gray-300	 rounded-md shadow-sm"
+                  >
+                    <option value="amoxicillin">Amoxicillin</option>
+                    <option value="ibuprofen">Ibuprofen</option>
+                    {/* Add other medicine options here */}
+                  </select>
+                  <input
+                    type="number"
+                    name={`quantity-${idx}`}
+                    value={row.quantity}
+                    onChange={(e) => {
+                      const newRows = [...medicineRows];
+                      newRows[idx].quantity = e.target.value;
+                      setMedicineRows(newRows);
+                    }}
+                    className="block w-1/3 mt-1 mr-2 p-2  border border-gray-300	 rounded-md shadow-sm"
+                    min="1"
+                  />
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={addMedicineRow}
+              className ="text-sky-600	text-sm"
+            >
+              + Add Medicine
+            </button>
+          </div>
         </div>
         <div className ="text-right mt-5">
           <button onClick={() => handleListItemClick("hi")} className ="bg-sky-500 rounded-md px-3 py-2">Save</button>

@@ -2,7 +2,6 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import TodayIcon from "@mui/icons-material/Today";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
@@ -20,7 +19,7 @@ const Sidebar = () => {
       <div>
         <ul>
           <li>
-            <NavLink to="medication/all" className="bg-light-ebony-clay side">
+            <NavLink to="medication/all" className={`${pathname.includes("medication") ? "bg-light-ebony-clay" : "bg-ebony-clay"} side`}>
               <TodayIcon style={{ color: "white" }} />
               <span className="ml-2 mr-3 text-white	">
                 Medication management
@@ -65,7 +64,7 @@ const Sidebar = () => {
             </div>
           )}
           <li>
-            <NavLink to="user/all" className="bg-light-ebony-clay side mt-2">
+          <NavLink to="user/all" className={`${pathname.includes("user") ? "bg-light-ebony-clay" : "bg-ebony-clay"} side`}>
               <TodayIcon style={{ color: "white" }} />
               <span className="ml-2 mr-3 text-white	">
                 User management
@@ -121,6 +120,13 @@ const Sidebar = () => {
                   </span>
                 </NavLink>
               </li>
+              <li>
+            <NavLink to="record/all" className="mt-2 side">
+                <LogoutIcon style={{ color: "white" }} />
+                <span className="ml-2 mr-14 text-white">Log out</span>
+                
+              </NavLink>
+            </li>
             </div>
           )}
         </ul>

@@ -3,9 +3,8 @@ import { NavLink, useLocation } from "react-router-dom";
 import TodayIcon from "@mui/icons-material/Today";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
-import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-
+import PatienRecords from "../pages/PatienRecords";
 const Sidebar = () => {
   const location = useLocation();
   const { pathname } = location;
@@ -20,7 +19,7 @@ const Sidebar = () => {
       <div>
         <ul>
           <li>
-            <NavLink to="appointment/all" className="bg-light-dirty-blue side">
+            <NavLink to="appointment/all" className={`${pathname.includes("appointment")?"bg-light-dirty-blue":"bg-dirty-blue"} side mt-3`}>
               <TodayIcon style={{ color: "white" }} />
               <span className="ml-2 mr-3 text-white	">
                 Appointment management
@@ -64,12 +63,12 @@ const Sidebar = () => {
               </li>
             </div>
           )}
-          <li>
-            <NavLink to="record/all" className="mt-2 side">
-              {" "}
+         <li>
+            <NavLink to="record" className={`${pathname.includes("record")?"bg-light-dirty-blue":"bg-dirty-blue"} side mt-3`}>
               <DocumentScannerIcon style={{ color: "white" }} />
-              <span className="ml-2 mr-14 text-white">All Records</span>
-              
+              <span className="ml-2 mr-3 text-white	" >
+                Patient Record
+              </span>
             </NavLink>
           </li>
         </ul>

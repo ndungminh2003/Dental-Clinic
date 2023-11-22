@@ -21,8 +21,7 @@ import StaffLogin from "./pages/Login/StaffLogin";
 import SAddAppointments from "./pages/Staff/pages/AddAppointments";
 import SAllAppointments from "./pages/Staff/pages/AllAppointments";
 import SAppointment from "./pages/Staff/pages/Appointment";
-import SRecord from "./pages/Staff/pages/Record";
-import SAllRecord from "./pages/Staff/pages/AllRecord";
+import PatienRecords from "./pages/Staff/pages/PatienRecords";
 
 import Admin from "./pages/Admin/Admin";
 import AdminLogin from "./pages/Login/AdminLogin";
@@ -56,9 +55,7 @@ const router = createBrowserRouter(
           <Route path="add" element ={<SAddAppointments/>}></Route>
           <Route path="all" element ={<SAllAppointments/>}></Route>
         </Route>
-        <Route path ="record" element ={<SRecord/>}>
-          <Route path="all" element ={<SAllRecord/>}></Route>
-        </Route>
+        <Route path="record" element={<PatienRecords/>}></Route>
       </Route>
 
       <Route path="admin/login" element={<AdminLogin />}></Route>

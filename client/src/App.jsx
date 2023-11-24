@@ -8,8 +8,13 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import UserLogin from "./pages/Login/UserLogin";
 import SignUp from "./pages/SignUp";
+
 import Dentist from "./pages/Dentist/Dentist";
 import DentistLogin from "./pages/Login/DentistLogin";
+import DAddAppointments from "./pages/Dentist/pages/AddAppointments";
+import DAllAppointments from "./pages/Dentist/pages/AllAppointments";
+import DAppointment from "./pages/Dentist/pages/Appointment";
+
 
 import Staff from "./pages/Staff/Staff";
 import StaffLogin from "./pages/Login/StaffLogin";
@@ -46,15 +51,25 @@ const router = createBrowserRouter(
       <Route path="/dentist" element={<Dentist />}>
         <Route path="login" element={<DentistLogin />}></Route>
       </Route>
+
+      <Route path="dentist/login" element={<DentistLogin />}></Route>
+      <Route path="/dentist" element={<Dentist />}>
+        <Route path ="appointment" element ={<DAppointment/>}>
+          <Route path="add" element ={<DAddAppointments/>}></Route>
+          <Route path="all" element ={<DAllAppointments/>}></Route>
+        </Route>
+      </Route> 
+
+      <Route path="staff/login" element={<StaffLogin />}></Route>
       <Route path="/staff" element={<Staff />}>
         <Route path ="appointment" element ={<SAppointment/>}>
           <Route path="add" element ={<SAddAppointments/>}></Route>
           <Route path="all" element ={<SAllAppointments/>}></Route>
         </Route>
-        <Route path ="record" element ={<SRecord/>}>
-          <Route path="all" element ={<SAllRecord/>}></Route>
-        </Route>
+        <Route path="record" element={<PatienRecords/>}></Route>
       </Route>
+
+       <Route path="admin/login" element={<AdminLogin />}></Route>
       <Route path="/admin" element={<Admin />}>
         <Route path ="medication" element ={<Medication/>}>
           <Route path="add" element ={<AddMedication/>}></Route>
@@ -65,6 +80,7 @@ const router = createBrowserRouter(
           <Route path="all" element ={<AllUsers/>}></Route>
         </Route>
       </Route>
+
       <Route path="/profile" element={<Profile />}></Route>
       <Route path="/contact" element={<Contact />}></Route>
       <Route path="/our-dentist" element={<OurDentists />}></Route>

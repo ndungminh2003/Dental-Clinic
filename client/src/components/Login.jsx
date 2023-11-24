@@ -9,7 +9,7 @@ export default function Login({ username, bgcolor, ringcolor }) {
           <h2 className="text-center text-5xl font-extrabold pb-10">Login</h2>
           <div>
             <div className="mb-4">
-              <label className="font-mono 	">{username}</label>
+              <label className="font-mono 	">Username</label>
               <hr />
               <input
                 type="text"

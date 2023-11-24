@@ -3,14 +3,7 @@ import Dialog from "@mui/material/Dialog";
 import PropTypes from "prop-types";
 import InvoiceCom from "./InvoiceCom/InvoiceCom";
 export default function Invoice (props)  {
-    const { onClose, selectedValue, open, values ,services,medicine,status } = props;
-    const handleClose = () => {
-      onClose(selectedValue);
-    };
-    const [openChange, setOpenChange] = React.useState(false);
-    const handleCloseChange = () => {
-      setOpenChange(false);
-    };
+    const { onClose, open,services,medicine } = props;
     const handleListItemClick = (value) => {
       onClose(value);
     };
@@ -18,7 +11,7 @@ export default function Invoice (props)  {
       window.print();
     };
     return (
-      <Dialog onClose={handleClose} open={open}>
+      <Dialog onClose={onClose} open={open}>
         <div className=" p-10">
           <div>
             <InvoiceCom services ={services} medicine ={medicine}/>
@@ -45,12 +38,9 @@ export default function Invoice (props)  {
 Invoice.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    selectedValue: PropTypes.string.isRequired,
-    values: PropTypes.array.isRequired,
     medicine: PropTypes.shape({
       name: PropTypes.array.isRequired,
       quantity: PropTypes.array.isRequired,
       price: PropTypes.array.isRequired,
     }),
-    status: PropTypes.string.isRequired,
   };

@@ -31,7 +31,6 @@ import AllMedication from "./pages/Admin/pages/AllMedications";
 import UserManagement from "./pages/Admin/pages/UserManagement";
 import AddUser from "./pages/Admin/pages/AddUser";
 import AllUsers from "./pages/Admin/pages/AllUsers";
-import DoctorSchedule from "./pages/Admin/pages/DoctorSchedule";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -67,7 +66,6 @@ const router = createBrowserRouter(
         <Route path ="user" element ={<UserManagement/>}>
           <Route path="add" element ={<AddUser/>}></Route>
           <Route path="all" element ={<AllUsers/>}></Route>
-          <Route path="doctor" element ={<DoctorSchedule/>}></Route>
         </Route>
       </Route>
     </>

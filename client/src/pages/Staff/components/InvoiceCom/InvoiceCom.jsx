@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import LineItems from './LineItems'
 
-import { v4 as uuidv4 } from 'uuid';
-
 class InvoiceCom extends Component {
   locale = 'en-US'
   currency = 'USD'
@@ -140,7 +138,7 @@ class InvoiceCom extends Component {
             <div className ="w-[200px]">
               <div className="grid grid-cols-[1fr_0.5fr] border border-[#ccc] p-1">
                 <div className="flex items-center justify-start font-bold">Tax Rate (%)</div>
-                <div className="text-right"><input name="taxRate" value={10} onChange={this.handleInvoiceChange} onFocus={this.handleFocusSelect} /></div>
+                <div className="text-right"><input className ="input" name="taxRate" value={10} onChange={this.handleInvoiceChange} onFocus={this.handleFocusSelect} /></div>
               </div>
             </div>
             <div className="valueTable">

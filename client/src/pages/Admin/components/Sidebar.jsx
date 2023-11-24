@@ -10,7 +10,7 @@ const Sidebar = () => {
   const { pathname } = location;
 
   return (
-    <div className="h-screen w-[300px] z-10 bg-ebony-clay p-3	">
+    <div className=" w-full h-screen z-10 bg-ebony-clay p-3	">
       <div className="mx-2 mb-10 mt-5">
         <h1 className="text-3xl font-bold uppercase text-center text-white		">
           Dencare
@@ -19,7 +19,14 @@ const Sidebar = () => {
       <div>
         <ul>
           <li>
-            <NavLink to="medication/all" className={`${pathname.includes("medication") ? "bg-light-ebony-clay" : "bg-ebony-clay"} side`}>
+            <NavLink
+              to="medication/all"
+              className={`${
+                pathname.includes("medication")
+                  ? "bg-light-ebony-clay"
+                  : "bg-ebony-clay"
+              } side`}
+            >
               <TodayIcon style={{ color: "white" }} />
               <span className="ml-2 mr-3 text-white	">
                 Medication management
@@ -64,11 +71,16 @@ const Sidebar = () => {
             </div>
           )}
           <li>
-          <NavLink to="user/all" className={`${pathname.includes("user") ? "bg-light-ebony-clay" : "bg-ebony-clay"} side`}>
+            <NavLink
+              to="user/all"
+              className={`${
+                pathname.includes("user")
+                  ? "bg-light-ebony-clay"
+                  : "bg-ebony-clay"
+              } side`}
+            >
               <TodayIcon style={{ color: "white" }} />
-              <span className="ml-2 mr-3 text-white	">
-                User management
-              </span>
+              <span className="ml-2 mr-3 text-white	">User management</span>
               {pathname.includes("user") ? (
                 <ExpandLessIcon style={{ color: "white" }} />
               ) : (
@@ -107,26 +119,11 @@ const Sidebar = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="user/doctor" className=" side">
-                  <span
-                    className={`ml-8 
-                    ${
-                      pathname.includes("user/doctor")
-                        ? "text-white"
-                        : "text-dark-ebony-clay"
-                    }`}
-                  >
-                    Doctor's schedule
-                  </span>
+                <NavLink to="record/all" className="mt-2 side">
+                  <LogoutIcon style={{ color: "white" }} />
+                  <span className="ml-2 mr-14 text-white">Log out</span>
                 </NavLink>
               </li>
-              <li>
-            <NavLink to="record/all" className="mt-2 side">
-                <LogoutIcon style={{ color: "white" }} />
-                <span className="ml-2 mr-14 text-white">Log out</span>
-                
-              </NavLink>
-            </li>
             </div>
           )}
         </ul>

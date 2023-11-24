@@ -2,8 +2,6 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import TodayIcon from "@mui/icons-material/Today";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
-import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 const Sidebar = () => {

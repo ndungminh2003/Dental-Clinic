@@ -64,7 +64,6 @@ export default function AllMedications () {
 
   const [values, setValues] = React.useState([""]);
 
-  const [selectedValue, setSelectedValue] = React.useState();
   const handleCloseSee = () => {
     setOpenSee(false);
   };

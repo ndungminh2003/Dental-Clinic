@@ -4,10 +4,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import LineItem from "./LineItem";
 
-import { MdAddCircle as AddIcon } from "react-icons/md";
-
 class LineItems extends Component {
-
   render = () => {
     const { items, ...functions } = this.props;
 
@@ -23,7 +20,7 @@ class LineItems extends Component {
               <div>Total</div>
             </div>
 
-            <DragDropContext >
+            <DragDropContext>
               <Droppable droppableId="droppable">
                 {(provided, snapshot) => (
                   <div

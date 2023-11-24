@@ -52,8 +52,6 @@ const data = [
   },
 ];
 
-const p_r = [];
-
 const AllAppointments = () => {
   const columns = [
     "Appointment date",

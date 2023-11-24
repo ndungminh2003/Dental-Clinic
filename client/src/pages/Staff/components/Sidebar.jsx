@@ -4,13 +4,12 @@ import TodayIcon from "@mui/icons-material/Today";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import PatienRecords from "../pages/PatienRecords";
 const Sidebar = () => {
   const location = useLocation();
   const { pathname } = location;
 
   return (
-    <div className="h-screen w-[300px] z-10 bg-dirty-blue p-3	">
+    <div className="h-screen w-full z-10 bg-dirty-blue p-3	">
       <div className="mx-2 mb-10 mt-5">
         <h1 className="text-3xl font-bold uppercase text-center text-white		">
           Dencare

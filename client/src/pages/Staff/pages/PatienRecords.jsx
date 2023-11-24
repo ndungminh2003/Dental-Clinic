@@ -215,7 +215,6 @@ function SimpleDialog(props) {
         <Invoice
           open={openInvoice}
           onClose={handleCloseInvoice}
-          values={values}
           services={services}
           medicine={medicine}
           status ={status}

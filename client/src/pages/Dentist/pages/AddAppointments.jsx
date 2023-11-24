@@ -1,68 +1,117 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import Paper from '@mui/material/Paper';
+import { ViewState, EditingState } from '@devexpress/dx-react-scheduler';
+import {
+  Scheduler,
+  Appointments,
+  AppointmentForm,
+  AppointmentTooltip,
+  WeekView,
+  DayView,
+  Toolbar,
+  EditRecurrenceMenu,
+  ViewSwitcher,
+  ConfirmationDialog,
+  DateNavigator,
+  TodayButton,
+  MonthView,
+} from '@devexpress/dx-react-scheduler-material-ui';
+import {appointments} from '../components/CalendarData/data'
+export default class Demo extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: appointments,
+      currentDate: '2018-06-27',
 
-export default function AddApointments (){
-  const [medicineRows, setMedicineRows] = useState([]);
+      addedAppointment: {},
+      appointmentChanges: {},
+      editingAppointment: undefined,
+    };
 
-  const addMedicineRow = () => {
-    setMedicineRows([...medicineRows, { medicine: '', quantity: 1 }]);
-  };
+    this.commitChanges = this.commitChanges.bind(this);
+    this.changeAddedAppointment = this.changeAddedAppointment.bind(this);
+    this.changeAppointmentChanges = this.changeAppointmentChanges.bind(this);
+    this.changeEditingAppointment = this.changeEditingAppointment.bind(this);
+  }
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-    // Implement submission logic here
-    console.log('Form data:', medicineRows);
-  };
+  changeAddedAppointment(addedAppointment) {
+    this.setState({ addedAppointment });
+  }
 
-  return (
-    <form onSubmit={handleFormSubmit} className="max-w-md mx-auto my-10">
-      {/* Other form fields... */}
+  changeAppointmentChanges(appointmentChanges) {
+    this.setState({ appointmentChanges });
+  }
 
-      <div id="medicineSection">
-        {medicineRows.map((row, idx) => (
-          <div key={idx} className="flex mb-3">
-            <select
-              name={`medicine-${idx}`}
-              value={row.medicine}
-              onChange={(e) => {
-                const newRows = [...medicineRows];
-                newRows[idx].medicine = e.target.value;
-                setMedicineRows(newRows);
-              }}
-              className="block w-full mt-1 mr-2 p-2 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="amoxicillin">Amoxicillin</option>
-              <option value="ibuprofen">Ibuprofen</option>
-              {/* Add other medicine options here */}
-            </select>
-            <input
-              type="number"
-              name={`quantity-${idx}`}
-              value={row.quantity}
-              onChange={(e) => {
-                const newRows = [...medicineRows];
-                newRows[idx].quantity = e.target.value;
-                setMedicineRows(newRows);
-              }}
-              className="block w-full mt-1 p-2 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              min="1"
-            />
-          </div>
-        ))}
-      </div>
-      <button
-        type="button"
-        onClick={addMedicineRow}
-        className="mt-3 mb-6 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-700"
-      >
-        Add Medicine
-      </button>
+  changeEditingAppointment(editingAppointment) {
+    this.setState({ editingAppointment });
+  }
 
-      {/* Submit button */}
-      <input
-        type="submit"
-        value="Save Record"
-        className="px-4 py-2 bg-green-500 text-white rounded-md shadow cursor-pointer hover:bg-green-700"
-      />
-    </form>
-  );
-};
+  commitChanges({ added, changed, deleted }) {
+    this.setState((state) => {
+      let { data } = state;
+      if (added) {
+        const startingAddedId = data.length > 0 ? data[data.length - 1].id + 1 : 0;
+        data = [...data, { id: startingAddedId, ...added }];
+      }
+      if (changed) {
+        data = data.map(appointment => (
+          changed[appointment.id] ? { ...appointment, ...changed[appointment.id] } : appointment));
+      }
+      if (deleted !== undefined) {
+        data = data.filter(appointment => appointment.id !== deleted);
+      }
+      return { data };
+    });
+  }
+
+  render() {
+    const {
+      currentDate, data, addedAppointment, appointmentChanges, editingAppointment,
+    } = this.state;
+
+    return (
+      <Paper>
+        <Scheduler
+          data={data}
+          height={490}
+        >
+          <ViewState
+            defaultCurrentDate={currentDate}
+            defaultCurrentViewName="Week"
+          />
+          <DayView
+            startDayHour={9}
+            endDayHour={18}
+          />
+          <WeekView
+            startDayHour={10}
+            endDayHour={19}
+          />
+          <MonthView />
+          <Toolbar />
+          <ViewSwitcher />
+          <EditingState
+            onCommitChanges={this.commitChanges}
+            addedAppointment={addedAppointment}
+            onAddedAppointmentChange={this.changeAddedAppointment}
+            appointmentChanges={appointmentChanges}
+            onAppointmentChangesChange={this.changeAppointmentChanges}
+            editingAppointment={editingAppointment}
+            onEditingAppointmentChange={this.changeEditingAppointment}
+          />
+          <DateNavigator />
+          <TodayButton />
+          <EditRecurrenceMenu />
+          <ConfirmationDialog />
+          <Appointments />
+          <AppointmentTooltip
+            showOpenButton
+            showDeleteButton
+          />
+          <AppointmentForm />
+        </Scheduler>
+      </Paper>
+    );
+  }
+}

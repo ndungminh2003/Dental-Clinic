@@ -24,6 +24,9 @@
   padding: 0.5rem;
   border-radius: 0.5rem;
 }
+.side:active {
+  width: 100%;
+}
 
 .lineItem {
   display: grid;
@@ -36,19 +39,6 @@
   width: 100%;
   line-height: var(--rhythm);
   min-width: var(--rhythm);
-
-  &:first-of-type {
-    padding: calc(var(--rhythm) / 2) 0;
-    border-left: none;
-  }
-
-  &:last-of-type {
-    padding: calc(var(--rhythm) / 2) 0;
-  }
-
-  &:first-of-type, &:nth-child(4), &:last-of-type {
-    text-align: center;
-  }
 }
 
 .deleteItem {
@@ -59,8 +49,8 @@
   cursor: pointer;
 }
 
-input,
-input[type='number'] {
+.input,
+.inputNum {
   padding: calc(var(--rhythm) / 4);
   border: 1px dotted lighten(var(--tableBorderColor), 2%);
   border-radius: var(--borderRadius);
@@ -68,7 +58,7 @@ input[type='number'] {
   width: 100%;
 }
 
-input[type='number'] {
+.inputNum {
   text-align: center;
 }
 .lineItems {

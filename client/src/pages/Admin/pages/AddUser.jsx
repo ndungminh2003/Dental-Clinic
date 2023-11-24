@@ -9,31 +9,35 @@ export default function AddUser (){
     setSelectedOption(event.target.value);
   };
   return (
-    <div className="px-24 py-14">
+    <div className="px-24 py-14 w-full">
         <h1 className=" text-2xl font-semibold pb-5">
           ADD USER
         </h1>
-        <div className ="flex mt-5">
-          <h1>Type</h1>
-          <div>
-            <label className ="ml-[118px]">
-              <input className ="mr-2" type="radio" name="myRadio" value="doctor"  onChange={handleRadioChange} />
-                Doctor
-            </label>
+        <div className ="flex lex-grow mt-5 w-full">
+          <div className ="w-1/6">
+            <h1 className="font-mono ">Type</h1>
           </div>
-          <div>
-            <label className ="ml-5">
-              <input className ="mr-2" type="radio" name="myRadio" value="staff" defaultChecked={true} onChange={handleRadioChange} />
-                Staff
-            </label>
+          <div className ="w-5/6 flex">
+            <div>
+              <label >
+                <input className ="mr-2" type="radio" name="myRadio" value="doctor"  onChange={handleRadioChange} />
+                  Doctor
+              </label>
+            </div>
+            <div className ="ml-4">
+              <label>
+                <input className ="mr-2" type="radio" name="myRadio" value="staff" defaultChecked={true} onChange={handleRadioChange} />
+                  Staff
+              </label>
+            </div>
           </div>
         </div>
-        <div className="flex  grow mt-5">
-          <div className="flex w-1/2 items-center">
-            <div className="w-1/5">
-              <label className="font-mono rounded-md text-center	">Phone</label>
-            </div>
-            <div  className="w-4/5 ml-[100px]">
+        <div className="flex flex-grow mt-5">
+          <div className="w-1/6 flex	items-center">
+            <label className="font-mono rounded-md text-center">Phone</label>
+          </div>
+          <div className="flex flex-grow w-5/6 items-center">
+            <div className="w-1/2">
               <PhoneInput
                 inputClass="!w-full"
                 placeholder="Enter phone number"
@@ -43,64 +47,68 @@ export default function AddUser (){
                 onChange={setValue}
               />
             </div>
-          </div>
-          <div className="flex w-1/2 items-center ml-7">
-            <div className="w-1/5">
-              <label className="font-mono rounded-md text-center	">Birthday</label>
+            <div className="flex w-1/2 items-center ml-2">
+              <div className="w-1/5">
+                <label className="font-mono rounded-md text-center	">Birthday</label>
+              </div>
+              <input
+                type="date"
+                className={` ml-4 w-4/5 px-3 py-2 rounded-md  border border-gray-300	`}
+                ></input>
             </div>
-            <input
-              type="date"
-              className={`w-4/5 px-3 py-2 rounded-md  border border-gray-300	`}
-            ></input>
           </div>
         </div>
-        <div className="flex items-center grow mt-3">
-          <div className="w-1/5">
+        <div className="flex items-center flex-grow mt-3">
+          <div className="w-1/6">
             <label className="font-mono rounded-md text-center	">
               Fullname
             </label>
           </div>
           <input
             type="text"
-            className={` w-4/5  px-3 py-2 rounded-md border border-gray-300	`}
+            className={` w-5/6  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>
-        <div className="flex items-center grow mt-3">
-          <div className="w-1/5">
+        <div className="flex items-center flex-grow mt-3">
+          <div className="w-1/6">
             <label className="font-mono rounded-md text-center	">
               Password
             </label>
           </div>
           <input
             type="text"
-            className={` w-4/5  px-3 py-2 rounded-md border border-gray-300	`}
+            className={` w-5/6  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>
         {selectedOption === "doctor" && 
-          <div className="flex items-center grow mt-3">
-            <div className="w-1/5">
+          <div className="flex items-center flex-grow mt-3">
+            <div className="w-1/6">
               <label className="font-mono rounded-md text-center	">
                 Introduction
               </label>
             </div>
             <textarea
-              className={`w-4/5 px-3 py-2 rounded-md border border-gray-300 resize-none`}
+              className={`w-5/6 px-3 py-2 rounded-md border border-gray-300 resize-none`}
             ></textarea>
           </div>
         }
-        <div className ="flex mt-5">
-          <h1>Gender</h1>
-          <div>
-            <label className ="ml-[100px]">
-              <input className ="mr-2" type="radio" value="male" defaultChecked={true} />
-                Male
-            </label>
+        <div className ="flex lex-grow mt-5 w-full">
+          <div className ="w-1/6">
+            <h1 className="font-mono ">Type</h1>
           </div>
-          <div>
-            <label className ="ml-5">
-              <input className ="mr-2" type="radio" value="female" />
-                Female
-            </label>
+          <div className ="w-5/6 flex">
+            <div>
+              <label >
+                <input className ="mr-2" type="radio" name="myRadio" value="male"   />
+                  Male
+              </label>
+            </div>
+            <div className ="ml-4">
+              <label>
+                <input className ="mr-2" type="radio" name="myRadio" value="female" defaultChecked={true}  />
+                  Female
+              </label>
+            </div>
           </div>
         </div>
         

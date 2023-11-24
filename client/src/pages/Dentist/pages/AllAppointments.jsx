@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import Dialog from "@mui/material/Dialog";
-
 
 import { TextField, Autocomplete } from "@mui/material";
 
@@ -14,20 +13,20 @@ const service = [
     id: 1,
     price: 50,
     name: "Service1",
-    description:"Basic dental checkup",
+    description: "Basic dental checkup",
   },
   {
     id: 2,
     price: 60,
     name: "Service2",
-    description:"dental filling service",
+    description: "dental filling service",
   },
   {
     id: 3,
     price: 160,
     name: "Service3",
-    description:"dental filling service",
-  }
+    description: "dental filling service",
+  },
 ];
 
 const data = [
@@ -39,7 +38,7 @@ const data = [
       "Yonkers",
       "4 Nguyễn Văn Cừ Q:5 P:10",
       "0000000000",
-      "Male", 
+      "Male",
       "cancelled",
     ],
   },
@@ -51,7 +50,7 @@ const data = [
       "Jack",
       "5 Nguyễn Văn Cừ Q:5 P:10",
       "0000000000",
-      "Male", 
+      "Male",
       "cancelled",
     ],
   },
@@ -63,7 +62,7 @@ const data = [
       "Alice",
       "6 Nguyễn Văn Cừ Q:5 P:10",
       "0000000000",
-      "Female", 
+      "Female",
       "cancelled",
     ],
   },
@@ -75,16 +74,18 @@ const data = [
       "Blanc",
       "7 Nguyễn Văn Cừ Q:5 P:10",
       "0000000000",
-      "Male", 
+      "Male",
       "cancelled",
     ],
   },
 ];
 
-
 function SimpleDialog(props) {
   const { onClose, selectedValue, open, values } = props;
-
+  const [medicineRows, setMedicineRows] = useState([]);
+  const addMedicineRow = () => {
+    setMedicineRows([...medicineRows, { medicine: "", quantity: 1 }]);
+  };
   const handleClose = () => {
     onClose(selectedValue);
   };
@@ -111,7 +112,7 @@ function SimpleDialog(props) {
           ></input>
         </div>
         <div className="flex  grow mt-3">
-          <div className ="flex w-2/3 items-center">
+          <div className="flex w-2/3 items-center">
             <div className="w-1/4">
               <label className="font-mono rounded-md text-center	">Phone</label>
             </div>
@@ -122,7 +123,7 @@ function SimpleDialog(props) {
               className={` w-3/4 ml-[50px] px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
-          <div className ="flex w-1/3 items-center ml-3">
+          <div className="flex w-1/3 items-center ml-3">
             <div className="w-1/2">
               <label className="font-mono rounded-md text-center	">Gender</label>
             </div>
@@ -161,17 +162,13 @@ function SimpleDialog(props) {
             <label className="font-mono rounded-md text-center	">Service</label>
           </div>
           <Autocomplete
-            sx={{ marginLeft:'26px', width: '100%' }}
+            sx={{ marginLeft: "26px", width: "100%" }}
             multiple
-            options={service.map((data) => data.name) }
+            options={service.map((data) => data.name)}
             getOptionLabel={(option) => option}
             disableCloseOnSelect
             renderInput={(params) => (
-              <TextField
-                {...params}
-                variant="outlined"
-                placeholder="Add"
-              />
+              <TextField {...params} variant="outlined" placeholder="Add" />
             )}
           />
         </div>
@@ -195,15 +192,68 @@ function SimpleDialog(props) {
         </div>
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
-            <label className="font-mono rounded-md text-center	">Diagnostic</label>
+            <label className="font-mono rounded-md text-center	">
+              Diagnostic
+            </label>
           </div>
           <input
             type="text"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>
-        <div className ="text-right mt-5">
-          <button onClick={() => handleListItemClick("hi")} className ="bg-sky-500 rounded-md px-3 py-2">Save</button>
+        <div className="flex items-center grow mt-3">
+          <div className="w-1/4">
+            <label className="font-mono rounded-md text-center	">Medicine</label>
+          </div>
+          <div>
+            <div id="medicineSection">
+              {medicineRows.map((row, idx) => (
+                <div key={idx} className="flex mb-3">
+                  <select
+                    name={`medicine-${idx}`}
+                    value={row.medicine}
+                    onChange={(e) => {
+                      const newRows = [...medicineRows];
+                      newRows[idx].medicine = e.target.value;
+                      setMedicineRows(newRows);
+                    }}
+                    className="block w-2/3 mt-1 mr-2 p-2  border border-gray-300	 rounded-md shadow-sm"
+                  >
+                    <option value="amoxicillin">Amoxicillin</option>
+                    <option value="ibuprofen">Ibuprofen</option>
+                    {/* Add other medicine options here */}
+                  </select>
+                  <input
+                    type="number"
+                    name={`quantity-${idx}`}
+                    value={row.quantity}
+                    onChange={(e) => {
+                      const newRows = [...medicineRows];
+                      newRows[idx].quantity = e.target.value;
+                      setMedicineRows(newRows);
+                    }}
+                    className="block w-1/3 mt-1 mr-2 p-2  border border-gray-300	 rounded-md shadow-sm"
+                    min="1"
+                  />
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={addMedicineRow}
+              className="text-sky-600	text-sm"
+            >
+              + Add Medicine
+            </button>
+          </div>
+        </div>
+        <div className="text-right mt-5">
+          <button
+            onClick={() => handleListItemClick("hi")}
+            className="bg-sky-500 rounded-md px-3 py-2"
+          >
+            Save
+          </button>
         </div>
       </div>
     </Dialog>
@@ -232,12 +282,12 @@ const AllAppointments = () => {
     "Patient name",
     {
       name: "Adress",
-      options: {display: false}
+      options: { display: false },
     },
     "Number",
     {
       name: "Gender",
-      options: {display: false}
+      options: { display: false },
     },
     "Status",
     {

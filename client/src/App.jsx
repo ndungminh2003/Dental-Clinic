@@ -13,9 +13,19 @@ import DentistLogin from "./pages/Login/DentistLogin";
 
 import Staff from "./pages/Staff/Staff";
 import StaffLogin from "./pages/Login/StaffLogin";
+import SAddAppointments from "./pages/Staff/pages/AddAppointments";
+import SAllAppointments from "./pages/Staff/pages/AllAppointments";
+import SAppointment from "./pages/Staff/pages/Appointment";
+import PatienRecords from "./pages/Staff/pages/PatienRecords";
 
 import Admin from "./pages/Admin/Admin";
 import AdminLogin from "./pages/Login/AdminLogin";
+import Medication from "./pages/Admin/pages/Medication";
+import AddMedication from "./pages/Admin/pages/AddMedications";
+import AllMedication from "./pages/Admin/pages/AllMedications";
+import UserManagement from "./pages/Admin/pages/UserManagement";
+import AddUser from "./pages/Admin/pages/AddUser";
+import AllUsers from "./pages/Admin/pages/AllUsers";
 
 import Profile from "./pages/Profile";
 import Contact from "./pages/Contact"
@@ -37,10 +47,23 @@ const router = createBrowserRouter(
         <Route path="login" element={<DentistLogin />}></Route>
       </Route>
       <Route path="/staff" element={<Staff />}>
-        <Route path="login" element={<StaffLogin />}></Route>
+        <Route path ="appointment" element ={<SAppointment/>}>
+          <Route path="add" element ={<SAddAppointments/>}></Route>
+          <Route path="all" element ={<SAllAppointments/>}></Route>
+        </Route>
+        <Route path ="record" element ={<SRecord/>}>
+          <Route path="all" element ={<SAllRecord/>}></Route>
+        </Route>
       </Route>
       <Route path="/admin" element={<Admin />}>
-        <Route path="login" element={<AdminLogin />}></Route>
+        <Route path ="medication" element ={<Medication/>}>
+          <Route path="add" element ={<AddMedication/>}></Route>
+          <Route path="all" element ={<AllMedication/>}></Route>
+        </Route>
+        <Route path ="user" element ={<UserManagement/>}>
+          <Route path="add" element ={<AddUser/>}></Route>
+          <Route path="all" element ={<AllUsers/>}></Route>
+        </Route>
       </Route>
       <Route path="/profile" element={<Profile />}></Route>
       <Route path="/contact" element={<Contact />}></Route>

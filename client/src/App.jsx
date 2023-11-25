@@ -14,6 +14,7 @@ import DentistLogin from "./pages/Login/DentistLogin";
 import DAddAppointments from "./pages/Dentist/pages/AddAppointments";
 import DAllAppointments from "./pages/Dentist/pages/AllAppointments";
 import DAppointment from "./pages/Dentist/pages/Appointment";
+import DProfile from "./pages/Dentist/pages/Profile";
 
 
 import Staff from "./pages/Staff/Staff";
@@ -22,6 +23,7 @@ import SAddAppointments from "./pages/Staff/pages/AddAppointments";
 import SAllAppointments from "./pages/Staff/pages/AllAppointments";
 import SAppointment from "./pages/Staff/pages/Appointment";
 import PatienRecords from "./pages/Staff/pages/PatienRecords";
+import SProfile from "./pages/Staff/pages/Profile";
 
 import Admin from "./pages/Admin/Admin";
 import AdminLogin from "./pages/Login/AdminLogin";
@@ -54,6 +56,7 @@ const router = createBrowserRouter(
 
       <Route path="dentist/login" element={<DentistLogin />}></Route>
       <Route path="/dentist" element={<Dentist />}>
+        <Route path="profile" element={<DProfile />}></Route>
         <Route path ="appointment" element ={<DAppointment/>}>
           <Route path="add" element ={<DAddAppointments/>}></Route>
           <Route path="all" element ={<DAllAppointments/>}></Route>
@@ -62,6 +65,7 @@ const router = createBrowserRouter(
 
       <Route path="staff/login" element={<StaffLogin />}></Route>
       <Route path="/staff" element={<Staff />}>
+        <Route path="profile" element={<SProfile />}></Route>
         <Route path ="appointment" element ={<SAppointment/>}>
           <Route path="add" element ={<SAddAppointments/>}></Route>
           <Route path="all" element ={<SAllAppointments/>}></Route>

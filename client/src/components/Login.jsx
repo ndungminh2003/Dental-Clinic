@@ -1,27 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
-export default function Login({ username, bgcolor, ringcolor }) {
+export default function Login({ bgcolor, ringcolor }) {
+  const [value,setValue] = useState();
+
   return (
     <div className="w-full flex items-center	min-h-screen">
       <div className="w-full max-w-md mx-auto">
-        <div className=" bg-neutral-100 p-10 rounded-md  ">
+        <div className=" bg-white	p-10 rounded-md ">
           <h2 className="text-center text-5xl font-extrabold pb-10">Login</h2>
           <div>
             <div className="mb-4">
-              <label className="font-mono 	">Username</label>
+              <label className="font-mono ">Phone</label>
               <hr />
-              <input
-                type="text"
-                className={`${ringcolor} w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-25 border`}
-              ></input>
+                <PhoneInput
+                  inputClass="!w-full !h-[45px] "
+                  placeholder="Enter phone number"
+                  country='vn'
+                  regions={'asia'}
+                  value={value}
+                  onChange={setValue}
+                  />
             </div>
             <div className="mb-4">
               <label className="font-mono rounded-md	">Password</label>
               <hr />
               <input
                 type="password"
-                className={` ${ringcolor} w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-25 border`}
+                className={` ${ringcolor} w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-25 border border-gray-300	`}
               ></input>
             </div>
             <div className="flex justify-between mb-6">
@@ -39,9 +47,7 @@ export default function Login({ username, bgcolor, ringcolor }) {
               <button
                 className={`${bgcolor} py-2 rounded-md w-full text-white`}
               >
-                <Link to="/">
-                  Login
-                </Link>
+                Login
               </button>
             </div>
             <div>

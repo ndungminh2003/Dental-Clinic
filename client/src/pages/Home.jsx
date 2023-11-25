@@ -27,7 +27,7 @@ export default function Home() {
           <h3 className="text-6xl font-extrabold uppercase pl-6">Let us brighten your smile</h3>
           <p className="text-xl pl-24 pr-24">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris dapibus, nunc et porttitor tincidunt consectetur adipiscing elit.</p>
           <button className=" text-3xl text-white font-bold bg-cyan-blue-azure rounded-lg  hover:bg-ebony-clay w-96 h-16">
-            <Link to="/contact">
+            <Link to="/book-appointment">
               Book an appointment
             </Link>
           </button>

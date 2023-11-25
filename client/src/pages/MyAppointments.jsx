@@ -1,6 +1,7 @@
 import React from "react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+import { Link } from "react-router-dom";
 
 const getStatusStyle = (status) => {
   switch (status) {
@@ -50,7 +51,8 @@ export default function MyAppointment() {
           </button>
         );
       case 'Booked':
-        return <button className='hover:underline'onClick={() => handleSeeMore()}>See More</button>;
+        return <button className='hover:underline'onClick={() => handleSeeMore()}>
+          <Link to="/book-successful">See More</Link></button>;
       default:
         return null;
     }
@@ -70,6 +72,11 @@ export default function MyAppointment() {
     <>
       <NavBar />
       <div className="flex flex-col justify-center items-center gap-10 pb-10">
+        <div className="flex items-center">
+              <h2 className="text-center text-5xl font-extrabold pt-10">MY APPOINTMENTS</h2>
+        </div>
+        <h3 className=" text-2xl font-bold pr-[754px]">Welcome to My Appointments</h3>
+        <p className="pl-[380px] pr-[380px] text-xl">We understand the importance of your time and oral health. Here, you can effortlessly manage and track your appointments, ensuring a convenient and stress-free experience. Trust us to keep your smile healthy and schedule hassle-free. Your journey to optimal oral care starts here!</p>
         <div className="text-xl font-bold pr-[850px]">
           My previous appointments
         </div>
@@ -176,6 +183,11 @@ export default function MyAppointment() {
             <div className="text-blue-hosta pl-[340px] text-[17px]">{renderButtons(appointment4.status)}</div>
           </div>
         </div>
+        
+          <button className="bg-blue-hosta text-xl text-white font-bold w-72 h-12 rounded-xl">
+            <Link to="/my-dental-record">Go to My Dental Record</Link></button>
+        
+        
       </div>
       <Footer />
     </>

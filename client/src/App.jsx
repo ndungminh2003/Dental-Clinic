@@ -5,7 +5,7 @@ import {
   Route,
 } from "react-router-dom";
 import Home from "./pages/Home";
-import About from "./pages/About";
+import ContactUs from "./pages/ContactUs";
 import UserLogin from "./pages/Login/UserLogin";
 import SignUp from "./pages/SignUp";
 
@@ -35,19 +35,21 @@ import AddUser from "./pages/Admin/pages/AddUser";
 import AllUsers from "./pages/Admin/pages/AllUsers";
 
 import Profile from "./pages/Profile";
-import Contact from "./pages/Contact"
+import BookAppointment from "./pages/BookAppointment"
 import OurDentists from "./pages/OurDentists";
 import SpecificDentists from "./pages/SpecificDentist";
 import MyAppointment from "./pages/MyAppointments";
 import BookSuccess from "./pages/BookSuccess";
 import BookFailed from "./pages/BookFailed";
+import DentalRecords from "./pages/DentalRecords";
+import Services from "./pages/Services";
 
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route index element={<Home />} />
-      <Route path="/about" element={<About />}></Route>
+      <Route path="/contact-us" element={<ContactUs />}></Route>
       <Route path="/login" element={<UserLogin />}></Route>
       <Route path="/sign-up" element={<SignUp />}></Route>
       <Route path="/dentist" element={<Dentist />}>
@@ -86,12 +88,14 @@ const router = createBrowserRouter(
       </Route>
 
       <Route path="/profile" element={<Profile />}></Route>
-      <Route path="/contact" element={<Contact />}></Route>
+      <Route path="/book-appointment" element={<BookAppointment />}></Route>
       <Route path="/our-dentist" element={<OurDentists />}></Route>
       <Route path="/our-dentist/specific-dentist" element= {<SpecificDentists />}></Route>
       <Route path="/my-appointment" element= {<MyAppointment />}></Route>
+      <Route path="/my-dental-record" element= {<DentalRecords />}></Route>
       <Route path="/book-successful" element= {<BookSuccess />}></Route>
       <Route path="/book-failed" element= {<BookFailed />}></Route>
+      <Route path="/service" element= {<Services />}></Route>
     </>
   )
 );

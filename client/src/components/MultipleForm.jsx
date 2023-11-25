@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 
 const YourFormComponent = () => {
   const [selectedOption, setSelectedOption] = useState('');
@@ -35,6 +35,30 @@ const YourFormComponent = () => {
     setActiveButton(buttonNumber);
   };
 
+  const [minDate, setMinDate] = useState("");
+  const [maxDate, setMaxDate] = useState("");
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const oneMonthLater = new Date();
+    oneMonthLater.setMonth(currentDate.getMonth() + 1);
+
+    // Format the date as YYYY-MM-DD
+    const formattedCurrentDate = formatDate(currentDate);
+    const formattedOneMonthLater = formatDate(oneMonthLater);
+
+    setMinDate(formattedCurrentDate);
+    setMaxDate(formattedOneMonthLater);
+  }, []);
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <div className='flex flex-col justify-start items-start pl-20 pt-5'>
       <label className='text-xl font-bold'>
@@ -64,7 +88,12 @@ const YourFormComponent = () => {
         <div className="flex flex-row gap-16 items-center justify-center pt-4">
           <div className="flex flex-col gap-3">
             <h3 className="font-bold text-2xl">DATE</h3>
-            <input type="date" className="rounded-xl w-[390px] h-[48px] text-2xl text-center" />
+            <input
+                  type="date"
+                  className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
+                  min={minDate}
+                  max={maxDate}
+                />
           </div>
           <div className="flex flex-col gap-3">
             <h3 className="font-bold text-2xl">DENTIST</h3>
@@ -105,7 +134,12 @@ const YourFormComponent = () => {
           <div className="flex flex-row gap-16 items-center justify-center pt-4">
             <div className="flex flex-col gap-3">
               <h3 className="font-bold text-2xl">DATE</h3>
-              <input type="date" className="rounded-xl w-[390px] h-[48px] text-2xl text-center" />
+              <input
+                  type="date"
+                  className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
+                  min={minDate}
+                  max={maxDate}
+                />
             </div>
             <div className="flex flex-col gap-3">
               <h3 className="font-bold text-2xl">TIME</h3>

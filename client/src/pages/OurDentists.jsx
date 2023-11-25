@@ -11,7 +11,7 @@ export default function OurDentists() {
             <div className='flex flex-col justify-center items-center gap-16 w-[900px]'>
                 <div className='text-6xl font-extrabold'>OUR DENTISTS</div>
                 <div >
-                    <div className='text-2xl font-extrabold'>Welcome to Our Dentist.</div>
+                    <div className='text-2xl font-extrabold'>Welcome to Our Dentists.</div>
                     <div className='text-xl '>Meet our dedicated team of experienced and compassionate dental professionals committed to providing personalized care. Your oral health is our priority, and we look forward to creating a brighter, healthier smile for you</div>
                 </div>
                 <div className='flex flex-row gap-16'>

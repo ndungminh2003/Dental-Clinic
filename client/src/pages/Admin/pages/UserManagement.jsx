@@ -1,12 +1,11 @@
-import React from "react";
+import React from 'react'
 import { Outlet } from "react-router-dom";
 
-const Record = () => {
+export default function UserManagement (){
   return (
     <div>
       <Outlet />
     </div>
   );
-};
+}
 
-export default Record;

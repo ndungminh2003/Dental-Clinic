@@ -5,7 +5,9 @@ import Header from "./components/Header";
 export default function Dentist() {
   return (
     <div className ="flex flex-row">
-      <Sidebar/>
+      <div>
+        <Sidebar/>
+      </div>
       <div className ="flex-grow">
         <Header/>
         <div >

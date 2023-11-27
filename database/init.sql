@@ -242,3 +242,44 @@ VALUES (100.00, '2023-11-10 12:00:00', N'Chưa thanh toán', 1, 1);
 INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
 VALUES (1, '2023-11-10 08:00:00', '2023-11-10 09:00:00', 0);
 
+
+GO
+CREATE OR ALTER PROC sp_createDatabaseUser
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+  BEGIN TRY
+    CREATE LOGIN guest WITH PASSWORD = 'guest'
+    CREATE LOGIN customer WITH PASSWORD = 'customer'
+    CREATE LOGIN staff WITH PASSWORD = 'staff'
+    CREATE LOGIN dentist WITH PASSWORD = 'dentist'
+    CREATE LOGIN admin WITH PASSWORD = 'admin'
+
+    CREATE USER guestUser FOR LOGIN guest
+    CREATE USER customerUser FOR LOGIN customer
+    CREATE USER staffUser FOR LOGIN staff
+    CREATE USER dentistUser FOR LOGIN dentist
+    CREATE USER adminUser FOR LOGIN admin
+
+    CREATE ROLE guestRole
+    CREATE ROLE customerRole
+    CREATE ROLE staffRole
+    CREATE ROLE dentistRole
+    CREATE ROLE adminRole
+
+    ALTER ROLE guestRole ADD MEMBER guestUser
+    ALTER ROLE customerRole ADD MEMBER customerUser
+    ALTER ROLE dentistRole ADD MEMBER dentistUser
+    ALTER ROLE staffRole ADD MEMBER staffUser
+    ALTER ROLE adminRole ADD MEMBER adminUser
+
+    GRANT EXEC ON dbo.sp_signUp TO guestRole
+	GRANT SELECT TO guestRole
+
+  END TRY
+  BEGIN CATCH
+    ;THROW
+  END CATCH
+END
+
+EXEC sp_createDatabaseUser

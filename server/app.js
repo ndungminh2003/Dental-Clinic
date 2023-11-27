@@ -7,9 +7,9 @@ var app = express();
 const bodyParser = require("body-parser");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const cookieParser = require("cookie-parser");
+
 const customerRoute = require("./routes/customerRoute");
-const { ConnectMSSQL } = require("./config/dbconfig");
-ConnectMSSQL();
+const authRoute = require("./routes/authRoute");
 app.use(morgan("dev"));
 app.use(cors());
 // app.use(express.json());
@@ -23,7 +23,8 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/api/customer", customerRoute);
+// app.use("/api/customer", customerRoute);
+app.use("/api/auth", authRoute);
 
 app.use(notFound);
 app.use(errorHandler);
@@ -31,7 +32,3 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
-const { load, add, del, patch } = require("./utils/dbOperation");
-
-// load("select * from CUSTOMER");

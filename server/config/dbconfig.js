@@ -1,42 +1,61 @@
-const sql = require("mssql");
+const mssql = require("mssql");
 const dotenv = require("dotenv");
 dotenv.config();
-const PORT = Number(process.env.DBMS_PORT);
-const config = {
-  user: process.env.DBMS_USERNAME,
-  password: process.env.DBMS_PASSWORD,
-  server: process.env.DBMS_SERVER,
-  port: PORT,
-  database: process.env.DATABASE_NAME,
-  options: {
-    enableArithAbort: true,
-    trustServerCertificate: true,
-    encrypt: true, // Sử dụng kết nối mã hóa SSL
-  },
-  pool: {
-    max: 100,
-    min: 0,
-    idleTimeoutMillis: 60000,
-  },
+
+const options = {
+  enableArithAbort: true,
+  trustServerCertificate: true,
+  encrypt: true,
 };
 
-const ConnectMSSQL = async () => {
-  try {
-    await sql.connect(config);
-    console.log("SQL Server connection successful !\n");
-  } catch (error) {
-    console.error("SQL Server connection error !\n");
-  }
+const dbConect = {
+  guest: new mssql.ConnectionPool({
+    user: process.env.DBMS_GUEST_USER,
+    password: process.env.DBMS_GUEST_PASSWORD,
+    server: process.env.DBMS_SERVER,
+    port: Number(process.env.DBMS_PORT),
+    database: process.env.DBMS_DATABASE_NAME,
+    options: options,
+  }).connect(),
+  customer: new mssql.ConnectionPool({
+    user: process.env.DBMS_CUSTOMER_USER,
+    password: process.env.DBMS_CUSTOMER_PASSWORD,
+    server: process.env.DBMS_SERVER,
+    port: Number(process.env.DBMS_PORT),
+    database: process.env.DBMS_DATABASE_NAME,
+    options: options,
+  }).connect(),
+  dentist: new mssql.ConnectionPool({
+    user: process.env.DBMS_DENTIST_USER,
+    password: process.env.DBMS_DENTIST_PASSWORD,
+    server: process.env.DBMS_SERVER,
+    port: Number(process.env.DBMS_PORT),
+    database: process.env.DBMS_DATABASE_NAME,
+    options: options,
+  }).connect(),
+  staff: new mssql.ConnectionPool({
+    user: process.env.DBMS_STAFF_USER,
+    password: process.env.DBMS_STAFF_PASSWORD,
+    server: process.env.DBMS_SERVER,
+    port: Number(process.env.DBMS_PORT),
+    database: process.env.DBMS_DATABASE_NAME,
+    options: options,
+  }).connect(),
+  admin: new mssql.ConnectionPool({
+    user: process.env.DBMS_ADMIN_USER,
+    password: process.env.DBMS_ADMIN_PASSWORD,
+    server: process.env.DBMS_SERVER,
+    port: Number(process.env.DBMS_PORT),
+    database: process.env.DBMS_DATABASE_NAME,
+    options: options,
+  }).connect(),
 };
 
-const poolConnect = async () => {
-  try {
-    let pool = new sql.ConnectionPool(config);
-    await pool.connect(config);
-    return pool;
-  } catch (error) {
-    console.error("poolconnect connection error !\n");
-  }
-};
+async function getDb(name) {
+  console.log("Connect with role ", name);
+  return (await dbConect[name]).request();
+}
 
-module.exports = { ConnectMSSQL, poolConnect };
+module.exports = {
+  getDb,
+};

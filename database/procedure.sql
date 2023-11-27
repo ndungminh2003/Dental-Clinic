@@ -4,7 +4,6 @@ BEGIN
     DROP PROCEDURE sp_signUp
 END
 GO
-
 CREATE PROC sp_signUp
     @phone VARCHAR(15),
     @password VARCHAR(50),
@@ -13,7 +12,7 @@ CREATE PROC sp_signUp
     @birthday DATE,
     @address NVARCHAR(120)
 AS
--- SET XACT_ABORT, NOCOUNT ON
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
     BEGIN TRY
         BEGIN TRAN
@@ -35,6 +34,7 @@ BEGIN
         BEGIN
             INSERT INTO CUSTOMER 
             VALUES(@name, @password, @phone, 'Customer', @gender, @address, @birthday, 0)
+			SELECT * FROM CUSTOMER WHERE phoneNumber = @phone
         END
         COMMIT TRAN
     END TRY
@@ -43,6 +43,77 @@ BEGIN
         ;THROW
     END CATCH
 END
+
+-- login
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_login')
+BEGIN
+    DROP PROCEDURE sp_login
+END
+GO
+CREATE PROC sp_login
+    @phone VARCHAR(15),
+    @password VARCHAR(50),
+	@role VARCHAR(16)
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+    BEGIN TRY
+        BEGIN TRAN
+			IF @role = 'guest'
+			BEGIN
+				IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone AND role = 'Customer' AND password = @password )
+				BEGIN
+					RAISERROR (N'Error: Incorrect phone number or password', 16, 1)
+				END
+				IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone AND role = 'Customer' AND password = @password AND isBlocked = 0)
+				BEGIN
+					RAISERROR (N'Error: Account has been blocked', 16, 1)
+				END
+				SELECT * FROM CUSTOMER WHERE phoneNumber = @phone AND role = 'Customer' AND password = @password AND isBlocked = 0
+			END
+
+			ELSE IF @role = 'dentist'
+			BEGIN
+				IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE phoneNumber = @phone AND password = @password )
+				BEGIN
+					RAISERROR (N'Error: Incorrect phone number or password', 16, 1)
+				END
+				IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE phoneNumber = @phone AND password = @password AND isBlocked = 0)
+				BEGIN
+					RAISERROR (N'Error: Account has been blocked', 16, 1)
+				END
+				SELECT * FROM DENTIST WHERE phoneNumber = @phone AND password = @password AND isBlocked = 0
+			END
+
+			ELSE IF @role = 'staff'
+			BEGIN
+				IF NOT EXISTS (SELECT 1 FROM STAFF WHERE phoneNumber = @phone AND password = @password )
+				BEGIN
+					RAISERROR (N'Error: Incorrect phone number or password', 16, 1)
+				END
+				IF NOT EXISTS (SELECT 1 FROM STAFF WHERE phoneNumber = @phone AND password = @password AND isBlocked = 0)
+				BEGIN
+					RAISERROR (N'Error: Account has been blocked', 16, 1)
+				END
+				SELECT * FROM STAFF WHERE phoneNumber = @phone AND password = @password AND isBlocked = 0
+			END
+
+			ELSE IF @role = 'admin'
+			BEGIN
+				IF NOT EXISTS (SELECT 1 FROM ADMIN WHERE phoneNumber = @phone AND password = @password )
+				BEGIN
+					RAISERROR (N'Error: Incorrect phone number or password', 16, 1)
+				END
+				SELECT * FROM ADMIN WHERE phoneNumber = @phone AND password = @password
+			END
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
 
 -- customer login without hashing
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_customerLoginWithoutHash')
@@ -54,7 +125,8 @@ GO
 --UNREPEATABLE READ
 CREATE PROC sp_customerLoginWithoutHash
     @phone VARCHAR(15),
-    @password VARCHAR(50)
+    @password VARCHAR(50),
+	@role VARCHAR(16)
 AS
 BEGIN
 	BEGIN TRY
@@ -311,6 +383,10 @@ BEGIN
 		BEGIN
 			RAISERROR (N'Lỗi: Số điện thoại hoặc mật khẩu không đúng', 16, 1)
 			ROLLBACK TRAN
+		END
+		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE phoneNumber = @phone and password = @password and isBlocked = 0)
+		BEGIN
+		RAISERROR (N'Lỗi: Tài khoản đã bị khóa', 16, 1)
 		END
 		SELECT * FROM DENTIST WHERE phoneNumber = @phone and password = @password
 		 PRINT N'Đăng nhập thành công'
@@ -708,6 +784,11 @@ BEGIN
 			RAISERROR (N'Lỗi: Số điện thoại không đặt được cuộc hẹn vì đã bị khóa', 16, 1)
 			ROLLBACK TRAN
 		END
+		IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId != @dentistId AND a.customerId = @customerId)
+		BEGIN 
+			RAISERROR (N'Lỗi: Khách hàng chỉ có thể có một cuộc hẹn với một nha sĩ trong một thời điểm', 16, 1)
+			ROLLBACK TRAN
+		END
 		INSERT INTO APPOINTMENT VALUES(@dentistId, @customerId, @startTime, @endTime, N'Đang chờ', @staffId, NULL)
 		UPDATE SCHEDULE SET isBooked = 1 WHERE dentistId = @dentistId and startTime = @startTime and endTime = @endTime
 		COMMIT TRAN
@@ -896,7 +977,7 @@ BEGIN
 	END CATCH
 END
 
--- view dentist's appointment
+-- view dentist's appointment - dirty read, phantom read
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewDentistAppointment')
 BEGIN
@@ -972,7 +1053,7 @@ BEGIN
 	END CATCH
 END
 
--- update patient record
+-- update patient record - lost update
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updatePatientRecord')
 BEGIN
@@ -1038,7 +1119,7 @@ BEGIN
 	END CATCH
 END
 
--- view one patient record
+-- view one patient record - dirty read, phantom read 
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOnePatientRecord')
 BEGIN
@@ -1068,7 +1149,7 @@ BEGIN
 	END CATCH
 END
 
--- view all patient record
+-- view all patient record - dirty read
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllPatientRecord')
 BEGIN
@@ -1089,7 +1170,7 @@ BEGIN
 	END CATCH
 END
 
--- view patient record by customer id
+-- view patient record by customer id - dirty read
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewCustomerPatientRecord')
 BEGIN
@@ -1178,7 +1259,7 @@ BEGIN
 			RAISERROR(N'Lỗi: Mã Thuốc không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
-		IF EXISTS (SELECT 1 FROM MEDICINE WHERE name = @name)
+		IF EXISTS (SELECT 1 FROM MEDICINE WHERE name = @name AND id != @medicineId)
 		BEGIN
 			RAISERROR(N'Lỗi: Tên thuốc đã tồn tại', 16, 1)
 			ROLLBACK TRAN
@@ -1267,7 +1348,7 @@ BEGIN
 	END CATCH
 END
 
--- add Prescribe Medicine
+-- add Prescribe Medicine - lost update
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addPrescribeMedicine')
 BEGIN
@@ -1324,7 +1405,7 @@ BEGIN
 	END CATCH
 END
 
---delete Prescribe Medicine
+--delete Prescribe Medicine 
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deletePrescribeMedicine')
 BEGIN
@@ -1503,7 +1584,7 @@ BEGIN
 	END CATCH
 END
 
--- view one service
+-- view one service dirty read
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneService')
 BEGIN
 	DROP PROCEDURE sp_viewOneService
@@ -1529,7 +1610,7 @@ BEGIN
 	END CATCH
 END
 
--- view all service
+-- view all service dirty read
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllService')
 BEGIN
 	DROP PROCEDURE sp_viewAllService
@@ -1725,7 +1806,7 @@ BEGIN
 	END CATCH
 END
 
--- view invoice by id
+-- view invoice by id * dirty read, phantom
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewInvoiceById')
 BEGIN
 	DROP PROCEDURE sp_viewInvoiceById
@@ -1847,22 +1928,18 @@ BEGIN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
 			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
-			ROLLBACK TRAN
 		END
 		IF NOT EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime1)
 		BEGIN
 			RAISERROR(N'Lỗi: Lịch rảnh muốn chỉnh sửa không tồn tại', 16, 1)
-			ROLLBACK TRAN
 		END
 		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime2)
 		BEGIN
 			RAISERROR(N'Lỗi: Lịch rảnh đã tồn tại', 16, 1)
-			ROLLBACK TRAN
 		END
 		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime1 AND isBooked = 1)
 		BEGIN
 			RAISERROR(N'Lỗi: Không thể chỉnh sửa lịch đã được đặt', 16, 1)
-			ROLLBACK TRAN
 		END
 		DECLARE @endTime DATETIME
 		SET @endTime = DATEADD(HOUR, 1, @startTime2)
@@ -1875,7 +1952,7 @@ BEGIN
 	END CATCH
 END
 
--- delete schedule
+-- delete schedule - lost update
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteDentistSchedule')
 BEGIN
 	DROP PROCEDURE sp_deleteDentistSchedule
@@ -1890,18 +1967,15 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Mã nha sĩ không tồn tại', 16, 1)
-			ROLLBACK TRAN
+			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
 		END
 		IF NOT EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime)
 		BEGIN
-			RAISERROR(N'Lịch rảnh không tồn tại', 16, 1)
-			ROLLBACK TRAN
+			RAISERROR(N'Lỗi: Lịch rảnh không tồn tại', 16, 1)
 		END
 		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime AND isBooked = 1)
 		BEGIN
-			RAISERROR(N'Không thể xóa lịch đã được đặt', 16, 1)
-			ROLLBACK TRAN
+			RAISERROR(N'Lỗi: Không thể xóa lịch đã được đặt', 16, 1)
 		END
 		DELETE FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime AND isBooked = 0
 		COMMIT TRAN
@@ -1926,8 +2000,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Mã nha sĩ không tồn tại', 16, 1)
-			ROLLBACK TRAN
+			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
 		END
 		SELECT * FROM SCHEDULE WHERE dentistId = @dentistId
 		COMMIT TRAN
@@ -1959,7 +2032,7 @@ BEGIN
 END
 
 
--- view all schdedule available
+-- view all schdedule available 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllScheduleAvailable')
 BEGIN
 	DROP PROCEDURE sp_viewAllScheduleAvailable

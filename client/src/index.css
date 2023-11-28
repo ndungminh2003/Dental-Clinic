@@ -24,6 +24,305 @@
   padding: 0.5rem;
   border-radius: 0.5rem;
 }
+.side:active {
+  width: 100%;
+}
+
+.lineItem {
+  display: grid;
+  grid-template-columns: 0.5fr 3fr 1fr repeat(2, 2fr);
+}
+
+.lineItem > div {
+  padding: calc(var(--rhythm) / 2);
+  border-left: 1px solid var(--tableBorderColor);
+  width: 100%;
+  line-height: var(--rhythm);
+  min-width: var(--rhythm);
+}
+
+.deleteItem {
+  color: var(--removeColor);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.input,
+.inputNum {
+  padding: calc(var(--rhythm) / 4);
+  border: 1px dotted lighten(var(--tableBorderColor), 2%);
+  border-radius: var(--borderRadius);
+  min-width: calc(var(--rhythm) * 2);
+  width: 100%;
+}
+
+.inputNum {
+  text-align: center;
+}
+.lineItems {
+  margin-bottom: var(--rhythm) * 4;
+}
+
+.lineItems .addItem {
+  padding-top: var(--rhythm);
+}
+
+.lineItems .addItem button {
+  background: none;
+  padding: var(--rhythm) / 2;
+  border: 1px solid var(--addColor);
+  color: var(--addColor);
+  border-radius: var(--borderRadius);
+  float: right;
+}
+
+.lineItems .addItem button .addIcon {
+  color: var(--addColor);
+  margin-right: var(--rhythm) / 4;
+}
+
+.gridTable {
+  margin: 0 auto;
+  border: 1px solid var(--tableBorderColor);
+  border-radius: var(--borderRadius);
+  overflow: hidden;
+  display: grid;
+}
+
+.gridTable .row {
+  display: grid;
+  grid-template-columns: 0.5fr 3fr 1fr repeat(2, 2fr);
+  border-bottom: 1px solid var(--tableBorderColor);
+}
+
+.gridTable .row:last-of-type {
+  border-bottom: none;
+}
+
+.gridTable .row.header > div {
+  text-align: center;
+  font-weight: bold;
+  background: var(--boxBgColor);
+}
+
+.gridTable .row.editable > div {
+  padding: var(--rhythm) / 2;
+}
+
+.gridTable .row > div {
+  padding: calc(var(--rhythm) / 2);
+  border-left: 1px solid var(--tableBorderColor);
+  width: 100%;
+  line-height: var(--rhythm);
+  min-width: var(--rhythm);
+}
+
+.gridTable .row > div:first-of-type {
+  padding: calc(var(--rhythm) / 2) 0;
+  border-left: none;
+}
+
+.gridTable .row > div:last-of-type {
+  padding: calc(var(--rhythm) / 2) 0;
+}
+
+.gridTable .row > div:first-of-type,
+.gridTable .row > div:nth-child(4),
+.gridTable .row > div:last-of-type {
+  text-align: center;
+}
+
+.gridTable .row > div .deleteItem {
+  color: var(--removeColor);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.gridTable .currency > input[type=number] {
+  max-width: calc(var(--rhythm) * 4);
+}
+
+.listDraggingOver {
+  background: #ddd;
+  background-image: repeating-linear-gradient(
+    30deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.2) 30px,
+    transparent 0,
+    transparent 60px
+  );
+}
+
+.listItemDragging {
+  background: #f9fff9;
+  border: 1px solid var(--tableBorderColor);
+}
+@layer components {
+  .invoice {
+    --invoice-padding: calc(2 * var(--rhythm));
+    @apply max-w-[var(--invoiceMaxWidth)] mx-auto border border-solid border-[var(--tableBorderColor)] py-[--invoice-padding] rounded-[var(--borderRadius)] bg-[var(--bgColor)];
+  }
+}
+
+
+.brand {
+  margin-bottom: var(--rhythm) * 2;
+}
+
+.brand .logo {
+  display: inline-block;
+  border-radius: var(--borderRadius);
+}
+
+.addresses {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  text-align: left;
+}
+
+.addresses .from, .addresses .to {
+  padding: var(--rhythm);
+  border-radius: var(--borderRadius);
+  width: 100%;
+  max-width: var(--invoiceMaxWidth) / 3;
+}
+
+.addresses .from {
+  display: block;
+  font-style: normal;
+  margin-right: var(--rhythm) / 2;
+  background: #efefef;
+  border: 1px solid var(--tableBorderColor);
+}
+
+.addresses .to {
+  display: block;
+  margin-left: var(--rhythm) / 2;
+  padding: 0;
+}
+
+.addresses .to .value {
+  text-align: right;
+}
+
+.addresses .address {
+  display: block;
+}
+
+.valueTable {
+  margin: 0 0 0 auto;
+  border: 1px solid var(--tableBorderColor);
+  border-radius: var(--borderRadius);
+  overflow: hidden;
+  width: 50%;
+}
+
+.valueTable > .row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-bottom: 1px solid var(--tableBorderColor);
+}
+
+.valueTable > .row:last-of-type {
+  border-bottom: none;
+}
+
+.valueTable > .row > div {
+  padding: calc(var(--rhythm) / 2);
+}
+
+@layer components {
+  .valueTable > .row > .label {
+    @apply flex justify-center items-center font-bold; /* Replace %flex-center with Tailwind classes */
+  }
+}
+
+.totalContainer {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.pay {
+  display: flex;
+  justify-content: flex-end;
+  padding: calc(var(--rhythm) * 1) 0 calc(var(--rhythm)) var(--rhythm);
+}
+
+button.payNow {
+  display: block;
+  padding: calc(var(--rhythm)) calc(var(--rhythm) * 2);
+  background: lightyellow;
+  border-radius: var(--borderRadius);
+  border: 1px solid #444;
+}
+
+.footer {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer .comments {
+  padding: var(--rhythm);
+  border-radius: var(--borderRadius);
+}
+
+.footer .comments h4, .footer .comments h5 {
+  margin-top: 0;
+  margin-bottom: calc(var(--rhythm) / 2);
+}
+
+.footer .comments {
+  text-align: left;
+  background: #eee;
+}
+
+.footer .closing {
+  padding-top: var(--rhythm);
+}
+
+:root {
+  --rhythm: 20px;
+  --invoiceMaxWidth: 800px;
+  --borderRadius: 4px;
+  --tableBorderColor: #ccc;
+  --boxBgColor: #eee;
+  --bgColor: #ffffff;
+  --addColor: darkgreen;
+  --removeColor: darkred;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.currency {
+  text-align: right;
+  word-break: break-word;
+}
+
+@layer components {
+  .invoice {
+    @apply max-w-[var(--invoiceMaxWidth)] mx-auto border border-solid border-[var(--tableBorderColor)] py-[calc(2 * var(--rhythm))] rounded-[var(--borderRadius)] bg-[var(--bgColor)];
+  }
+}
+.addColor {
+  background-color: var(--addColor);
+}
+
+.removeColor {
+  color: var(--removeColor);
+}
+
 
 @tailwind base;
 @tailwind components;

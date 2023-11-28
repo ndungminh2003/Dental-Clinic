@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
 export default function Login({ bgcolor, ringcolor }) {
+  const [value,setValue] = useState();
+
   return (
     <div className="w-full flex items-center	min-h-screen">
       <div className="w-full max-w-md mx-auto">
@@ -11,10 +15,14 @@ export default function Login({ bgcolor, ringcolor }) {
             <div className="mb-4">
               <label className="font-mono ">Phone</label>
               <hr />
-              <input
-                type="text"
-                className={`${ringcolor} w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-25 border border-gray-300	`}
-              ></input>
+                <PhoneInput
+                  inputClass="!w-full !h-[45px] "
+                  placeholder="Enter phone number"
+                  country='vn'
+                  regions={'asia'}
+                  value={value}
+                  onChange={setValue}
+                  />
             </div>
             <div className="mb-4">
               <label className="font-mono rounded-md	">Password</label>

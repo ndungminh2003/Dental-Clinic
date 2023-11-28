@@ -274,7 +274,9 @@ BEGIN
     ALTER ROLE adminRole ADD MEMBER adminUser
 
     GRANT EXEC ON dbo.sp_signUp TO guestRole
-	GRANT SELECT TO guestRole
+	GRANT EXEC ON dbo.sp_login TO guestRole
+
+	GRANT SELECT TO customerRole
 
   END TRY
   BEGIN CATCH
@@ -283,3 +285,5 @@ BEGIN
 END
 
 EXEC sp_createDatabaseUser
+
+SELECT * FROM CUSTOMER 

@@ -8,7 +8,7 @@ const options = {
   encrypt: true,
 };
 
-const dbConect = {
+const dbConnect = {
   guest: new mssql.ConnectionPool({
     user: process.env.DBMS_GUEST_USER,
     password: process.env.DBMS_GUEST_PASSWORD,
@@ -52,8 +52,8 @@ const dbConect = {
 };
 
 async function getDb(name) {
-  console.log("Connect with role ", name);
-  return (await dbConect[name]).request();
+  console.log("Connect with role", name);
+  return (await dbConnect[name]).request();
 }
 
 module.exports = {

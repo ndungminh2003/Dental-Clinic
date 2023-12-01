@@ -275,8 +275,15 @@ BEGIN
 
     GRANT EXEC ON dbo.sp_signUp TO guestRole
 	GRANT EXEC ON dbo.sp_login TO guestRole
+	GRANT EXEC ON dbo.sp_login TO dentistRole
+    GRANT EXEC ON dbo.sp_makeAppointment TO guestRole
+    GRANT EXEC ON dbo.sp_makeAppointment TO customerRole
 
-	GRANT SELECT TO customerRole
+	GRANT EXEC ON dbo.sp_viewAllAppointment TO guestRole
+	GRANT EXEC ON dbo.sp_viewAllAppointment TO customerRole
+
+
+	  GRANT SELECT TO customerRole
 
   END TRY
   BEGIN CATCH
@@ -286,4 +293,15 @@ END
 
 EXEC sp_createDatabaseUser
 
-SELECT * FROM CUSTOMER 
+ 
+SELECT * FROM CUSTOMER
+
+SELECT * FROM DENTIST
+
+SELECT * FROM STAFF
+
+SELECT * FROM SCHEDULE
+
+SELECT * FROM APPOINTMENT
+
+INSERT INTO SCHEDULE VALUES(1, '2023-12-15 09:00:00.000', '2023-12-15 10:00:00.000', 0)

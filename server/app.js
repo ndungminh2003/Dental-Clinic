@@ -8,15 +8,16 @@ const bodyParser = require("body-parser");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const cookieParser = require("cookie-parser");
 
-const customerRoute = require("./routes/customerRoute");
+const { roleAuthentication } = require("./controller/authCtrl");
 const authRoute = require("./routes/authRoute");
+const appointmentRoute = require("./routes/appointmentRoute");
 app.use(morgan("dev"));
 app.use(cors());
 // app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
+app.use(roleAuthentication);
 app.get("/", (req, res) => {
   res.json({
     msg: "root",
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 
 // app.use("/api/customer", customerRoute);
 app.use("/api/auth", authRoute);
+app.use("/api/appointment", appointmentRoute);
 
 app.use(notFound);
 app.use(errorHandler);

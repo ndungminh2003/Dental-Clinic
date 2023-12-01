@@ -746,13 +746,12 @@ GO
 CREATE PROC sp_makeAppointment
 	@phone VARCHAR(15),
 	@name NVARCHAR(50),
-  @gender NVARCHAR(6),
-  @birthday DATE,
-  @address NVARCHAR(120),
+  	@gender NVARCHAR(6),
+ 	@birthday DATE,
+  	@address NVARCHAR(120),
 	@dentistId INT,
 	@staffId INT,
-	@startTime DATETIME,
-	@endTime DATETIME
+	@startTime DATETIME
 AS
 BEGIN
 	BEGIN TRY
@@ -770,7 +769,7 @@ BEGIN
 				ROLLBACK TRAN
 			END
 		END
-		IF NOT EXISTS (SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId and startTime = @startTime and endTime = @endTime and isBooked = 0)
+		IF NOT EXISTS (SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId and startTime = @startTime and isBooked = 0)
 		BEGIN
 			RAISERROR (N'Lỗi: Lịch trình không tồn tại hoặc đã được đặt', 16, 1)
 			ROLLBACK TRAN
@@ -796,8 +795,11 @@ BEGIN
 			RAISERROR (N'Lỗi: Khách hàng chỉ có thể có một cuộc hẹn với một nha sĩ trong một thời điểm', 16, 1)
 			ROLLBACK TRAN
 		END
+		DECLARE @endTime DATETIME
+		SET @endTime = DATEADD(HOUR, 1, @startTime)
 		INSERT INTO APPOINTMENT VALUES(@dentistId, @customerId, @startTime, @endTime, N'Đang chờ', @staffId, NULL)
 		UPDATE SCHEDULE SET isBooked = 1 WHERE dentistId = @dentistId and startTime = @startTime and endTime = @endTime
+		SELECT * FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId = @dentistId AND a.customerId = @customerId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1886,7 +1888,6 @@ END
 GO
 CREATE PROC sp_addDentistSchedule
 	@startTime DATETIME,
-	@endTime DATETIME,
 	@dentistId INT
 AS
 BEGIN
@@ -1902,6 +1903,8 @@ BEGIN
 			RAISERROR(N'Lịch rảnh đã tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
+		DECLARE @endTime DATETIME
+		SET @endTime = DATEADD(HOUR, 1, @startTime)
 		INSERT INTO SCHEDULE VALUES(@dentistId, @startTime, @endTime, 0)
 		COMMIT TRAN
 	END TRY

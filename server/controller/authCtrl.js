@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const { generateToken } = require("../utils/jwtToken");
 const { getDb } = require("../config/dbconfig");
 
@@ -12,7 +13,7 @@ const signUp = async (req, res) => {
       .input("birthday", input.birthday)
       .input("address", input.address)
       .execute("sp_signUp");
-    res.status(200).json(db.recordsets);
+    res.status(200).json(db.recordset);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -31,13 +32,17 @@ const login = async (req, res) => {
       .input("password", input.password)
       .input("role", input.role)
       .execute("sp_login");
-    const accessToken = generateToken(input);
+
+    const accessToken = generateToken({
+      phone: input.phone,
+      role: input.role == "guest" ? "customer" : input.role,
+    });
     res.cookie("accessToken", accessToken, {
       secure: false,
       httpOnly: true,
       maxAge: 72 * 60 * 60 * 1000,
     });
-    res.status(200).json(db.recordsets);
+    res.status(200).json(db.recordset);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -49,11 +54,7 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  const input = req.body;
   try {
-    const sql = `SELECT * FROM ${input.role} WHERE phoneNumber = '${input.phone}' AND password = '${input.password}'`;
-    const db = await (await getDb(input.role)).query(sql);
-    console.log(db.recordsets);
     res.clearCookie("accessToken", {
       httpOnly: false,
       secure: false,
@@ -69,8 +70,39 @@ const logout = async (req, res) => {
   }
 };
 
+const roleAuthentication = async (req, res, next) => {
+  try {
+    let accessToken;
+    if (req?.cookies?.accessToken) {
+      accessToken = req.cookies.accessToken;
+      if (accessToken) {
+        const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+        const sql = `SELECT * FROM ${decoded.role} WHERE phoneNumber = '${decoded.phone}'`;
+        const db = await (await getDb(decoded.role)).query(sql);
+        const user = db.recordset[0];
+        if (user) {
+          req.user = {
+            phone: user.phone,
+            role: user.role,
+          };
+          return next();
+        } else throw null;
+      }
+    } else throw null;
+  } catch {
+    return next();
+  }
+};
+
+const getRole = (req, res) => {
+  const user = req.user;
+  return user ? user.role : "guest";
+};
+
 module.exports = {
   signUp,
   login,
   logout,
+  roleAuthentication,
+  getRole,
 };

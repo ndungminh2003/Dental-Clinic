@@ -34,8 +34,17 @@ const verifyRole = async (roleName, req, res, next) => {
   }
 };
 
+const blockRole = async (roleName, req, res, next) => {
+  const role = getRole(req);
+  if (role === roleName) {
+    res.status(402).send("Not Authorized");
+  } else {
+    next();
+  }
+};
+
 const getRole = (req) => {
-  const user = req.user;
+  const user = req?.user;
   return user ? user.role : "guest";
 };
 
@@ -49,11 +58,25 @@ const isDentist = async (req, res, next) =>
 
 const isAdmin = async (req, res, next) => verifyRole("admin", req, res, next);
 
+const isNotAdmin = async (req, res, next) => blockRole("admin", req, res, next);
+
+const isNotStaff = async (req, res, next) => blockRole("staff", req, res, next);
+
+const isNotDentist = async (req, res, next) =>
+  blockRole("dentist", req, res, next);
+
+const isNotCustomer = async (req, res, next) =>
+  blockRole("customer", req, res, next);
+
 module.exports = {
   authMiddleware,
   isCustomer,
   isStaff,
   isDentist,
   isAdmin,
+  isNotAdmin,
+  isNotStaff,
+  isNotDentist,
+  isNotCustomer,
   getRole,
 };

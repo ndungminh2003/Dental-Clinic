@@ -1,18 +1,13 @@
 const express = require("express");
 const {
-  authMiddleware,
-  isAdmin,
-  isCustomer,
-  isDentist,
-  isStaff,
-} = require("../middlewares/authMiddleware");
-const {
   makeAppointment,
-  getAllAppointment,
+  getOneAppointment,
+  cancelAppointment,
 } = require("../controller/appointmentCtrl");
+const { isNotDentist } = require("../middlewares/authMiddleware");
 const router = express.Router();
 
-router.post("/make-appointment", makeAppointment);
-router.get("/get-all-appointment", getAllAppointment);
-
+router.post("/make-appointment", isNotDentist, makeAppointment);
+router.get("/get-one-appointment", getOneAppointment);
+router.delete("/cancel-appointment", cancelAppointment);
 module.exports = router;

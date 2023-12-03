@@ -885,18 +885,18 @@ GO
 CREATE PROC sp_updateAppointmentStatus
 	@dentistId INT,
 	@startTime DATETIME,
-	@customerId INT,
 	@status NVARCHAR(30)
 AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId)
+		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId AND startTime = @startTime)
 		BEGIN
 			RAISERROR (N'Lỗi: Cuộc hẹn không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
-		UPDATE APPOINTMENT SET status = @status WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId
+		UPDATE APPOINTMENT SET status = @status WHERE dentistId = @dentistId AND startTime = @startTime
+		SELECT * FROM APPOINTMENT WHERE dentistId = @dentistId AND startTime = @startTime
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH

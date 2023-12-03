@@ -82,8 +82,8 @@ const roleAuthentication = async (req, res, next) => {
         const user = db.recordset[0];
         if (user) {
           req.user = {
-            phone: user.phone,
-            role: user.role,
+            phone: decoded.phone,
+            role: decoded.role,
           };
           return next();
         } else throw null;

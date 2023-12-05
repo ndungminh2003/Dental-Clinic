@@ -36,8 +36,15 @@ export default class Demo extends React.PureComponent {
   }
 
   changeAddedAppointment(addedAppointment) {
-    this.setState({ addedAppointment });
+    // Ensure the default title is set to "appointment" for new appointments
+    const defaultTitle = addedAppointment.title || 'Schedule';
+    const updatedAppointment = {
+      ...addedAppointment,
+      title: defaultTitle,
+    };
+    this.setState({ addedAppointment: updatedAppointment });
   }
+  
 
   changeAppointmentChanges(appointmentChanges) {
     this.setState({ appointmentChanges });
@@ -121,7 +128,7 @@ const TextEditor = (props) => {
   // eslint-disable-next-line react/destructuring-assignment
   if (props.type === 'titleTextEditor') {
     return (
-      <AppointmentForm.TextEditor { ...props} value="appointment" readOnly="true" />
+      <AppointmentForm.TextEditor { ...props} value="Schedule" />
     );
   } return <AppointmentForm.TextEditor {...props} />;
 };

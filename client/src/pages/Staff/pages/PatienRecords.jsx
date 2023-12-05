@@ -244,6 +244,7 @@ SimpleDialog.propTypes = {
 };
 
 const AllAppointments = () => {
+
   const [serviceName, setServiceName] = React.useState();
   const [medicine, setMedicine] = React.useState();
   const [services, setServices] = React.useState();
@@ -307,7 +308,6 @@ const AllAppointments = () => {
         MUIDataTableBodyCell: {
           styleOverrides: {
             root: {
-              paddingRight: "25px",
               textAlign: "center",
               overflow: "Hidden",
               textOverflow: "ellipsis",

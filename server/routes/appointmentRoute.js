@@ -1,13 +1,21 @@
 const express = require("express");
-const {
-  makeAppointment,
-  getOneAppointment,
-  cancelAppointment,
-} = require("../controller/appointmentCtrl");
-const { isNotDentist } = require("../middlewares/authMiddleware");
+const appointmentCtrl = require("../controller/appointmentCtrl");
+const authM = require("../middlewares/authMiddleware");
 const router = express.Router();
 
-router.post("/make-appointment", isNotDentist, makeAppointment);
-router.get("/get-one-appointment", getOneAppointment);
-router.delete("/cancel-appointment", cancelAppointment);
+router.post(
+  "/make-appointment",
+  authM.isNotDentist,
+  appointmentCtrl.makeAppointment
+);
+router.get("/get-one-appointment", appointmentCtrl.getOneAppointment);
+router.get("/get-all-appointment", appointmentCtrl.getAllAppointment);
+router.get("/get-customer-appointment", appointmentCtrl.getCustomerAppointment);
+router.get("/get-dentist-appointment", appointmentCtrl.getDentistAppointment);
+router.get(
+  "/update-appointment-status",
+  appointmentCtrl.updateAppointmentStatus
+);
+router.delete("/cancel-appointment", appointmentCtrl.cancelAppointment);
+
 module.exports = router;

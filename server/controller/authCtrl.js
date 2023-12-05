@@ -70,6 +70,26 @@ const logout = async (req, res) => {
   }
 };
 
+const blockUser = async (req, res) => {
+  const input = req.body;
+  try {
+    const db = await (await getDb("admin"))
+      .input("userId", input.userId)
+      .input("role", input.role)
+      .execute("sp_blockUser");
+    res
+      .status(200)
+      .send(`Successfully block ${input.role} with id: ${input.userId}`);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+      const statuscode = res.statusCode == 200 ? 500 : res.statusCode;
+      return res.status(statuscode).send(error.message);
+    }
+    return res.status(500).send("Signup failed");
+  }
+};
+
 const roleAuthentication = async (req, res, next) => {
   try {
     let accessToken;
@@ -105,4 +125,5 @@ module.exports = {
   logout,
   roleAuthentication,
   getRole,
+  blockUser,
 };

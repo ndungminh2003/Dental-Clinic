@@ -114,63 +114,6 @@ BEGIN
 	END CATCH
 END
 
-
--- customer login without hashing
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_customerLoginWithoutHash')
-BEGIN
-    DROP PROCEDURE sp_customerLoginWithoutHash
-END
-GO
-
--- DIRTY READ this situation can occur when a transaction modifies a data item and then fails to commit the changes due to a system failure, network error, or other issue.
--- DIRTY READ(Admin thay đổi thông tin người dùng và fails trong lúc commit), PHANTOM READ(Admin xóa người dùng sau khi check tài khoản và mật khẩu), UNREPEATABLE READ(Admin thay đổi thông tin người dùng sau khi check tài khoản mật khẩu và block)
-CREATE PROC sp_customerLoginWithoutHash
-    @phone VARCHAR(15),
-    @password VARCHAR(50),
-	@role VARCHAR(16)
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password )
-		BEGIN
-			RAISERROR (N'Lỗi: Số điện thoại hoặc mật khẩu không đúng', 16, 1)
-		END
-		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password and isBlocked = 0)
-		BEGIN
-			RAISERROR (N'Lỗi: Tài khoản đã bị khóa', 16, 1)
-		END
-		SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer' and password = @password and isBlocked = 0
-		PRINT N'Đăng nhập thành công'
-		COMMIT TRAN
-	END TRY
-	BEGIN CATCH
-		IF @@trancount > 0 ROLLBACK TRAN
-        ;THROW
-	END CATCH
-END
-
-GO
-CREATE PROC sp_customerLoginWithHash
-    @phone VARCHAR(15)
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer')
-		BEGIN
-			RAISERROR (N'Lỗi: Người dùng không tồn tại', 16, 1)
-		END
-		SELECT * FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer'
-		COMMIT TRAN
-	END TRY
-	BEGIN CATCH
-		IF @@trancount > 0 ROLLBACK TRAN
-        ;THROW
-	END CATCH
-END
-
-
 -- view one customer
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneCustomer')
 BEGIN
@@ -252,6 +195,8 @@ BEGIN
 		UPDATE CUSTOMER 
 		SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, address = @address 
 		WHERE id = @customerId
+
+		SELECT * FROM CUSTOMER WHERE id = @customerId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -260,34 +205,37 @@ BEGIN
 	END CATCH
 END
 
---block customer 
+--block user
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockCustomer')
 BEGIN
-	DROP PROCEDURE sp_blockCustomer
+	DROP PROCEDURE sp_blockUser
 END
 GO
-CREATE PROC sp_blockCustomer
-	@customerId INT
+CREATE OR ALTER PROC  sp_blockUser
+	@userId INT,
+	@role VARCHAR(16) 
 AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE id = @customerId)
+		DECLARE @id INT
+		DECLARE @sql1 NVARCHAR(128) = 'SELECT @id = id FROM '+ quotename(@role) + ' WHERE id = @userId'
+		exec sp_executesql @sql1, N'@role VARCHAR(16), @userId INT, @id INT OUTPUT',
+		@role = @role, @userId = @userId, @id = @id OUTPUT
+		IF @id IS NULL
 		BEGIN
-			RAISERROR(N'Lỗi: Mã khách hàng không tồn tại', 16, 1)
+			RAISERROR(N'Lỗi: Mã người dùng không tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
 		DECLARE @isBlocked BIT
-		SELECT @isBlocked = CASE WHEN isBlocked = 1 THEN 0 ELSE 1 END FROM CUSTOMER WHERE id = @customerId
-		UPDATE CUSTOMER SET isBlocked = @isBlocked WHERE id = @customerId
-		IF @isBlocked = 1
-		BEGIN
-		PRINT N'Khóa tài khoản thành công'
-		END
-		ELSE
-		BEGIN
-			PRINT N'Mở khóa tài khoản thành công'
-		END
+		DECLARE @sql2 NVARCHAR(128) = 'SELECT @isBlocked = CASE WHEN isBlocked = 1 THEN 0 ELSE 1 END FROM '+ quotename(@role) +' WHERE id = @userId'
+		exec sp_executesql @sql2, N'@role VARCHAR(16), @userId INT, @isBlocked BIT OUTPUT',
+		@role = @role, @userId = @userId, @isBlocked = @isBlocked OUTPUT
+
+		DECLARE @sql3 NVARCHAR(128) = 'UPDATE '+ quotename(@role) +' SET isBlocked = @isBlocked WHERE id = @userId'
+		exec sp_executesql @sql3, N'@isBlocked BIT, @role VARCHAR(16), @userId INT',
+		@isBlocked = @isBlocked, @role = @role, @userId = @userId
+
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -305,6 +253,7 @@ END
 GO
 CREATE PROC sp_changeCustomerPassword
 	@customerId INT,
+	@oldPassword VARCHAR(50),
 	@newPassword VARCHAR(50)
 AS
 BEGIN
@@ -318,6 +267,11 @@ BEGIN
 			IF LEN(@newPassword) <= 10
 			BEGIN
 				RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+				ROLLBACK TRAN
+			END
+			IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE id = @customerId AND password = @oldPassword)
+			BEGIN
+				RAISERROR(N'Lỗi: Mật khẩu cũ không đúng',16, 1)
 				ROLLBACK TRAN
 			END
 			UPDATE CUSTOMER SET password = @newPassword WHERE id = @customerId
@@ -368,41 +322,6 @@ END
 
 GO
 sp_createDentist 'Dentist6','123123123123', '0327116216', N'Nam', '2008-11-11', 'Experienced dentist'
-
-
---DIRTY READ(Admin thay đổi thông tin bác sĩ và fails trong lúc commit), PHANTOM READ(Admin xóa bác sĩ sau khi check tài khoản và mật khẩu), UNREPEATABLE READ(Admin thay đổi thông tin bác sĩ sau khi check tài khoản mật khẩu và block)
--- dentist login
-GO
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_dentistLogin')
-BEGIN
-	DROP PROCEDURE sp_dentistLogin
-END
-GO
-CREATE PROC sp_dentistLogin
-    @phone VARCHAR(15),
-    @password VARCHAR(50)
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE phoneNumber = @phone and password = @password )
-		BEGIN
-			RAISERROR (N'Lỗi: Số điện thoại hoặc mật khẩu không đúng', 16, 1)
-			ROLLBACK TRAN
-		END
-		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE phoneNumber = @phone and password = @password and isBlocked = 0)
-		BEGIN
-		RAISERROR (N'Lỗi: Tài khoản đã bị khóa', 16, 1)
-		END
-		SELECT * FROM DENTIST WHERE phoneNumber = @phone and password = @password
-		 PRINT N'Đăng nhập thành công'
-		COMMIT TRAN
-	END TRY
-	BEGIN CATCH
-		IF @@trancount > 0 ROLLBACK TRAN
-        ;THROW
-	END CATCH
-END
 
 
 -- view one dentist dirty read, phantom read, unrepeatable read
@@ -481,6 +400,7 @@ BEGIN
 			ROLLBACK TRAN
 		END
 		UPDATE DENTIST SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, introduction = @introduction WHERE id = @dentistId
+		SELECT * FROM DENTIST WHERE id = @dentistId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -499,6 +419,7 @@ END
 GO
 CREATE PROC sp_changeDentistPassword
 	@dentistId INT,
+	@oldPassword VARCHAR(50),
 	@newPassword VARCHAR(50)
 AS
 BEGIN
@@ -514,73 +435,12 @@ BEGIN
 				RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
 				ROLLBACK TRAN
 			END
+			IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId AND password = @oldPassword)
+			BEGIN
+				RAISERROR(N'Lỗi: Mật khẩu cũ không đúng',16, 1)
+				ROLLBACK TRAN
+			END
 			UPDATE DENTIST SET password = @newPassword WHERE id = @dentistId
-		COMMIT TRAN
-	END TRY
-	BEGIN CATCH
-		IF @@trancount > 0 ROLLBACK TRAN
-        ;THROW
-	END CATCH
-END
-
-
---block dentist
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockDentist')
-BEGIN
-	DROP PROCEDURE sp_blockDentist
-END
-GO
-CREATE PROC sp_blockDentist
-	@dentistId VARCHAR(15)
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId)
-		BEGIN
-			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
-			ROLLBACK TRAN
-		END
-		DECLARE @isBlocked BIT
-		SELECT @isBlocked = CASE WHEN isBlocked = 1 THEN 0 ELSE 1 END FROM DENTIST WHERE id = @dentistId
-		UPDATE DENTIST SET isBlocked = @isBlocked WHERE id = @dentistId
-		IF @isBlocked = 1
-		BEGIN
-		PRINT N'Khóa tài khoản thành công'
-		END
-		ELSE
-		BEGIN
-			PRINT N'Mở khóa tài khoản thành công'
-		END
-		COMMIT TRAN
-	END TRY
-	BEGIN CATCH
-		IF @@trancount > 0 ROLLBACK TRAN
-        ;THROW
-	END CATCH
-END
-
---DIRTY READ(Admin thay đổi thông tin nhân viên và fails trong lúc commit), PHANTOM READ(Admin xóa nhân viên sau khi check tài khoản và mật khẩu), UNREPEATABLE READ(Admin thay đổi thông tin nhân viên sau khi check tài khoản mật khẩu và block)
--- staff login
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_staffLogin')
-BEGIN
-	DROP PROCEDURE sp_staffLogin
-END
-GO
-CREATE PROC sp_staffLogin
-    @phone VARCHAR(15),
-    @password VARCHAR(50)
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM STAFF WHERE phoneNumber = @phone and password = @password )
-		BEGIN
-			RAISERROR (N'Lỗi: Số điện thoại hoặc mật khẩu không đúng', 16, 1)
-			ROLLBACK TRAN
-		END
-		SELECT * FROM STAFF WHERE phoneNumber = @phone and password = @password
-		 PRINT N'Đăng nhập thành công'
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -661,72 +521,6 @@ BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
 			SELECT * FROM STAFF
-		COMMIT TRAN
-	END TRY
-	BEGIN CATCH
-		IF @@trancount > 0 ROLLBACK TRAN
-        ;THROW
-	END CATCH
-END
-
---block staff
-GO
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockStaff')
-BEGIN
-	DROP PROCEDURE sp_blockStaff
-END
-GO
-CREATE PROC sp_blockStaff
-	@staffId VARCHAR(15)
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
-		BEGIN
-			RAISERROR(N'Lỗi: Mã nhân viên không tồn tại', 16, 1)
-			ROLLBACK TRAN
-		END
-		DECLARE @isBlocked BIT
-		SELECT @isBlocked = CASE WHEN isBlocked = 1 THEN 0 ELSE 1 END FROM STAFF WHERE id = @staffId
-		UPDATE STAFF SET isBlocked = @isBlocked WHERE id = @staffId
-		IF @isBlocked = 1
-		BEGIN
-		PRINT N'Khóa tài khoản thành công'
-		END
-		ELSE
-		BEGIN
-			PRINT N'Mở khóa tài khoản thành công'
-		END
-		COMMIT TRAN
-	END TRY
-	BEGIN CATCH
-		IF @@trancount > 0 ROLLBACK TRAN
-        ;THROW
-	END CATCH
-END
-
--- admin login
-GO
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_adminLogin')
-BEGIN
-	DROP PROCEDURE sp_adminLogin
-END
-GO
-CREATE PROC sp_adminLogin
-    @phone VARCHAR(15),
-    @password VARCHAR(50)
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM ADMIN WHERE phoneNumber = @phone and password = @password )
-		BEGIN
-			RAISERROR (N'Lỗi: Số điện thoại hoặc mật khẩu không đúng', 16, 1)
-			ROLLBACK TRAN
-		END
-		SELECT * FROM ADMIN WHERE phoneNumber = @phone and password = @password
-		 PRINT N'Đăng nhập thành công'
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1030,19 +824,19 @@ BEGIN
 END
 GO
 CREATE PROC sp_createPatientRecord
-	@CUSTOMER_ID INT, 
-	@DENTIST_ID INT,
-	@DATE_TIME DATETIME,
-	@DIAGNOSTIC NVARCHAR(100),
-	@SYMPTOM NVARCHAR(50),
-	@ADVICE NVARCHAR(100)
+	@customerId INT, 
+	@dentistId INT,
+	@date_time DATETIME,
+	@diagnostic NVARCHAR(100),
+	@symptom NVARCHAR(50),
+	@advice NVARCHAR(100)
 AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
 			IF NOT EXISTS (
 				SELECT 1
-				FROM CUSTOMER C WHERE C.id = @CUSTOMER_ID	
+				FROM CUSTOMER C WHERE C.id = @customerId	
 			)
 			BEGIN
 				RAISERROR (N'LỖI: KHÔNG TỒN TẠI ID KHÁCH HÀNG', 16, 1)
@@ -1050,13 +844,13 @@ BEGIN
 			END
 			IF NOT EXISTS (
 				SELECT 1
-				FROM DENTIST D WHERE D.id = @DENTIST_ID	
+				FROM DENTIST D WHERE D.id = @dentistId	
 			)
 			BEGIN
 				RAISERROR (N'LỖI: KHÔNG TỒN TẠI ID BÁC SĨ', 16, 1)
 				ROLLBACK TRAN
 			END
-			INSERT INTO PATIENT_RECORD(symptom, advice, diagnostic, date_time, dentistId, customerId) VALUES (@SYMPTOM, @ADVICE, @DIAGNOSTIC, @DATE_TIME, @DENTIST_ID, @CUSTOMER_ID)
+			INSERT INTO PATIENT_RECORD(symptom, advice, diagnostic, date_time, dentistId, customerId) VALUES (@symptom, @advice, @diagnostic, @date_time, @dentistId, @customerId)
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1746,11 +1540,11 @@ BEGIN
 END
 GO
 CREATE PROC sp_addInvoice
-	@RECORD_ID INT, 
-	@DATE_TIME DATETIME,
-	@STATUS NVARCHAR(30),
-	@TOTAL FLOAT,
-	@STAFFID INT
+	@recordId INT, 
+	@date_time DATETIME,
+	@status NVARCHAR(30),
+	@total FLOAT,
+	@staffId INT
 AS
 BEGIN
 	BEGIN TRY
@@ -1758,7 +1552,7 @@ BEGIN
 			--CHECK RECORD ID
 			IF NOT EXISTS (
 				SELECT 1
-				FROM PATIENT_RECORD PR WHERE PR.id = @RECORD_ID	
+				FROM PATIENT_RECORD PR WHERE PR.id = @recordId	
 			)
 			BEGIN
 				RAISERROR(N'LỖI: KHÔNG TỒN TẠI HỒ SƠ BỆNH NHÂN', 16, 1)
@@ -1766,13 +1560,14 @@ BEGIN
 			END
 			IF EXISTS (
 				SELECT 1
-				FROM INVOICE I WHERE I.recordId = @RECORD_ID	
+				FROM INVOICE I WHERE I.recordId = @recordId	
 			)
 			BEGIN
 				RAISERROR(N'LỖI: HỒ SƠ BỆNH NHÂN ĐÃ CÓ HÓA ĐƠN', 16, 1)
 				ROLLBACK TRAN
 			END
-			INSERT INTO INVOICE(recordId, date_time, status, total, staffId) VALUES (@RECORD_ID, @DATE_TIME, @STATUS, @TOTAL, @STAFFID)
+			INSERT INTO INVOICE(recordId, date_time, status, total, staffId) VALUES (@recordId, @date_time, @status, @total, @staffId)
+			SELECT * FROM INVOICE WHERE recordId = @recordId
 			COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1880,6 +1675,32 @@ BEGIN
 	END CATCH
 END
 
+-- view all invoice 
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewStaffInvoice')
+BEGIN
+	DROP PROCEDURE sp_viewStaffInvoice
+END
+GO
+CREATE PROC sp_viewStaffInvoice
+	@staffId
+AS
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		IF NOT EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
+		BEGIN
+			RAISERROR(N'Lỗi: mã nhân viên không tồn tại', 16, 1)
+			ROLLBACK TRAN
+		END
+		SELECT * FROM INVOICE WHERE staffId = @staffId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
 -- add dentist schedule 
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addDentistSchedule')
 BEGIN
@@ -1906,47 +1727,6 @@ BEGIN
 		DECLARE @endTime DATETIME
 		SET @endTime = DATEADD(HOUR, 1, @startTime)
 		INSERT INTO SCHEDULE VALUES(@dentistId, @startTime, @endTime, 0)
-		COMMIT TRAN
-	END TRY
-	BEGIN CATCH
-		IF @@trancount > 0 ROLLBACK TRAN
-        ;THROW
-	END CATCH
-END
-
--- update schedule
-IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updateDentistSchedule')
-BEGIN
-	DROP PROCEDURE sp_updateDentistSchedule
-END
-GO
-CREATE PROC sp_updateDentistSchedule
-	@dentistId INT,
-	@startTime1 DATETIME,
-	@startTime2 DATETIME
-AS
-BEGIN
-	BEGIN TRY
-		BEGIN TRAN
-		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
-		BEGIN
-			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
-		END
-		IF NOT EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime1)
-		BEGIN
-			RAISERROR(N'Lỗi: Lịch rảnh muốn chỉnh sửa không tồn tại', 16, 1)
-		END
-		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime2)
-		BEGIN
-			RAISERROR(N'Lỗi: Lịch rảnh đã tồn tại', 16, 1)
-		END
-		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime1 AND isBooked = 1)
-		BEGIN
-			RAISERROR(N'Lỗi: Không thể chỉnh sửa lịch đã được đặt', 16, 1)
-		END
-		DECLARE @endTime DATETIME
-		SET @endTime = DATEADD(HOUR, 1, @startTime2)
-		UPDATE SCHEDULE  SET  startTime = @startTime2, endTime = @endTime WHERE dentistId = @dentistId AND startTime = @startTime1
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -2046,7 +1826,7 @@ AS
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		SELECT * FROM SCHEDULE WHERE isBooked = 0
+		SELECT * FROM SCHEDULE WHERE isBooked = 0 AND datediff(second, startTime, GETDATE())
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH

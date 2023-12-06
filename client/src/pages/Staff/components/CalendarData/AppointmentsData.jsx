@@ -6,35 +6,27 @@ export const AppointmentsData = [{
   id: 0,
   title: 'Watercolor Landscape',
   members: [1],
-  type: 1,
   startDate: new Date(2017, 4, 28, 9, 30),
   endDate: new Date(2017, 4, 28, 12, 0),
 }, {
   id: 1,
   title: 'Oil Painting for Beginners',
   members: [2],
-  type: 2,
   startDate: new Date(2017, 4, 28, 12, 30),
   endDate: new Date(2017, 4, 28, 14, 30),
 }, {
   id: 2,
   title: 'Testing',
   members: [3],
-  type: 1,
   startDate: new Date(2017, 4, 29, 12, 30),
   endDate: new Date(2017, 4, 29, 14, 30),
 }, {
   id: 3,
   title: 'Final exams',
   members: [4],
-  type: 2,
   startDate: new Date(2017, 4, 29, 9, 30),
   endDate: new Date(2017, 4, 29, 12, 0),
 }];
 
-export const type = [
-  { text: 'Schedule', id: 1 },
-  { text: 'Appointment', id: 2 },
-];
 
 

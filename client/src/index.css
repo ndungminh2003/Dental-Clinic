@@ -323,6 +323,13 @@ button.payNow {
   color: var(--removeColor);
 }
 
+button.MuiButtonBase-root.MuiButton-root.MuiButton-Primary.MuiButton-sizeMedium.MuiButton-SizeMedium.MuiButton-root.MuiButton-Primary.MuiButton-sizeMedium.MuiButton-SizeMedium.tss-1fbujeu-MUIDataTableHeadCell-toolButton.css-1w1rijm-MuiButtonBase-root-MuiButton-root {
+  /* Your styles here */
+  width: 100%;
+  text-transform: uppercase;
+  /* Add any other styles you need */
+}
+
 
 @tailwind base;
 @tailwind components;

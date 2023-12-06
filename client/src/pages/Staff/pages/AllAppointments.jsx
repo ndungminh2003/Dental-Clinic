@@ -61,7 +61,7 @@ const AllAppointments = () => {
       name: "Adress",
       options: { display: false },
     },
-    "Number",
+    "Phone Number",
     {
       name: "Gender",
       options: { display: false },
@@ -81,7 +81,6 @@ const AllAppointments = () => {
         MUIDataTableBodyCell: {
           styleOverrides: {
             root: {
-              paddingRight: "25px",
               textAlign: "center",
               overflow: "Hidden",
               textOverflow: "ellipsis",
@@ -89,6 +88,14 @@ const AllAppointments = () => {
             },
           },
         },
+        MUIDataTableHeadCell: {
+          root: {
+            textTransform: "lowercase",
+            '&:first-child': {
+              textTransform: 'capitalize', // Optional: capitalize the first letter
+            },
+          },
+        }, 
       },
     });
   return (

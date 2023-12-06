@@ -9,7 +9,11 @@ router.post(
   appointmentCtrl.makeAppointment
 );
 router.get("/get-one-appointment", appointmentCtrl.getOneAppointment);
-router.get("/get-all-appointment", appointmentCtrl.getAllAppointment);
+router.get(
+  "/get-all-appointment",
+  authM.authMiddleware,
+  appointmentCtrl.getAllAppointment
+);
 router.get("/get-customer-appointment", appointmentCtrl.getCustomerAppointment);
 router.get("/get-dentist-appointment", appointmentCtrl.getDentistAppointment);
 router.get(

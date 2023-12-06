@@ -4,8 +4,9 @@ const expressAsyncHandler = require("express-async-handler");
 
 const authMiddleware = expressAsyncHandler(async (req, res, next) => {
   let accessToken;
-  if (req?.cookies?.accessToken) {
-    accessToken = req.cookies.accessToken;
+  console.log("headers:", req?.headers?.authorization);
+  if (req?.headers?.authorization?.startsWith("Bearer")) {
+    accessToken = req.headers.authorization.split(" ")[1];
     try {
       if (accessToken) {
         const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);

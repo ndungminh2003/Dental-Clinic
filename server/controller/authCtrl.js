@@ -13,7 +13,7 @@ const signUp = async (req, res) => {
       .input("birthday", input.birthday)
       .input("address", input.address)
       .execute("sp_signUp");
-    res.status(200).json(db.recordset);
+    res.status(200).json(db.recordset[0]);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -42,7 +42,8 @@ const login = async (req, res) => {
       httpOnly: true,
       maxAge: 72 * 60 * 60 * 1000,
     });
-    res.status(200).json(db.recordset);
+    db.recordset[0].accessToken = accessToken;
+    res.status(200).json(db.recordset[0]);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);

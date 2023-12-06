@@ -1,6 +1,6 @@
-import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import { ViewState, EditingState } from '@devexpress/dx-react-scheduler';
+import * as React from "react";
+import Paper from "@mui/material/Paper";
+import { ViewState, EditingState } from "@devexpress/dx-react-scheduler";
 import {
   Scheduler,
   Appointments,
@@ -15,14 +15,14 @@ import {
   DateNavigator,
   TodayButton,
   MonthView,
-} from '@devexpress/dx-react-scheduler-material-ui';
-import {appointments} from '../components/CalendarData/data'
+} from "@devexpress/dx-react-scheduler-material-ui";
+import { appointments } from "../components/CalendarData/data";
 export default class Demo extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       data: appointments,
-      currentDate: '2018-06-27',
+      currentDate: "2018-06-27",
 
       addedAppointment: {},
       appointmentChanges: {},
@@ -36,8 +36,15 @@ export default class Demo extends React.PureComponent {
   }
 
   changeAddedAppointment(addedAppointment) {
-    this.setState({ addedAppointment });
+    // Ensure the default title is set to "appointment" for new appointments
+    const defaultTitle = addedAppointment.title || 'Schedule';
+    const updatedAppointment = {
+      ...addedAppointment,
+      title: defaultTitle,
+    };
+    this.setState({ addedAppointment: updatedAppointment });
   }
+  
 
   changeAppointmentChanges(appointmentChanges) {
     this.setState({ appointmentChanges });
@@ -51,15 +58,19 @@ export default class Demo extends React.PureComponent {
     this.setState((state) => {
       let { data } = state;
       if (added) {
-        const startingAddedId = data.length > 0 ? data[data.length - 1].id + 1 : 0;
+        const startingAddedId =
+          data.length > 0 ? data[data.length - 1].id + 1 : 0;
         data = [...data, { id: startingAddedId, ...added }];
       }
       if (changed) {
-        data = data.map(appointment => (
-          changed[appointment.id] ? { ...appointment, ...changed[appointment.id] } : appointment));
+        data = data.map((appointment) =>
+          changed[appointment.id]
+            ? { ...appointment, ...changed[appointment.id] }
+            : appointment
+        );
       }
       if (deleted !== undefined) {
-        data = data.filter(appointment => appointment.id !== deleted);
+        data = data.filter((appointment) => appointment.id !== deleted);
       }
       return { data };
     });
@@ -67,27 +78,28 @@ export default class Demo extends React.PureComponent {
 
   render() {
     const {
-      currentDate, data, addedAppointment, appointmentChanges, editingAppointment,
+      currentDate,
+      data,
+      addedAppointment,
+      appointmentChanges,
+      editingAppointment,
     } = this.state;
 
     return (
-      <Paper>
-        <Scheduler
-          data={data}
-          height={490}
-        >
+      <div
+        style={{
+          height: "calc(100vh - 80px)",
+          width: "80vw",
+          overflowX: "auto",
+        }}
+      >
+        <Scheduler data={data} height="auto">
           <ViewState
             defaultCurrentDate={currentDate}
             defaultCurrentViewName="Week"
           />
-          <DayView
-            startDayHour={9}
-            endDayHour={18}
-          />
-          <WeekView
-            startDayHour={10}
-            endDayHour={19}
-          />
+          <DayView startDayHour={9} endDayHour={18} />
+          <WeekView startDayHour={10} endDayHour={19} />
           <MonthView />
           <Toolbar />
           <ViewSwitcher />
@@ -105,13 +117,18 @@ export default class Demo extends React.PureComponent {
           <EditRecurrenceMenu />
           <ConfirmationDialog />
           <Appointments />
-          <AppointmentTooltip
-            showOpenButton
-            showDeleteButton
-          />
-          <AppointmentForm />
+          <AppointmentTooltip showOpenButton showDeleteButton />
+          <AppointmentForm textEditorComponent={TextEditor} />
         </Scheduler>
-      </Paper>
+      </div>
     );
   }
 }
+const TextEditor = (props) => {
+  // eslint-disable-next-line react/destructuring-assignment
+  if (props.type === 'titleTextEditor') {
+    return (
+      <AppointmentForm.TextEditor { ...props} value="Schedule" />
+    );
+  } return <AppointmentForm.TextEditor {...props} />;
+};

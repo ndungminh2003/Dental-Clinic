@@ -30,6 +30,7 @@ const makeAppointment = async (req, res) => {
 const getAllAppointment = async (req, res) => {
   try {
     const role = getRole(req);
+    console.log(req.user);
     const db = await (await getDb(role)).execute("sp_viewAllAppointment");
     res.status(200).json(db.recordset);
   } catch (error) {

@@ -102,7 +102,7 @@ export default function AllUsers () {
         MUIDataTableBodyCell: {
           styleOverrides: {
             root: {
-              paddingRight: "30px",
+              marginRight: "7px",
               textAlign: "center",
               overflow: "Hidden",
               textOverflow: "ellipsis",

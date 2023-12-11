@@ -3,66 +3,27 @@ import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import SeeMedication from "../components/SeeMedication";
 import ChangeMedication from "../components/ChangeMedication";
-const data = [
-  {
-    index: 0,
-    values: [
-      "TradeCode 99",
-      "Amoxicillin",
-      "It is a commonly used medicine that can help treat pain and reduce a high temperature (fever)",
-      "Used to treat bacterial infections such as strep throat, diabetic infections, pneumonia, etc.",
-      "05-10-2023",
-      "Cap", 
-      "10.000",
-      "1234"
-    ],
-  },
-  {
-    index: 1,
-    values: [
-      "TradeCode 97",
-      "Amoxicillin",
-      "It is a commonly used medicine that can help treat pain and reduce a high temperature (fever)",
-      "Used to treat bacterial infections such as strep throat, diabetic infections, pneumonia, etc.",
-      "05-10-2023",
-      "Cap", 
-      "10.000",
-      "1234"
-    ],
-  },
-  {
-    index: 2,
-    values: [
-      "TradeCode 96",
-      "Amoxicillin",
-      "It is a commonly used medicine that can help treat pain and reduce a high temperature (fever)",
-      "Used to treat bacterial infections such as strep throat, diabetic infections, pneumonia, etc.",
-      "05-10-2023",
-      "Cap", 
-      "10.000",
-      "1234"
-    ],
-  },
-  {
-    index: 3,
-    values: [
-      "TradeCode 5",
-      "Amoxicillin",
-      "It is a commonly used medicine that can help treat pain and reduce a high temperature (fever)",
-      "Used to treat bacterial infections such as strep throat, diabetic infections, pneumonia, etc.",
-      "05-10-2023",
-      "Cap", 
-      "10.000",
-      "1234"
-    ],
-  },
-];
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllMedicine } from "../../../features/medicine/medicineSlice";
 
-export default function AllMedications () {
+export default function AllMedications() {
+
+  const dispatch = useDispatch();
+  const { medicine, loading, success, error } = useSelector(
+    (state) => state.medicine
+  );
+
+  useEffect(() => {
+    dispatch(getAllMedicine());
+  }, []);
+
+
   const [openSee, setOpenSee] = React.useState(false);
   const [openChange, setOpenChange] = React.useState(false);
 
-  const [values, setValues] = React.useState([""]);
+  const [values, setValues] = React.useState({});
 
   const handleCloseSee = () => {
     setOpenSee(false);
@@ -70,39 +31,64 @@ export default function AllMedications () {
   const handleCloseChange = () => {
     setOpenChange(false);
   };
+
   const columns = [
-    "Code medicine",
-    "Medicine name",
     {
-      name: "Description",
-      options: {display: false}
+      name: "id",
+      label: "ID",
+      options: {
+        filter: true,
+        sort: true,
+      },
     },
     {
-      name: "Indication",
-      options: {display: false}
+      name: "name",
+      label: "Name",
+      options: {
+        filter: true,
+        sort: true,
+      },
     },
-    "Expiration date",
+
     {
-      name: "Unit",
-      options: {display: false}
+      name: "expirationDate",
+      label: "Expiration Date",
+      options: {
+        filter: true,
+        sort: true,
+      },
     },
-    "Price",
-    "Quantity",
+    {
+      name: "quantity",
+      label: "Quantity",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "price",
+      label: "Price",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
     {
       name: "Action",
       options: {
         customBodyRenderLite: (dataIndex, rowIndex) => {
           return (
             <div>
-              <button 
-                className ="mr-5"
-                onClick={() => handleActionClickSee({ dataIndex })}>
+              <button
+                className="mr-5"
+                onClick={() => handleActionClickSee({ dataIndex })}
+              >
                 See
               </button>
               <button onClick={() => handleActionClickChange({ dataIndex })}>
                 Change
               </button>
-              
             </div>
           );
         },
@@ -111,17 +97,13 @@ export default function AllMedications () {
   ];
 
   const handleActionClickSee = (row) => {
-    // Do something when the button in the 'Action' column is clicked
     setOpenSee(true);
-    console.log("1:", data[row.dataIndex].values);
-    setValues(data[row.dataIndex].values);
+    setValues(medicine[row.dataIndex]);
   };
 
   const handleActionClickChange = (row) => {
-    // Do something when the button in the 'Action' column is clicked
     setOpenChange(true);
-    console.log("1:", data[row.dataIndex].values);
-    setValues(data[row.dataIndex].values);
+    setValues(medicine[row.dataIndex]);
   };
 
   const options = {
@@ -152,17 +134,13 @@ export default function AllMedications () {
         <ThemeProvider theme={getMuiTheme()}>
           <MUIDataTable
             title={"All medication"}
-            data={data.map((entry) => entry.values)}
+            data={medicine}
             columns={columns}
             options={options}
           />
         </ThemeProvider>
       </div>
-      <SeeMedication
-        open={openSee}
-        onClose={handleCloseSee}
-        values={values}
-      />
+      <SeeMedication open={openSee} onClose={handleCloseSee} values={values} />
       <ChangeMedication
         open={openChange}
         onClose={handleCloseChange}
@@ -170,6 +148,4 @@ export default function AllMedications () {
       />
     </div>
   );
-};
-
- 
+}

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getConfig } from "../../utils/getConfig";
 import { API_URL } from "../../app/config";
+
 const getAllAppointment = async (user) => {
   const config = getConfig();
   const response = await axios.get(

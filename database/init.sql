@@ -455,6 +455,7 @@ BEGIN
     GRANT SELECT ON STAFF TO staffRole
     GRANT SELECT ON DENTIST TO dentistRole
     GRANT SELECT ON ADMIN TO adminRole  
+	GRANT EXEC ON dbo.sp_viewAllMedicine TO guestRole
   END TRY
   BEGIN CATCH
     ;THROW
@@ -462,7 +463,6 @@ BEGIN
 END
 
 EXEC sp_createDatabaseUser
-
  
 SELECT * FROM CUSTOMER
 
@@ -475,3 +475,8 @@ SELECT * FROM SCHEDULE
 SELECT * FROM APPOINTMENT
 
 INSERT INTO SCHEDULE VALUES(1, '2023-12-15 09:00:00.000', '2023-12-15 10:00:00.000', 0)
+INSERT INTO MEDICINE VALUES ('Thuoc chong ngu', N'Viên', 'Ngu lau nam', '2024-12-31 10:30:00.000', 'Ngu bat chap', 200, 200)
+INSERT INTO MEDICINE VALUES ('Thuoc chong fucking ngu', N'Viên', 'Ngu lau nam', '2024-12-31 10:30:00.000', 'Ngu bat chap', 200, 200)
+INSERT INTO MEDICINE VALUES ('Thuoc chong fucking ngu abc111', N'Viên', 'Ngu lau nam', '2024-12-31 10:30:00.000', 'Ngu bat chap', 200, 200)
+		
+select * from medicine

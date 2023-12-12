@@ -1,4 +1,5 @@
-import * as React from "react";
+import React from "react";
+import { useState } from "react";
 import {
   ViewState,
   GroupingState,
@@ -50,6 +51,18 @@ const service = [
 
 function SimpleDialog(props) {
   const { onClose, open,services } = props;
+  let startTime;
+  let date;
+  const [data, setData] = useState({
+    phone: '',
+    name: '',
+    gender: '',
+    birthday: '',
+    address: '',
+    dentistId: '',
+    staffId: '',
+    startTime: '',
+  });
   const handleClose = () => {
     onClose();
   };
@@ -59,6 +72,13 @@ function SimpleDialog(props) {
   };
   const handleListItemClick = (value) => {
     onClose(value);
+  };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setData({
+      ...data,
+      [name]: value,
+    });
   };
   const handleInvoiceClick = () => {
     setOpenInvoice(true);
@@ -75,6 +95,8 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
+            value={data.name}
+            onChange={handleInputChange}
             className={` w-3/4  px-3 py-2 rounded-md  border border-gray-300	`}
           ></input>
         </div>
@@ -85,6 +107,8 @@ function SimpleDialog(props) {
             </div>
             <input
               type="text"
+              value={data.phone}
+              onChange={handleInputChange}
               className={` w-3/4 ml-[50px] px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
@@ -94,6 +118,8 @@ function SimpleDialog(props) {
             </div>
             <input
               type="text"
+              value={data.gender}
+              onChange={handleInputChange}
               className={` w-1/2  px-3 py-2 rounded-md  border border-gray-300	`}
             ></input>
           </div>
@@ -104,6 +130,8 @@ function SimpleDialog(props) {
           </div>
           <input
             type="date"
+            value={data.birthday}
+            onChange={handleInputChange}
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>
@@ -113,6 +141,8 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
+            value={data.address}
+            onChange={handleInputChange}
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>

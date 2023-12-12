@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 
 export default function ChangeMedication(props) {
-
   const dispatch = useDispatch();
   const { onClose, open, values } = props;
   const handleClose = () => {
@@ -33,7 +32,7 @@ export default function ChangeMedication(props) {
         unit: values.unit,
         description: values.description,
         indication: values.indication,
-        expirationDate: values.expirationDate
+        expirationDate: values.expirationDate,
       };
 
       console.log(updateData.medicineId);
@@ -150,6 +149,14 @@ export default function ChangeMedication(props) {
               onBlur={formik.handleBlur}
               value={formik.values.expirationDate}
               placeholder={values.expirationDate}
+              className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
+            ></input>
+          </div>
+          <div className="flex items-center grow mt-3">
+            <div className="w-1/4">
+              <label className="font-mono rounded-md text-center	">Price</label>
+            </div>
+            <input
               className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>

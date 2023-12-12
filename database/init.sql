@@ -456,6 +456,8 @@ BEGIN
     GRANT SELECT ON DENTIST TO dentistRole
     GRANT SELECT ON ADMIN TO adminRole  
 	GRANT EXEC ON dbo.sp_viewAllMedicine TO guestRole
+	GRANT EXEC ON dbo.sp_updateMedicine TO guestRole
+	GRANT EXEC ON dbo.sp_createMedicine TO guestRole
   END TRY
   BEGIN CATCH
     ;THROW

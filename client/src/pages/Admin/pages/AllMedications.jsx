@@ -110,6 +110,9 @@ export default function AllMedications() {
     filterType: "checkbox",
     download: false,
     print: false,
+    onRowsDelete: (rowsDeleted) => {
+      console.log(medicine[rowsDeleted.data[0].dataIndex].id);
+    },
   };
 
   const getMuiTheme = () =>

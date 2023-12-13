@@ -184,6 +184,8 @@ BEGIN
 		ROLLBACK TRAN
 	END
 	UPDATE a SET a.recordId = @recordId, a.status = N'Hoàn thành' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án'
+	PRINT @recordId
+	PRINT 'Hi'
 	INSERT INTO SERVICE_USE (recordId, serviceId) VALUES(@recordId, 1)
 END
 

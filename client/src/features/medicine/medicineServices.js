@@ -1,39 +1,100 @@
-import axios from "axios";
-import { getConfig } from "../../utils/getConfig";
-import { API_URL } from "../../app/config";
+import Axios from "../../app/axiosConfig";
 
-const getAllMedicine = async (user) => {
-  const config = getConfig();
-  const response = await axios.get(
-    `${API_URL}medicine/get-all-medicine`,
-    config
-  );
-  return response.data;
+const getAllMedicine = async () => {
+  try {
+    const response = await Axios.get("medicine/get-all-medicine");
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
 };
 
-const deleteMedicine = async (user) => {
-  const config = getConfig();
-  const response = await axios.delete(
-    `${API_URL}medicine/delete-medicine`,
-    config
-  );
-  return response.data;
+const getOneMedicine = async (medicineId) => {
+  try {
+    const response = await Axios.get("medicine/get-one-medicine", {
+      medicineId,
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
 };
 
-const updateMedicine = async (user, data) => {
-  const config = getConfig();
-  console.log(data);
-  const response = await axios.put(
-    `${API_URL}medicine/update-medicine`, data,
-    config
-  );
-  return response.data;
+const createMedicine = async (medicine) => {
+  try {
+    const response = await Axios.post("medicine/create-medicine", medicine);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
 };
 
-const appointmentService = {
+const updateMedicine = async (medicine) => {
+  try {
+    const response = await Axios.put("medicine/update-medicine", medicine);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
+};
+
+const deleteMedicine = async (medicineId) => {
+  try {
+    const response = await Axios.delete("medicine/delete-medicine", {
+      medicineId,
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
+};
+
+const customerService = {
+  createMedicine,
   getAllMedicine,
+  getOneMedicine,
   deleteMedicine,
-  updateMedicine
+  updateMedicine,
 };
 
-export default appointmentService;
+export default customerService;

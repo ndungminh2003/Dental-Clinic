@@ -784,7 +784,11 @@ SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-			SELECT * FROM APPOINTMENT
+			SELECT A.startTime,A.endTime,A.recordId,A.status,D.name AS dentistName, C.name AS customerName, S.name AS staffName
+			FROM APPOINTMENT A
+			JOIN DENTIST D ON A.dentistId = D.id
+			JOIN CUSTOMER C ON A.customerId = C.id
+			LEFT JOIN STAFF S ON A.staffId = S.id
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1018,7 +1022,10 @@ SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-			SELECT * FROM PATIENT_RECORD
+			SELECT P_R.id,P_R.advice, P_R.date_time,P_R.diagnostic,P_R.symptom,D.name AS dentistName, C.name AS customerName
+			FROM PATIENT_RECORD P_R
+			JOIN DENTIST D ON P_R.dentistId = D.id
+			JOIN CUSTOMER C ON P_R.customerId = C.id
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH

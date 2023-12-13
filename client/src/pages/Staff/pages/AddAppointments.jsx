@@ -48,7 +48,25 @@ const service = [
     description: "dental filling service",
   },
 ];
+function getDate() {
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
+  const date = today.getDate();
+  return `${month}/${date}/${year}`;
+}
+function getDateforinput() {
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
+  const date = today.getDate();
 
+  // Pad month and date with leading zeros if needed
+  const formattedMonth = month < 10 ? `0${month}` : month;
+  const formattedDate = date < 10 ? `0${date}` : date;
+
+  return `${year}-${formattedMonth}-${formattedDate}`;
+}
 function SimpleDialog(props) {
   const { onClose, open,services } = props;
   let startTime;
@@ -163,6 +181,7 @@ function SimpleDialog(props) {
               <label className="font-mono rounded-md text-center	">Day</label>
             </div>
             <input
+              defaultValue={getDateforinput()}
               type="date"
               className={` w-3/4 ml-[58px] px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
@@ -227,7 +246,7 @@ export default class Demo extends React.PureComponent {
     this.state = {
       open: false,
       data: AppointmentsData,
-      currentDate: "2017-05-28",
+      currentDate: getDate(),
       resources: [
         {
           fieldName: "members",

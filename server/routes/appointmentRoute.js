@@ -11,7 +11,7 @@ router.post(
 router.get("/get-one-appointment", appointmentCtrl.getOneAppointment);
 router.get(
   "/get-all-appointment",
-  authM.authMiddleware,
+  // authM.authMiddleware,
   appointmentCtrl.getAllAppointment
 );
 router.get(

@@ -18,7 +18,9 @@ export default function AllMedications() {
   useEffect(() => {
     dispatch(getAllMedicine());
   }, []);
-
+  useEffect(() => {
+    console.log(medicine);
+  }, [medicine]);
 
   const [openSee, setOpenSee] = React.useState(false);
   const [openChange, setOpenChange] = React.useState(false);

@@ -4,7 +4,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import PropTypes from "prop-types";
 import Invoice from "../components/Invoice";
-const emails = ["username@gmail.com", "user02@gmail.com"];
+import { useDispatch, useSelector } from "react-redux";
+import { getAllPatientRecord } from "../../../features/patientRecord/patientRecordSlice";
+import { useEffect } from "react";
 
 const data = [
   {
@@ -94,9 +96,9 @@ const data = [
 ];
 
 function SimpleDialog(props) {
-  const { onClose, selectedValue, open, values ,serviceName,medicine,status,services } = props;
+  const { onClose, open, values ,serviceName,medicine,status,services } = props;
   const handleClose = () => {
-    onClose(selectedValue);
+    onClose();
   };
   const [openInvoice, setOpenInvoice] = React.useState(false);
   const handleCloseInvoice = () => {
@@ -228,7 +230,6 @@ function SimpleDialog(props) {
 SimpleDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  selectedValue: PropTypes.string.isRequired,
   values: PropTypes.array.isRequired,
   serviceName: PropTypes.array.isRequired,
   medicine: PropTypes.shape({
@@ -243,8 +244,17 @@ SimpleDialog.propTypes = {
   status: PropTypes.string.isRequired,
 };
 
-const AllAppointments = () => {
-
+export default function AllAppointments () {
+  const dispatch = useDispatch();
+  const { patientRecord, loading, success, error } = useSelector(
+    (state) => state.patientRecord
+  );
+  useEffect(() => {
+    dispatch(getAllPatientRecord());
+  }, []);
+  useEffect(() => {
+    console.log(patientRecord);
+  }, [patientRecord]); 
   const [serviceName, setServiceName] = React.useState();
   const [medicine, setMedicine] = React.useState();
   const [services, setServices] = React.useState();
@@ -253,23 +263,66 @@ const AllAppointments = () => {
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState([""]);
 
-  const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const handleClose = (value) => {
     setOpen(false);
-    setSelectedValue(value);
   };
   const columns = [
-    "Patient ",
-    "Dentist",
-    "Examination day",
-    "Symptom",
     {
-      name: "Advice ",
-      options: { display: false },
+      name: "id",
+      label: "ID",
+      options: {
+        filter: true,
+        sort: true,
+      },
     },
     {
-      name: "Diagnostic",
-      options: { display: false },
+      name: "customerName",
+      label: "Customer",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "dentistName",
+      label: "Dentist",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "date_time",
+      label: "Time",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "symptom",
+      label: "Symtom",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "diagnostic",
+      label: "Diagnostic",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "advice",
+      label: "Advice",
+      options: {
+        filter: true,
+        sort: true,
+        display: false ,
+      },
     },
     {
       name: "Action",
@@ -293,7 +346,7 @@ const AllAppointments = () => {
     setServiceName((data[row.dataIndex].services.name));
     setMedicine(data[row.dataIndex].medicine);
     setServices(data[row.dataIndex].services);
-    setStatus(data[row.dataIndex].status)
+    setStatus(data[row.dataIndex].status);
   };
 
   const options = {
@@ -323,14 +376,13 @@ const AllAppointments = () => {
         <ThemeProvider theme={getMuiTheme()}>
           <MUIDataTable
             title={"Patient record"}
-            data={data.map((entry) => entry.values)}
+            data={patientRecord}
             columns={columns}
             options={options}
           />
         </ThemeProvider>
       </div>
       <SimpleDialog
-        selectedValue={selectedValue}
         open={open}
         onClose={handleClose}
         values={values}
@@ -343,4 +395,3 @@ const AllAppointments = () => {
   );
 };
 
-export default AllAppointments;

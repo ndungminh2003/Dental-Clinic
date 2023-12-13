@@ -389,6 +389,8 @@ BEGIN
 	GRANT EXEC ON dbo.sp_viewAllMedicine TO guestRole
 	GRANT EXEC ON dbo.sp_updateMedicine TO guestRole
 	GRANT EXEC ON dbo.sp_createMedicine TO guestRole
+	GRANT EXEC ON dbo.sp_viewAllPatientRecord TO guestRole
+	GRANT EXEC ON dbo.sp_sp_viewAllAppointment TO guestRole
   END TRY
   BEGIN CATCH
     ;THROW

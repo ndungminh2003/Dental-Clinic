@@ -1,11 +1,8 @@
 import Axios from "../../app/axiosConfig";
 
-const login = async (user) => {
+const getAllMedicine = async () => {
   try {
-    const response = await Axios.post("auth/login", user);
-    if (response.data) {
-      localStorage.setItem("user", JSON.stringify(response.data));
-    }
+    const response = await Axios.get("medicine/get-all-medicine");
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -20,10 +17,11 @@ const login = async (user) => {
   }
 };
 
-const signUp = async (user) => {
+const getOneMedicine = async (medicineId) => {
   try {
-    const response = await Axios.post("auth/sign-up", user);
-
+    const response = await Axios.get("medicine/get-one-medicine", {
+      medicineId,
+    });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -38,10 +36,9 @@ const signUp = async (user) => {
   }
 };
 
-const logout = async () => {
+const createMedicine = async (medicine) => {
   try {
-    const response = await Axios.post("auth/logout");
-    localStorage.removeItem("user");
+    const response = await Axios.post("medicine/create-medicine", medicine);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -56,9 +53,9 @@ const logout = async () => {
   }
 };
 
-const blockUser = async (user) => {
+const updateMedicine = async (medicine) => {
   try {
-    const response = await Axios.put("auth/block-user", user);
+    const response = await Axios.put("medicine/update-medicine", medicine);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -73,11 +70,31 @@ const blockUser = async (user) => {
   }
 };
 
-const authService = {
-  login,
-  signUp,
-  logout,
-  blockUser,
+const deleteMedicine = async (medicineId) => {
+  try {
+    const response = await Axios.delete("medicine/delete-medicine", {
+      medicineId,
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
 };
 
-export default authService;
+const customerService = {
+  createMedicine,
+  getAllMedicine,
+  getOneMedicine,
+  deleteMedicine,
+  updateMedicine,
+};
+
+export default customerService;

@@ -5,7 +5,6 @@ const makeAppointment = async (req, res) => {
   const input = req.body;
   try {
     const role = getRole(req);
-    console.log(role);
     const db = await (await getDb(role))
       .input("phone", input.phone)
       .input("name", input.name)

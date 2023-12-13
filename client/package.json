@@ -19,6 +19,7 @@
     "@testing-library/user-event": "^13.5.0",
     "aos": "^2.3.4",
     "axios": "^1.6.2",
+    "formik": "^2.4.5",
     "mui-datatables": "^4.3.0",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
@@ -29,10 +30,12 @@
     "react-redux": "^9.0.2",
     "react-router-dom": "^6.17.0",
     "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.3",
     "redux-persist": "^6.0.0",
     "uuid": "^9.0.1",
     "uuidv4": "^6.2.13",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.3.2"
   },
   "scripts": {
     "start": "react-scripts start",

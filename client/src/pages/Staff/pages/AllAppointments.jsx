@@ -73,6 +73,9 @@ const AllAppointments = () => {
     filterType: "checkbox",
     download: false,
     print: false,
+    onRowsDelete: (rowsDeleted) => {
+      console.log("Rows deleted:", rowsDeleted.data[0].dataIndex);
+    },
   };
 
   const getMuiTheme = () =>

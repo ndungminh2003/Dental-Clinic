@@ -52,11 +52,12 @@ const updateMedicine = async (req, res) => {
 };
 
 const deleteMedicine = async (req, res) => {
-  const { medicineId } = req.body;
+  const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
-      .input("medicineId", medicineId)
+      .input("medicineId", input.medicineId)
       .execute("sp_deleteMedicine");
     res.status(200).json(db.recordset);
   } catch (error) {

@@ -6,7 +6,7 @@ import ChangeMedication from "../components/ChangeMedication";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllMedicine } from "../../../features/medicine/medicineSlice";
+import { getAllMedicine, deleteMedicine } from "../../../features/medicine/medicineSlice";
 
 export default function AllMedications() {
 
@@ -110,6 +110,11 @@ export default function AllMedications() {
     filterType: "checkbox",
     download: false,
     print: false,
+    onRowsDelete: (rowsDeleted) => {
+      const medcineId = {medicineId: medicine[rowsDeleted.data[0].dataIndex].id};
+      console.log(medcineId);
+      dispatch(deleteMedicine(medcineId));
+    },
   };
 
   const getMuiTheme = () =>

@@ -1,3 +1,5 @@
+USE QLPhongKham
+GO
 -- customer sign up
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_signUp')
 BEGIN

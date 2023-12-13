@@ -22,9 +22,9 @@ export const getAllMedicine = createAsyncThunk(
 
 export const deleteMedicine = createAsyncThunk(
   "medicine/delete",
-  async (thunkAPI) => {
+  async (data, thunkAPI) => {
     try {
-      return await medicineService.deleteMedicine();
+      return await medicineService.deleteMedicine("", data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }

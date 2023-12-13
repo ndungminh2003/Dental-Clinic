@@ -1032,7 +1032,7 @@ BEGIN
 			RAISERROR(N'Lỗi: Tên thuốc đã tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
-		INSERT INTO MEDICINE VALUES(@unit, @name, @description, @expirationDate, @indication, @quantity, @price)
+		INSERT INTO MEDICINE VALUES(@name, @unit, @description, @expirationDate, @indication, @quantity, @price)
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH

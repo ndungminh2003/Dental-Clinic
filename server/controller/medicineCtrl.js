@@ -3,6 +3,7 @@ const { getRole } = require("../middlewares/authMiddleware");
 
 const createMedicine = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))

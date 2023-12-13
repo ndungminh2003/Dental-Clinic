@@ -35,13 +35,23 @@ export const updateMedicine = createAsyncThunk(
   "medicine/update",
   async (data, thunkAPI) => {
     try {
-      return await medicineService.updateMedicine('',data);
+      return await medicineService.updateMedicine("", data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
 
+export const createMedicine = createAsyncThunk(
+  "medicine/create",
+  async (data, thunkAPI) => {
+    try {
+      return await medicineService.createMedicine("", data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
 
 export const medicineSlice = createSlice({
   name: "medicine",
@@ -60,6 +70,22 @@ export const medicineSlice = createSlice({
         state.message = "success";
       })
       .addCase(getAllMedicine.rejected, (state, action) => {
+        state.error = true;
+        state.success = false;
+        state.message = action.error;
+        state.loading = false;
+      })
+      .addCase(createMedicine.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createMedicine.fulfilled, (state, action) => {
+        state.error = false;
+        state.loading = false;
+        state.success = true;
+        state.createMedicine = action.payload;
+        state.message = "success";
+      })
+      .addCase(createMedicine.rejected, (state, action) => {
         state.error = true;
         state.success = false;
         state.message = action.error;

@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.post(
   "/create-medicine",
-  authM.authMiddleware,
-  authM.isAdmin,
+  // authM.authMiddleware,
+  // authM.isAdmin,
   medicineCtrl.createMedicine
 );
 router.put(

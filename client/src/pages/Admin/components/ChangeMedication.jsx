@@ -14,8 +14,6 @@ export default function ChangeMedication(props) {
     onClose();
   };
 
-  console.log(values);
-
   const formik = useFormik({
     initialValues: values,
 
@@ -35,8 +33,6 @@ export default function ChangeMedication(props) {
         indication: values.indication,
         expirationDate: values.expirationDate
       };
-
-      console.log(updateData.medicineId);
       dispatch(updateMedicine(updateData));
     },
   });

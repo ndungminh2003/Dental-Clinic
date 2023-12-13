@@ -11,6 +11,17 @@ const getAllMedicine = async (user) => {
   return response.data;
 };
 
+const createMedicine = async (user, data) => {
+  const config = getConfig();
+  console.log(data);
+  const response = await axios.post(
+    `${API_URL}medicine/create-medicine`,
+    data,
+    config
+  );
+  return response.data;
+};
+
 const deleteMedicine = async (user) => {
   const config = getConfig();
   const response = await axios.delete(
@@ -24,7 +35,8 @@ const updateMedicine = async (user, data) => {
   const config = getConfig();
   console.log(data);
   const response = await axios.put(
-    `${API_URL}medicine/update-medicine`, data,
+    `${API_URL}medicine/update-medicine`,
+    data,
     config
   );
   return response.data;
@@ -33,7 +45,8 @@ const updateMedicine = async (user, data) => {
 const appointmentService = {
   getAllMedicine,
   deleteMedicine,
-  updateMedicine
+  updateMedicine,
+  createMedicine
 };
 
 export default appointmentService;

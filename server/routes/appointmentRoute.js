@@ -21,7 +21,7 @@ router.get(
 );
 router.get(
   "/get-dentist-appointment",
-  authM.authMiddleware,
+  // authM.authMiddleware,
   appointmentCtrl.getDentistAppointment
 );
 router.put(

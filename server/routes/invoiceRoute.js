@@ -17,8 +17,8 @@ router.put(
 );
 router.get(
   "/get-record-invoice",
-  authM.authMiddleware,
-  authM.isNotDentist,
+  // authM.authMiddleware,
+  // authM.isNotDentist,
   invoiceCtrl.getInvoiceByRecordId
 );
 router.get(

@@ -1380,7 +1380,7 @@ BEGIN
 			RAISERROR(N'Lỗi: Không có đơn thuốc nào' ,16, 1)
 			ROLLBACK TRAN
 		END
-		SELECT * FROM PRESCRIBE_MEDICINE WHERE recordId = @recordId
+		SELECT P_M.medicineName , P_M.price, P_M.quantity FROM PRESCRIBE_MEDICINE P_M WHERE recordId = recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1610,7 +1610,10 @@ BEGIN
 				RAISERROR(N'Lỗi: không có dịch vụ nào được sử dụng', 16, 1)
 				ROLLBACK TRAN
 			END
-			SELECT * FROM SERVICE_USE WHERE recordId = @recordId
+			SELECT S_U.price AS price, S.name as serviceName
+			FROM SERVICE_USE S_U
+			JOIN SERVICE S ON S_U.serviceId = S.id 
+			WHERE recordId = @recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1741,7 +1744,7 @@ BEGIN
 				RAISERROR(N'Lỗi: mã hồ sơ bệnh nhân không tồn tại', 16, 1)
 				ROLLBACK TRAN
 			END
-			SELECT * FROM INVOICE WHERE recordId = @recordId
+			SELECT I.status, I.total, I.date_time FROM INVOICE I WHERE recordId = @recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1952,3 +1955,4 @@ EXEC sp_signUp '01234567892', '123123123123', 'Customer2', 'Nam', '2008-11-11', 
 -- EXEC sp_makeAppointment '0327116254', 'Customer4b', 'Nam', '2008-11-11', N'Hà Nội', 2, NULL, '2024-05-15 09:00:00', '2024-05-15 010:00:00'
 -- EXEC sp_addDentistSchedule '2023-11-15 07:00:00.000','2023-11-15 08:00:00.000',7
 -- EXEC sp_addPrescribeMedicine 1, 2, 100
+

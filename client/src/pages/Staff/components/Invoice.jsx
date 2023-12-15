@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import InvoiceCom from "./InvoiceCom/InvoiceCom";
 export default function Invoice (props)  {
     const { onClose, open,services,medicine } = props;
+    console.log(services);
+    console.log(medicine);
     const handleListItemClick = (value) => {
       onClose(value);
     };
@@ -38,9 +40,17 @@ export default function Invoice (props)  {
 Invoice.propTypes = {
     onClose: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    medicine: PropTypes.shape({
-      name: PropTypes.array.isRequired,
-      quantity: PropTypes.array.isRequired,
-      price: PropTypes.array.isRequired,
-    }),
+    services: PropTypes.arrayOf(
+      PropTypes.shape({
+        price: PropTypes.float,
+        serviceName: PropTypes.string,
+      })
+    ),
+    medicine: PropTypes.arrayOf(
+      PropTypes.shape({
+        price: PropTypes.float,
+        quantity: PropTypes.number,
+        medicineName: PropTypes.string,
+      })
+    ),
   };

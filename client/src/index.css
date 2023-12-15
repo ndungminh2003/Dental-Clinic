@@ -30,7 +30,7 @@
 
 .lineItem {
   display: grid;
-  grid-template-columns: 0.5fr 3fr 1fr repeat(2, 2fr);
+  grid-template-columns: 0.5fr 3fr 1.25fr repeat(2, 2fr);
 }
 
 .lineItem > div {
@@ -93,7 +93,7 @@
 
 .gridTable .row {
   display: grid;
-  grid-template-columns: 0.5fr 3fr 1fr repeat(2, 2fr);
+  grid-template-columns: 0.5fr 3fr 1.25fr repeat(2, 2fr);
   border-bottom: 1px solid var(--tableBorderColor);
 }
 
@@ -310,11 +310,11 @@ button.payNow {
   word-break: break-word;
 }
 
-@layer components {
+/* @layer components {
   .invoice {
     @apply max-w-[var(--invoiceMaxWidth)] mx-auto border border-solid border-[var(--tableBorderColor)] py-[calc(2 * var(--rhythm))] rounded-[var(--borderRadius)] bg-[var(--bgColor)];
   }
-}
+} */
 .addColor {
   background-color: var(--addColor);
 }

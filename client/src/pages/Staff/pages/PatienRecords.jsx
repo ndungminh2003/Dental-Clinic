@@ -6,7 +6,10 @@ import PropTypes from "prop-types";
 import Invoice from "../components/Invoice";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllPatientRecord } from "../../../features/patientRecord/patientRecordSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getServiceUseByRecordId } from "../../../features/service/serviceSlice";
+import { getPrescribeMedicineByRecordId } from "../../../features/prescribeMedicine/prescribeMedicineSlice";
+import { getInvoiceByRecordId } from "../../../features/invoice/invoiceSlice";
 
 const data = [
   {
@@ -21,7 +24,7 @@ const data = [
     ],
     status: "Đã thanh toán",
     services: {
-      name: ["tooth filling", "service 2", "service 1" , "service 0"],
+      name: ["tooth filling", "service 2", "service 1", "service 0"],
       servicePrices: ["100.000", "100.000", "100.000", "200.000"],
     },
     medicine: {
@@ -88,7 +91,7 @@ const data = [
       servicePrices: ["100.000", "100.000", "100.000", "200.000"],
     },
     medicine: {
-      name: [ "Med 0", "Med 5", "Med 1", "Med 2"],
+      name: ["Med 0", "Med 5", "Med 1", "Med 2"],
       quantity: [1, 2, 3, 4],
       Prices: ["100.000", "100.000", "100.000", "200.000"],
     },
@@ -96,7 +99,16 @@ const data = [
 ];
 
 function SimpleDialog(props) {
-  const { onClose, open, values ,serviceName,medicine,status,services } = props;
+  const {
+    onClose,
+    open,
+    customer,
+    dentist,
+    date,
+    invoice,
+    service,
+    prescribeMedicine,
+  } = props;
   const handleClose = () => {
     onClose();
   };
@@ -122,7 +134,7 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
-            value={values[2]}
+            value={customer}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md  border border-gray-300	`}
           ></input>
@@ -133,7 +145,7 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
-            value={"Nguyễn Văn A"}
+            value={dentist}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
@@ -143,7 +155,8 @@ function SimpleDialog(props) {
             <label className="font-mono rounded-md text-center	">Day</label>
           </div>
           <input
-            type="date"
+            type="text"
+            value={date}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
@@ -152,11 +165,11 @@ function SimpleDialog(props) {
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Service</label>
           </div>
-          <div className ="w-3/4">
+          <div className="w-3/4">
             <input
               type="text"
-              value={serviceName}
               disabled="true"
+              value={service && service.map((item) => item.serviceName)}
               className={` w-full  px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
@@ -165,42 +178,40 @@ function SimpleDialog(props) {
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Medicine</label>
           </div>
-          <div className ="w-3/4">
-            {medicine && medicine.name.map((medName, index) => (
-              <div className="m-1 flex grow"key={index}>
-                <input
-                  type="text"
-                  value={medName}
-                  disabled="true"
-                  className={` w-2/3  px-3 py-2 rounded-md border border-gray-300	`}
-                ></input>
-                <input
-                  type="text"
-                  value={medicine.quantity[index]}
-                  disabled="true"
-                  className={` w-1/3 ml-1  px-3 py-2 rounded-md border border-gray-300	`}
-                ></input>
-              </div>
-            ))}
+          <div className="w-3/4">
+            {prescribeMedicine &&
+              prescribeMedicine.map((medName, index) => (
+                <div className="m-1 flex grow" key={index}>
+                  <input
+                    type="text"
+                    value={medName.medicineName}
+                    disabled="true"
+                    className={` w-2/3  px-3 py-2 rounded-md border border-gray-300	`}
+                  ></input>
+                  <input
+                    type="text"
+                    value={medName.quantity}
+                    disabled="true"
+                    className={` w-1/3 ml-1  px-3 py-2 rounded-md border border-gray-300	`}
+                  ></input>
+                </div>
+              ))}
           </div>
         </div>
-        
+
         <div className="text-right mt-5">
-          {status === "Chưa thanh toán" 
-          ?
-          <button
-            onClick={() => handleListItemClick("hi")}
-            className="bg-sky-500 rounded-md px-3 py-2 mr-2"
-          >
-            Already Paid
-          </button>
-          :
-          <button
-            className="bg-yellow-300 rounded-md px-3 py-2 mr-2"
-          >
-            Pay
-          </button>
-          }
+          {invoice && invoice[0].status === "Chưa thanh toán" ? (
+            <button className="bg-yellow-300 rounded-md px-3 py-2 mr-2">
+              Pay
+            </button>
+          ) : (
+            <button
+              onClick={() => handleListItemClick("hi")}
+              className="bg-sky-500 rounded-md px-3 py-2 mr-2"
+            >
+              Already Paid
+            </button>
+          )}
           <button
             onClick={handleInvoiceClick}
             className="bg-sky-500 rounded-md px-3 py-2 mr-2"
@@ -217,11 +228,10 @@ function SimpleDialog(props) {
         <Invoice
           open={openInvoice}
           onClose={handleCloseInvoice}
-          services={services}
-          medicine={medicine}
-          status ={status}
+          services={service}
+          medicine={prescribeMedicine}
+          status ={invoice && invoice[0].status}
         />
-        
       </div>
     </Dialog>
   );
@@ -230,36 +240,76 @@ function SimpleDialog(props) {
 SimpleDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  values: PropTypes.array.isRequired,
-  serviceName: PropTypes.array.isRequired,
-  medicine: PropTypes.shape({
-    name: PropTypes.array.isRequired,
-    quantity: PropTypes.array.isRequired,
-    price: PropTypes.array.isRequired,
-  }),
-  services: PropTypes.shape({
-    name: PropTypes.array.isRequired,
-    price: PropTypes.array.isRequired,
-  }),
-  status: PropTypes.string.isRequired,
+  customer: PropTypes.string,
+  dentist: PropTypes.string,
+  date: PropTypes.string,
+  service: PropTypes.arrayOf(
+    PropTypes.shape({
+      price: PropTypes.float,
+      serviceName: PropTypes.string,
+    })
+  ),
+  prescribeMedicine: PropTypes.arrayOf(
+    PropTypes.shape({
+      price: PropTypes.float,
+      quantity: PropTypes.number,
+      medicineName: PropTypes.string,
+    })
+  ),
+  invoice: PropTypes.arrayOf(
+    PropTypes.shape({
+      date_time: PropTypes.string,
+      total: PropTypes.number,
+      status: PropTypes.string,
+    })
+  ),
 };
 
-export default function AllAppointments () {
+export default function AllAppointments() {
   const dispatch = useDispatch();
-  const { patientRecord, loading, success, error } = useSelector(
-    (state) => state.patientRecord
-  );
+  const {
+    patientRecord: patientRecordData,
+    loading: patientRecordLoading,
+    success: patientRecordSuccess,
+    error: patientRecordError,
+  } = useSelector((state) => state.patientRecord);
+
+  const {
+    invoice: invoiceData,
+    loading: invoiceLoading,
+    success: invoiceSuccess,
+    error: invoiceError,
+  } = useSelector((state) => state.invoice);
+
+  const {
+    service: serviceData,
+    loading: serviceLoading,
+    success: serviceSuccess,
+    error: serviceError,
+  } = useSelector((state) => state.service);
+
+  const {
+    prescribeMedicine: prescribeMedicineData,
+    loading: prescribeMedicineLoading,
+    success: prescribeMedicineSuccess,
+    error: prescribeMedicineError,
+  } = useSelector((state) => state.prescribeMedicine);
+
   useEffect(() => {
     dispatch(getAllPatientRecord());
   }, []);
   useEffect(() => {
-    console.log(patientRecord);
-  }, [patientRecord]); 
-  const [serviceName, setServiceName] = React.useState();
-  const [medicine, setMedicine] = React.useState();
-  const [services, setServices] = React.useState();
-  const [status, setStatus] = React.useState();
+    console.log(patientRecordData);
+  }, [patientRecordData]);
 
+  const [dataDialog, setDataDialog] = useState({
+    customer: "",
+    dentist: "",
+    date: "",
+    status: "",
+    service: ["null"],
+    prescribeMedicine: ["null"],
+  });
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState([""]);
 
@@ -321,7 +371,7 @@ export default function AllAppointments () {
       options: {
         filter: true,
         sort: true,
-        display: false ,
+        display: false,
       },
     },
     {
@@ -341,12 +391,22 @@ export default function AllAppointments () {
   ];
 
   const handleActionClick = (row) => {
+    let recordId = patientRecordData[row.dataIndex].id;
+    dispatch(getServiceUseByRecordId(recordId));
+    dispatch(getPrescribeMedicineByRecordId(recordId));
+    dispatch(getInvoiceByRecordId(recordId));
+    console.log("data");
+    console.log(invoiceData);
+    const dateObject = new Date(patientRecordData[row.dataIndex].date_time);
+    setDataDialog((prevData) => ({
+      invoice: invoiceData,
+      customer: patientRecordData[row.dataIndex].customerName,
+      dentist: patientRecordData[row.dataIndex].dentistName,
+      date: dateObject.toISOString().split("T")[0],
+      service: serviceData,
+      prescribeMedicine: prescribeMedicineData,
+    }));
     setOpen(true);
-    setValues(data[row.dataIndex].values);
-    setServiceName((data[row.dataIndex].services.name));
-    setMedicine(data[row.dataIndex].medicine);
-    setServices(data[row.dataIndex].services);
-    setStatus(data[row.dataIndex].status);
   };
 
   const options = {
@@ -376,7 +436,7 @@ export default function AllAppointments () {
         <ThemeProvider theme={getMuiTheme()}>
           <MUIDataTable
             title={"Patient record"}
-            data={patientRecord}
+            data={patientRecordData}
             columns={columns}
             options={options}
           />
@@ -385,13 +445,13 @@ export default function AllAppointments () {
       <SimpleDialog
         open={open}
         onClose={handleClose}
-        values={values}
-        serviceName={serviceName}
-        medicine={medicine}
-        status ={status}
-        services={services}
+        customer={dataDialog.customer}
+        dentist={dataDialog.dentist}
+        date={dataDialog.date}
+        service={dataDialog.service}
+        prescribeMedicine={dataDialog.prescribeMedicine}
+        invoice={dataDialog.invoice}
       />
     </div>
   );
-};
-
+}

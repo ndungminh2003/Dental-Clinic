@@ -154,7 +154,7 @@ const YourFormComponent = () => {
                   <button
                     key={index}
                     className={`rounded-3xl w-[220px] flex-shrink-0  text-2xl border-2 border-solid border-blue-hosta bg-white ${
-                      activeButton === index ? 'border-4 border-solid border-blue-hosta text-blue-hosta' : 'border-2 border-solid border-grullo'
+                      activeButton === index ? 'border-4 border-solid border-blue-hosta text-blue-hosta font-bold' : 'border-2 border-solid border-grullo'
                     }`}
                     onClick={() => handleButtonClick(index)}
                   >

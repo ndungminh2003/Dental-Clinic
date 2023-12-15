@@ -43,7 +43,7 @@ export default function NavBar() {
         <div className="flex gap-1">
           <div className="relative">
             <button
-              className="text-xl text-black bg-gray-200 hover:bg-blue-hosta hover:text-white cursor-pointer"
+              className="text-xl text-black bg-gray-200 hover:bg-gray-300 cursor-pointer"
               onClick={toggleDropdown}
             >
               Profile

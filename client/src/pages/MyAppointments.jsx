@@ -17,7 +17,7 @@ const getStatusStyle = (status) => {
 };
 
 export default function MyAppointment() {
-  // Assuming appointment information is defined or passed as props
+  
   const appointment1 = {
     visitDate: '07/04/2023',
     dentist: 'Dr. Smith',
@@ -46,8 +46,8 @@ export default function MyAppointment() {
     switch (status) {
       case 'Completed':
         return (
-          <button className='hover:underline' onClick={() => handleViewDentalRecord()}>
-            View Dental Record
+          <button className='hover:underline pl-14' onClick={() => handleViewDentalRecord()}>
+            View details
           </button>
         );
       case 'Booked':
@@ -59,12 +59,10 @@ export default function MyAppointment() {
   };
 
   const handleViewDentalRecord = () => {
-    // Implement logic for 'View Dental Record' button
-    console.log("View Dental Record clicked");
+    console.log("View details clicked");
   };
 
   const handleSeeMore = () => {
-    // Implement logic for 'See More' button
     console.log("See More clicked");
   };
 
@@ -81,7 +79,7 @@ export default function MyAppointment() {
               My previous appointments
             </div>
             <div className="flex flex-col gap-10 h-96 overflow-y-scroll">
-              <div className="border-2 border-solid border-black rounded-xl w-[500px] h-60  pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
+              <div className="border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
                 <div className="flex flex-row gap-2 text-xl ">
                   <div className="font-bold">Date of visit:</div>
                   <div>{appointment1.visitDate}</div>
@@ -212,9 +210,6 @@ export default function MyAppointment() {
               <div className="text-blue-hosta pl-[340px] text-[17px]">{renderButtons(appointment4.status)}</div>
             </div>
           </div>
-          
-            
-          
         </div>
       </div>
       <div className="pt-10">

@@ -16,7 +16,7 @@ router.put(
   medicineCtrl.updateMedicine
 );
 router.delete(
-  "/delete-medicine",
+  "/delete-medicine/:medicineId",
   // authM.authMiddleware,
   // authM.isAdmin,
   medicineCtrl.deleteMedicine

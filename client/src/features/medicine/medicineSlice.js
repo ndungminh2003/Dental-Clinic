@@ -1,30 +1,11 @@
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import medicineService from "./medicineServices";
 
-const initialState = {
-  medicine: [],
-  error: false,
-  loading: false,
-  success: false,
-  message: "",
-};
-
-export const getAllMedicine = createAsyncThunk(
-  "medicine/get-all",
-  async (thunkAPI) => {
-    try {
-      return await medicineService.getAllMedicine();
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error);
-    }
-  }
-);
-
 export const deleteMedicine = createAsyncThunk(
   "medicine/delete",
-  async (data, thunkAPI) => {
+  async (medicineId, thunkAPI) => {
     try {
-      return await medicineService.deleteMedicine("", data);
+      return await medicineService.deleteMedicine(medicineId);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -35,7 +16,7 @@ export const updateMedicine = createAsyncThunk(
   "medicine/update",
   async (data, thunkAPI) => {
     try {
-      return await medicineService.updateMedicine("", data);
+      return await medicineService.updateMedicine(data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -46,35 +27,28 @@ export const createMedicine = createAsyncThunk(
   "medicine/create",
   async (data, thunkAPI) => {
     try {
-      return await medicineService.createMedicine("", data);
+      return await medicineService.createMedicine(data);
     } catch (error) {
+      console.log("reject here");
       return thunkAPI.rejectWithValue(error);
     }
   }
 );
 
+export const resetState = createAction("Reset_all");
+
 export const medicineSlice = createSlice({
   name: "medicine",
-  initialState: initialState,
+  initialState: {
+    medicine: [],
+    error: false,
+    loading: false,
+    success: false,
+    message: "",
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getAllMedicine.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getAllMedicine.fulfilled, (state, action) => {
-        state.error = false;
-        state.loading = false;
-        state.success = true;
-        state.medicine = action.payload;
-        state.message = "success";
-      })
-      .addCase(getAllMedicine.rejected, (state, action) => {
-        state.error = true;
-        state.success = false;
-        state.message = action.error;
-        state.loading = false;
-      })
       .addCase(createMedicine.pending, (state) => {
         state.loading = true;
       })

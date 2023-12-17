@@ -45,7 +45,7 @@ const getServiceUseByRecordId = async (req, res) => {
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
-      .input("recordId", input.recordId)
+      .input("recordId", recordId)
       .execute("sp_viewServiceUse");
     res.status(200).json(db.recordset);
   } catch (error) {

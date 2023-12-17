@@ -118,14 +118,14 @@ const Sidebar = () => {
                   </span>
                 </NavLink>
               </li>
-              <li>
-                <NavLink to="record/all" className="mt-2 side">
-                  <LogoutIcon style={{ color: "white" }} />
-                  <span className="ml-2 mr-14 text-white">Log out</span>
-                </NavLink>
-              </li>
             </div>
           )}
+          <li>
+            <NavLink to="record/all" className="mt-2 side">
+              <LogoutIcon style={{ color: "white" }} />
+              <span className="ml-2 mr-14 text-white">Log out</span>
+            </NavLink>
+          </li>
         </ul>
       </div>
     </div>

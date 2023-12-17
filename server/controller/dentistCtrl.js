@@ -4,10 +4,10 @@ const { getRole } = require("../middlewares/authMiddleware");
 const createDentistAccount = async (req, res) => {
   const input = req.body;
   try {
-    const db = await (await getDb("admin"))
+    const db = await (await getDb("guest"))
       .input("name", input.name)
       .input("password", input.password)
-      .input("phoneNumber", input.phone)
+      .input("phoneNumber", input.phoneNumber)
       .input("gender", input.gender)
       .input("birthday", input.birthday)
       .input("introduction", input.introduction)

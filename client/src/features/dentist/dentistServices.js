@@ -1,11 +1,11 @@
 import Axios from "../../app/axiosConfig";
 
-const login = async (user) => {
+const createDentistAccount = async (dentist) => {
   try {
-    const response = await Axios.post("auth/login", user);
-    if (response.data) {
-      localStorage.setItem("user", JSON.stringify(response.data));
-    }
+    const response = await Axios.post(
+      "dentist/create-dentist-account",
+      dentist
+    );
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -20,10 +20,9 @@ const login = async (user) => {
   }
 };
 
-const signUp = async (user) => {
+const getAllDentist = async () => {
   try {
-    const response = await Axios.post("auth/sign-up", user);
-
+    const response = await Axios.get("dentist/get-all-dentist");
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -38,10 +37,11 @@ const signUp = async (user) => {
   }
 };
 
-const logout = async () => {
+const getOneDentist = async (dentistId) => {
   try {
-    const response = await Axios.post("auth/logout");
-    localStorage.removeItem("user");
+    const response = await Axios.get("dentist/get-one-dentist", {
+      dentistId,
+    });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -56,9 +56,9 @@ const logout = async () => {
   }
 };
 
-const blockUser = async (user) => {
+const updateDentistProfile = async (dentist) => {
   try {
-    const response = await Axios.put("auth/block-user", user);
+    const response = await Axios.put("dentist/change-dentist-profile", dentist);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -73,11 +73,32 @@ const blockUser = async (user) => {
   }
 };
 
-const authService = {
-  login,
-  signUp,
-  logout,
-  blockUser,
+const changeDentistPassword = async (dentist) => {
+  try {
+    const response = await Axios.put(
+      "dentist/change-dentist-password",
+      dentist
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
 };
 
-export default authService;
+const dentistService = {
+  createDentistAccount,
+  getAllDentist,
+  getOneDentist,
+  changeDentistPassword,
+  updateDentistProfile,
+};
+
+export default dentistService;

@@ -1,11 +1,8 @@
 import Axios from "../../app/axiosConfig";
 
-const login = async (user) => {
+const createStaffAccount = async (staff) => {
   try {
-    const response = await Axios.post("auth/login", user);
-    if (response.data) {
-      localStorage.setItem("user", JSON.stringify(response.data));
-    }
+    const response = await Axios.post("staff/create-staff-account", staff);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -20,10 +17,9 @@ const login = async (user) => {
   }
 };
 
-const signUp = async (user) => {
+const getAllStaff = async () => {
   try {
-    const response = await Axios.post("auth/sign-up", user);
-
+    const response = await Axios.get("staff/get-all-staff");
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -38,10 +34,11 @@ const signUp = async (user) => {
   }
 };
 
-const logout = async () => {
+const getOneStaff = async (staffId) => {
   try {
-    const response = await Axios.post("auth/logout");
-    localStorage.removeItem("user");
+    const response = await Axios.get("staff/get-one-staff", {
+      staffId,
+    });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -56,28 +53,10 @@ const logout = async () => {
   }
 };
 
-const blockUser = async (user) => {
-  try {
-    const response = await Axios.put("auth/block-user", user);
-    return response.data;
-  } catch (error) {
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      console.log(error.request);
-    } else {
-      console.log("Error", error.message);
-    }
-  }
+const staffService = {
+  createStaffAccount,
+  getAllStaff,
+  getOneStaff,
 };
 
-const authService = {
-  login,
-  signUp,
-  logout,
-  blockUser,
-};
-
-export default authService;
+export default staffService;

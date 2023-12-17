@@ -14,9 +14,17 @@ router.get(
   authM.authMiddleware,
   appointmentCtrl.getAllAppointment
 );
-router.get("/get-customer-appointment", appointmentCtrl.getCustomerAppointment);
-router.get("/get-dentist-appointment", appointmentCtrl.getDentistAppointment);
 router.get(
+  "/get-customer-appointment",
+  authM.authMiddleware,
+  appointmentCtrl.getCustomerAppointment
+);
+router.get(
+  "/get-dentist-appointment",
+  authM.authMiddleware,
+  appointmentCtrl.getDentistAppointment
+);
+router.put(
   "/update-appointment-status",
   appointmentCtrl.updateAppointmentStatus
 );

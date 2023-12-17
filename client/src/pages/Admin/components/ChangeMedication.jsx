@@ -13,26 +13,50 @@ export default function ChangeMedication(props) {
     onClose();
   };
 
+  const initValue = {
+    medicineId: values.id,
+    name: values.name,
+    quantity: values.quantity,
+    unit: values.unit,
+    description: values.description,
+    indication: values.indication,
+    expirationDate: values.expirationDate,
+    price: values.price,
+  };
+
   const formik = useFormik({
     initialValues: values,
 
     validationSchema: Yup.object({
-      name: Yup.string()
-        .min(1, "Must be greater than 1")
-        .max(50, "Must be less than 50")
-        .required("Required"),
+      name: Yup.string().max(50, "Must be less than 50"),
     }),
     onSubmit: (values) => {
       let updateData = {
-        medicineId: values.id,
-        name: values.name,
-        quantity: values.quantity,
-        unit: values.unit,
-        description: values.description,
-        indication: values.indication,
-        expirationDate: values.expirationDate,
+        medicineId: initValue.medicineId,
+        name: typeof values.name === "undefined" ? initValue.name : values.name,
+        quantity:
+          typeof values.quantity === "undefined"
+            ? initValue.quantity
+            : values.quantity,
+        unit: typeof values.unit === "undefined" ? initValue.unit : values.unit,
+        description:
+          typeof values.description === "undefined"
+            ? initValue.description
+            : values.description,
+        indication:
+          typeof values.indication === "undefined"
+            ? initValue.indication
+            : values.indication,
+        expirationDate:
+          typeof values.expirationDate === "undefined"
+            ? initValue.expirationDate
+            : values.expirationDate,
+        price:
+          typeof values.price === "undefined" ? initValue.price : values.price,
       };
+
       dispatch(updateMedicine(updateData));
+      formik.resetForm();
     },
   });
 
@@ -56,6 +80,7 @@ export default function ChangeMedication(props) {
                 onBlur={formik.handleBlur}
                 value={formik.values.id}
                 placeholder={values.id}
+                disabled={true}
                 className={` w-3/4 ml-2 px-3 py-2 rounded-md border border-gray-300	`}
               ></input>
             </div>
@@ -116,7 +141,13 @@ export default function ChangeMedication(props) {
               </label>
             </div>
             <textarea
-              value={values.description}
+              id="description"
+              name="description"
+              type="text"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.description}
+              placeholder={values.description}
               className={`w-3/4 px-3 py-2 rounded-md border border-gray-300 resize-none`}
             ></textarea>
           </div>
@@ -127,7 +158,13 @@ export default function ChangeMedication(props) {
               </label>
             </div>
             <textarea
-              value={values.indication}
+              id="indication"
+              name="indication"
+              type="text"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.indication}
+              placeholder={values.indication}
               className={`w-3/4 px-3 py-2 rounded-md border border-gray-300 resize-none`}
             ></textarea>
           </div>
@@ -153,6 +190,13 @@ export default function ChangeMedication(props) {
               <label className="font-mono rounded-md text-center	">Price</label>
             </div>
             <input
+              id="price"
+              name="price"
+              type="text"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.price}
+              placeholder={values.price}
               className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>

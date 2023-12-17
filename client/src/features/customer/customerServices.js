@@ -1,11 +1,8 @@
 import Axios from "../../app/axiosConfig";
 
-const login = async (user) => {
+const getAllCustomer = async () => {
   try {
-    const response = await Axios.post("auth/login", user);
-    if (response.data) {
-      localStorage.setItem("user", JSON.stringify(response.data));
-    }
+    const response = await Axios.get("customer/get-all-customer");
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -20,10 +17,11 @@ const login = async (user) => {
   }
 };
 
-const signUp = async (user) => {
+const getOneCustomer = async (customerId) => {
   try {
-    const response = await Axios.post("auth/sign-up", user);
-
+    const response = await Axios.get("customer/get-one-customer", {
+      customerId,
+    });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -38,10 +36,12 @@ const signUp = async (user) => {
   }
 };
 
-const logout = async () => {
+const updateCustomerProfile = async (customer) => {
   try {
-    const response = await Axios.post("auth/logout");
-    localStorage.removeItem("user");
+    const response = await Axios.put(
+      "customer/update-customer-profile",
+      customer
+    );
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -56,9 +56,12 @@ const logout = async () => {
   }
 };
 
-const blockUser = async (user) => {
+const changeCustomerPassword = async (customer) => {
   try {
-    const response = await Axios.put("auth/block-user", user);
+    const response = await Axios.put(
+      "customer/change-customer-password",
+      customer
+    );
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -73,11 +76,11 @@ const blockUser = async (user) => {
   }
 };
 
-const authService = {
-  login,
-  signUp,
-  logout,
-  blockUser,
+const customerService = {
+  getAllCustomer,
+  getOneCustomer,
+  changeCustomerPassword,
+  updateCustomerProfile,
 };
 
-export default authService;
+export default customerService;

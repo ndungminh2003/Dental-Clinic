@@ -1,6 +1,9 @@
 USE QLPhongKham
 GO
 -- customer sign up
+GO
+USE QLPhongKham
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_signUp')
 BEGIN
     DROP PROCEDURE sp_signUp
@@ -47,6 +50,7 @@ BEGIN
 END
 
 -- login
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_login')
 BEGIN
     DROP PROCEDURE sp_login
@@ -117,6 +121,7 @@ BEGIN
 END
 
 -- view one customer
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneCustomer')
 BEGIN
     DROP PROCEDURE sp_viewOneCustomer
@@ -127,6 +132,7 @@ GO
 CREATE PROC sp_viewOneCustomer --STAFF CUSTOMER ADMIN
 	@customerId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -146,13 +152,16 @@ END
 
 -- view all customer (ADMIN STAFF)
 -- DIRTY READ (Admin thêm người dùng hoặc xóa người dùng, hoặc cập nhật người dùng nhưng lỗi commit)
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllCustomer')
 BEGIN
     DROP PROCEDURE sp_viewAllCustomer
 END
 GO
+
 CREATE PROC sp_viewAllCustomer
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -168,11 +177,13 @@ END
 
 -- DIRTY READ, LOST UPDATE, TỪ ADMIN
 -- update customer profile (CUSTOMER ADMIN)
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_updateCustomerProfile')
 BEGIN
 	DROP PROCEDURE sp_updateCustomerProfile
 END
 GO
+
 CREATE PROC sp_updateCustomerProfile
 	@customerId INT,
 	@name NVARCHAR(50),
@@ -181,6 +192,7 @@ CREATE PROC sp_updateCustomerProfile
 	@address NVARCHAR(120),
 	@birthday DATE
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
@@ -208,15 +220,18 @@ BEGIN
 END
 
 --block user
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockCustomer')
-BEGIN
-	DROP PROCEDURE sp_blockUser
-END
 GO
-CREATE OR ALTER PROC  sp_blockUser
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockUser1')
+BEGIN
+	DROP PROCEDURE sp_blockUser1
+END
+
+GO
+CREATE OR ALTER PROC sp_blockUser1
 	@userId INT,
 	@role VARCHAR(16) 
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -246,18 +261,23 @@ BEGIN
 	END CATCH
 END
 
+
+
 -- LOST UPDATE (Admin cùng cập nhật password sẽ bị ghi đè) 
 -- change customer password  (CUSTOMER, ADMIN)
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_changeCustomerPassword')
 BEGIN
 	DROP PROCEDURE sp_changeCustomerPassword
 END
 GO
+
 CREATE PROC sp_changeCustomerPassword
 	@customerId INT,
 	@oldPassword VARCHAR(50),
 	@newPassword VARCHAR(50)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -287,11 +307,13 @@ END
 
 
 -- create dentist
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_createDentist')
 BEGIN
 	DROP PROCEDURE sp_createDentist
 END
 GO
+
 CREATE PROC sp_createDentist
 	@name NVARCHAR(50),
 	@password VARCHAR(50),
@@ -300,6 +322,7 @@ CREATE PROC sp_createDentist
 	@birthday DATE,
 	@introduction NVARCHAR(500)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
@@ -322,19 +345,19 @@ BEGIN
 	END CATCH
 END
 
-GO
-sp_createDentist 'Dentist6','123123123123', '0327116216', N'Nam', '2008-11-11', 'Experienced dentist'
-
 
 -- view one dentist dirty read, phantom read, unrepeatable read
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneDentist')
 BEGIN
 	DROP PROCEDURE sp_viewOneDentist
 END
 GO
+
 CREATE PROC sp_viewOneDentist
 	@dentistId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
@@ -354,13 +377,16 @@ END
 
 
 -- view all dentist dirty read
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllDentist')
 BEGIN
 	DROP PROCEDURE sp_viewAllDentist
 END
 GO
+
 CREATE PROC sp_viewAllDentist
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
@@ -380,6 +406,7 @@ BEGIN
 	DROP PROCEDURE sp_updateDentistProfile
 END
 GO
+
 CREATE PROC sp_updateDentistProfile
 	@dentistId INT,
 	@name NVARCHAR(50),
@@ -388,6 +415,7 @@ CREATE PROC sp_updateDentistProfile
 	@birthday DATE,
 	@introduction NVARCHAR(500)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
@@ -419,11 +447,13 @@ BEGIN
 	DROP PROCEDURE sp_changeDentistPassword
 END
 GO
+
 CREATE PROC sp_changeDentistPassword
 	@dentistId INT,
 	@oldPassword VARCHAR(50),
 	@newPassword VARCHAR(50)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -452,6 +482,7 @@ BEGIN
 END
 
 -- create staff
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_createStaff')
 BEGIN
 	DROP PROCEDURE sp_createStaff
@@ -463,6 +494,7 @@ CREATE PROC sp_createStaff
 	@phoneNumber VARCHAR(15),
 	@gender NVARCHAR(6)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
@@ -486,6 +518,7 @@ BEGIN
 END
 
 -- view One staff dirty read, Unreapeateable read
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneStaff')
 BEGIN
 	DROP PROCEDURE sp_viewOneStaff
@@ -494,6 +527,7 @@ GO
 CREATE PROC sp_viewOneStaff
 	@staffId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
@@ -512,6 +546,7 @@ BEGIN
 END
 
 -- view all staff dirty read
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllStaff')
 BEGIN
 	DROP PROCEDURE sp_viewAllStaff
@@ -519,6 +554,7 @@ END
 GO
 CREATE PROC sp_viewAllStaff
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 	 	BEGIN TRAN
@@ -534,6 +570,7 @@ END
 
 -- make appointment 
 -- 2 user cung make dirty read, lost update
+GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_makeAppointment')
 BEGIN
     DROP PROCEDURE sp_makeAppointment
@@ -549,6 +586,7 @@ CREATE PROC sp_makeAppointment
 	@staffId INT,
 	@startTime DATETIME
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -611,11 +649,13 @@ BEGIN
     DROP PROCEDURE sp_cancelAppointment
 END  
 GO
+
 CREATE PROC sp_cancelAppointment
 	@dentistId INT,
 	@startTime DATETIME,
 	@customerId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -651,6 +691,7 @@ CREATE PROC sp_deleteAppointment
 	@startTime DATETIME,
 	@customerId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -683,6 +724,7 @@ CREATE PROC sp_updateAppointmentStatus
 	@startTime DATETIME,
 	@status NVARCHAR(30)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -713,6 +755,7 @@ CREATE PROC sp_viewOneAppointment
 	@dentistId INT,
 	@startTime DATETIME
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -739,6 +782,7 @@ END
 GO
 CREATE PROC sp_viewAllAppointment
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -761,6 +805,7 @@ GO
 CREATE PROC sp_viewCustomerAppointment
 	@customerId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -795,6 +840,7 @@ GO
 CREATE PROC sp_viewDentistAppointment
 	@dentistId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -833,6 +879,7 @@ CREATE PROC sp_createPatientRecord
 	@symptom NVARCHAR(50),
 	@advice NVARCHAR(100)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -875,6 +922,7 @@ CREATE PROC sp_updatePatientRecord
 	@sympton NVARCHAR(50),
 	@advice NVARCHAR(100)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -907,6 +955,7 @@ GO
 CREATE PROC sp_deletePatientRecord
 	@recordId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -937,6 +986,7 @@ GO
 CREATE PROC sp_viewOnePatientRecord
 	@recordId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -966,6 +1016,7 @@ END
 GO
 CREATE PROC sp_viewAllPatientRecord
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -988,6 +1039,7 @@ GO
 CREATE PROC sp_viewCustomerPatientRecord
 	@customerId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1012,6 +1064,7 @@ END
 
 
 -- create medicine
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_createMedicine')
 BEGIN
 	DROP PROCEDURE sp_createMedicine
@@ -1026,6 +1079,7 @@ CREATE PROC sp_createMedicine
 	@quantity INT,
 	@price FLOAT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1044,6 +1098,7 @@ BEGIN
 END
 
 -- update medicine
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updateMedicine')
 BEGIN
 	DROP PROCEDURE sp_updateMedicine
@@ -1059,6 +1114,7 @@ CREATE PROC sp_updateMedicine
 	@quantity INT,
 	@price FLOAT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1084,6 +1140,7 @@ BEGIN
 END
 
 -- delete medicine
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteMedicine')
 BEGIN
 	DROP PROCEDURE sp_deleteMedicine
@@ -1092,6 +1149,7 @@ GO
 CREATE PROC sp_deleteMedicine
 	@medicineId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1111,6 +1169,7 @@ BEGIN
 END
 
 -- view one medicine dirty read, phantom read (thêm xóa sửa medicine), 
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneMedicine')
 BEGIN
 	DROP PROCEDURE sp_viewOneMedicine
@@ -1119,6 +1178,7 @@ GO
 CREATE PROC sp_viewOneMedicine
 	@medicineId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1137,6 +1197,7 @@ BEGIN
 END
 
 -- view all medicine dirty read 
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllMedicine')
 BEGIN
 	DROP PROCEDURE sp_viewAllMedicine
@@ -1144,6 +1205,7 @@ END
 GO
 CREATE PROC sp_viewAllMedicine
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1168,6 +1230,7 @@ CREATE PROC sp_addPrescribeMedicine
     @MEDICINE_ID INT,
     @QUANTITY INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1223,6 +1286,7 @@ CREATE PROC sp_deletePrescribeMedicine
 	@recordId INT,
 	@medicineName NVARCHAR(30)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1259,6 +1323,7 @@ CREATE PROC sp_updatePrescribeMedicine
     @MEDICINE_ID INT,
     @QUANTITY INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1287,6 +1352,7 @@ END
 
 
 -- view one record's prescribe Medicine 
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewPrescribeMedicine')
 BEGIN
 	DROP PROCEDURE sp_viewPrescribeMedicine
@@ -1295,6 +1361,7 @@ GO
 CREATE PROC sp_viewPrescribeMedicine
 	@recordId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1319,6 +1386,7 @@ END
 
 
 -- add service
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addService')
 BEGIN
 	DROP PROCEDURE sp_addService
@@ -1329,6 +1397,7 @@ CREATE PROC sp_addService
 	@price FLOAT,
 	@description NVARCHAR(100)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1347,6 +1416,7 @@ BEGIN
 END
 
 -- update service
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updateService')
 BEGIN
 	DROP PROCEDURE sp_updateService
@@ -1358,6 +1428,7 @@ CREATE PROC sp_updateService
 	@price FLOAT,
 	@description NVARCHAR(100)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1383,6 +1454,7 @@ BEGIN
 END
 
 -- view one service dirty read
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOneService')
 BEGIN
 	DROP PROCEDURE sp_viewOneService
@@ -1391,6 +1463,7 @@ GO
 CREATE PROC sp_viewOneService
 	@serviceId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1409,6 +1482,7 @@ BEGIN
 END
 
 -- view all service dirty read
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllService')
 BEGIN
 	DROP PROCEDURE sp_viewAllService
@@ -1416,6 +1490,7 @@ END
 GO
 CREATE PROC sp_viewAllService
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1429,6 +1504,7 @@ BEGIN
 END
 
 -- add service use
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addServiceUse')
 BEGIN
 	DROP PROCEDURE sp_addServiceUse
@@ -1438,6 +1514,7 @@ CREATE PROC sp_addServiceUse
 	@serviceId INT,
 	@recordId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1466,6 +1543,7 @@ BEGIN
 END
 
 -- delete service use
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteServiceUse')
 BEGIN
 	DROP PROCEDURE sp_deleteServiceUse
@@ -1475,6 +1553,7 @@ CREATE PROC sp_deleteServiceUse
 	@serviceId INT,
 	@recordId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1503,6 +1582,7 @@ BEGIN
 END
 
 -- view service use
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewServiceUse')
 BEGIN
 	DROP PROCEDURE sp_viewServiceUse
@@ -1511,6 +1591,7 @@ GO
 CREATE PROC sp_viewServiceUse
 	@recordId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1548,6 +1629,7 @@ CREATE PROC sp_addInvoice
 	@total FLOAT,
 	@staffId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1579,6 +1661,7 @@ BEGIN
 END
 
 -- update invoice status
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updateInvoiceStatus')
 BEGIN
 	DROP PROCEDURE sp_updateInvoiceStatus
@@ -1588,6 +1671,7 @@ CREATE PROC sp_updateInvoiceStatus
 	@invoiceId INT,
 	@status NVARCHAR(30)
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1606,6 +1690,7 @@ BEGIN
 END
 
 -- view invoice by id * dirty read, phantom
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewInvoiceById')
 BEGIN
 	DROP PROCEDURE sp_viewInvoiceById
@@ -1614,6 +1699,7 @@ GO
 CREATE PROC sp_viewInvoiceById
 	@invoiceId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1632,6 +1718,7 @@ BEGIN
 END
 
 -- view invoice by record id
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewInvoiceByRecordId')
 BEGIN
 	DROP PROCEDURE sp_viewInvoiceByRecordId
@@ -1640,6 +1727,7 @@ GO
 CREATE PROC sp_viewInvoiceByRecordId
 	@recordId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1658,6 +1746,7 @@ BEGIN
 END
 
 -- view all invoice 
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllInvoice')
 BEGIN
 	DROP PROCEDURE sp_viewAllInvoice
@@ -1665,6 +1754,7 @@ END
 GO
 CREATE PROC sp_viewAllInvoice
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1678,14 +1768,16 @@ BEGIN
 END
 
 -- view all invoice 
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewStaffInvoice')
 BEGIN
 	DROP PROCEDURE sp_viewStaffInvoice
 END
 GO
 CREATE PROC sp_viewStaffInvoice
-	@staffId
-AS
+	@staffId INT
+AS 
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1704,6 +1796,7 @@ BEGIN
 END
 
 -- add dentist schedule 
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_addDentistSchedule')
 BEGIN
 	DROP PROCEDURE sp_addDentistSchedule
@@ -1713,6 +1806,7 @@ CREATE PROC sp_addDentistSchedule
 	@startTime DATETIME,
 	@dentistId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1738,6 +1832,7 @@ BEGIN
 END
 
 -- delete schedule - lost update
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteDentistSchedule')
 BEGIN
 	DROP PROCEDURE sp_deleteDentistSchedule
@@ -1747,6 +1842,7 @@ CREATE PROC sp_deleteDentistSchedule
 	@dentistId INT,
 	@startTime DATETIME
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1772,6 +1868,7 @@ BEGIN
 END
 
 -- view dentist schedule
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewDentistSchedule')
 BEGIN
 	DROP PROCEDURE sp_viewDentistSchedule
@@ -1780,6 +1877,7 @@ GO
 CREATE PROC sp_viewDentistSchedule
 	@dentistId INT
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1797,6 +1895,7 @@ BEGIN
 END
 	
 --view all schedule
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllSchedule')
 BEGIN
 	DROP PROCEDURE sp_viewAllSchedule
@@ -1804,6 +1903,7 @@ END
 GO
 CREATE PROC sp_viewAllSchedule
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
@@ -1818,6 +1918,7 @@ END
 
 
 -- view all schdedule available 
+GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllScheduleAvailable')
 BEGIN
 	DROP PROCEDURE sp_viewAllScheduleAvailable
@@ -1825,10 +1926,11 @@ END
 GO
 CREATE PROC sp_viewAllScheduleAvailable
 AS
+SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		SELECT * FROM SCHEDULE WHERE isBooked = 0 AND datediff(second, startTime, GETDATE())
+		SELECT * FROM SCHEDULE WHERE isBooked = 0 AND datediff(second, startTime, GETDATE()) > 0
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1838,10 +1940,10 @@ BEGIN
 END
 
 EXEC sp_signUp '01234567892', '123123123123', 'Customer2', 'Nam', '2008-11-11', N'Hà Nội'
-EXEC sp_customerLoginWithoutHash '01234567891', '123123123123'
-EXEC sp_viewOneCustomer 1
-EXEC sp_viewAllCustomer
-EXEC sp_updateCustomerProfile 1, 'Customer1', '01234567891', N'Nữ', 'TP HCM', '2008-11-11'
-EXEC sp_makeAppointment '0327116254', 'Customer4b', 'Nam', '2008-11-11', N'Hà Nội', 2, NULL, '2024-05-15 09:00:00', '2024-05-15 010:00:00'
-EXEC sp_addDentistSchedule '2023-11-15 07:00:00.000','2023-11-15 08:00:00.000',7
-EXEC sp_addPrescribeMedicine 1, 2, 100
+-- EXEC sp_customerLoginWithoutHash '01234567891', '123123123123'
+-- EXEC sp_viewOneCustomer 1
+-- EXEC sp_viewAllCustomer
+-- EXEC sp_updateCustomerProfile 1, 'Customer1', '01234567891', N'Nữ', 'TP HCM', '2008-11-11'
+-- EXEC sp_makeAppointment '0327116254', 'Customer4b', 'Nam', '2008-11-11', N'Hà Nội', 2, NULL, '2024-05-15 09:00:00', '2024-05-15 010:00:00'
+-- EXEC sp_addDentistSchedule '2023-11-15 07:00:00.000','2023-11-15 08:00:00.000',7
+-- EXEC sp_addPrescribeMedicine 1, 2, 100

@@ -1,52 +1,62 @@
-import axios from "axios";
-import { getConfig } from "../../utils/getConfig";
-import { API_URL } from "../../app/config";
+import Axios from "../../app/axiosConfig";
 
-const getAllMedicine = async (user) => {
-  const config = getConfig();
-  const response = await axios.get(
-    `${API_URL}medicine/get-all-medicine`,
-    config
-  );
+const getAllMedicine = async () => {
+  try {
+    const response = await Axios.get("medicine/get-all-medicine");
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
+};
+
+const getOneMedicine = async (medicineId) => {
+  try {
+    const response = await Axios.get("medicine/get-one-medicine", {
+      medicineId,
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
+};
+
+const createMedicine = async (medicine) => {
+  const response = await Axios.post("medicine/create-medicine", medicine);
   return response.data;
 };
 
-const createMedicine = async (user, data) => {
-  const config = getConfig();
-  console.log(data);
-  const response = await axios.post(
-    `${API_URL}medicine/create-medicine`,
-    data,
-    config
-  );
+const updateMedicine = async (medicine) => {
+  const response = await Axios.put("medicine/update-medicine", medicine);
   return response.data;
 };
 
-const deleteMedicine = async (user, data) => {
-  const config = getConfig();
-  const response = await axios.delete(
-    `${API_URL}medicine/delete-medicine`,
-    data,
-    config
-  );
+const deleteMedicine = async (medicineId) => {
+  const response = await Axios.delete(`medicine/delete-medicine/${medicineId}`);
   return response.data;
 };
 
-const updateMedicine = async (user, data) => {
-  const config = getConfig();
-  const response = await axios.put(
-    `${API_URL}medicine/update-medicine`,
-    data,
-    config
-  );
-  return response.data;
-};
-
-const appointmentService = {
+const medicineService = {
+  createMedicine,
   getAllMedicine,
+  getOneMedicine,
   deleteMedicine,
   updateMedicine,
-  createMedicine,
 };
 
-export default appointmentService;
+export default medicineService;

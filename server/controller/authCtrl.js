@@ -74,13 +74,13 @@ const logout = async (req, res) => {
 const blockUser = async (req, res) => {
   const input = req.body;
   try {
-    const db = await (await getDb("admin"))
-      .input("userId", input.userId)
+    const db = await (await getDb("guest"))
+      .input("userId", input.id)
       .input("role", input.role)
-      .execute("sp_blockUser");
+      .execute("sp_blockUser1");
     res
       .status(200)
-      .send(`Successfully block ${input.role} with id: ${input.userId}`);
+      .send(`Successfully block ${input.role} with id: ${input.id}`);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);

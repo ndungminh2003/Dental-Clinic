@@ -3,7 +3,6 @@ const { getRole } = require("../middlewares/authMiddleware");
 
 const createMedicine = async (req, res) => {
   const input = req.body;
-  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
@@ -28,7 +27,7 @@ const createMedicine = async (req, res) => {
 
 const updateMedicine = async (req, res) => {
   const input = req.body;
-  try {
+  try { 
     const role = getRole(req);
     const db = await (await getDb(role))
       .input("medicineId", input.medicineId)
@@ -52,8 +51,7 @@ const updateMedicine = async (req, res) => {
 };
 
 const deleteMedicine = async (req, res) => {
-  const input = req.body;
-  console.log(input);
+  const input = req.params;
   try {
     const role = getRole(req);
     const db = await (await getDb(role))

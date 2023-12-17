@@ -3,22 +3,31 @@ import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import SeeMedication from "../components/SeeMedication";
 import ChangeMedication from "../components/ChangeMedication";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllMedicine, deleteMedicine } from "../../../features/medicine/medicineSlice";
+import { deleteMedicine } from "../../../features/medicine/medicineSlice";
+import medicineServices from "../../../features/medicine/medicineServices";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function AllMedications() {
-
   const dispatch = useDispatch();
-  const { medicine, loading, success, error } = useSelector(
-    (state) => state.medicine
-  );
+
+  let { error, loading, success } = useSelector((state) => state.medicine);
+
+  const fetchData = async () => {
+    try {
+      const response = await medicineServices.getAllMedicine();
+      setMedicine(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [medicines, setMedicine] = useState([]);
 
   useEffect(() => {
-    dispatch(getAllMedicine());
-  }, []);
-
+    fetchData();
+  }, [error, loading, success]);
 
   const [openSee, setOpenSee] = React.useState(false);
   const [openChange, setOpenChange] = React.useState(false);
@@ -98,12 +107,12 @@ export default function AllMedications() {
 
   const handleActionClickSee = (row) => {
     setOpenSee(true);
-    setValues(medicine[row.dataIndex]);
+    setValues(medicines[row.dataIndex]);
   };
 
   const handleActionClickChange = (row) => {
     setOpenChange(true);
-    setValues(medicine[row.dataIndex]);
+    setValues(medicines[row.dataIndex]);
   };
 
   const options = {
@@ -111,9 +120,10 @@ export default function AllMedications() {
     download: false,
     print: false,
     onRowsDelete: (rowsDeleted) => {
-      const medcineId = {medicineId: medicine[rowsDeleted.data[0].dataIndex].id};
-      console.log(medcineId);
-      dispatch(deleteMedicine(medcineId));
+      for (let i = 0; i < rowsDeleted.data.length; i++) {
+        dispatch(deleteMedicine(medicines[rowsDeleted.data[i].dataIndex].id));
+      }
+      toast.success("Xóa thuốc thành công");
     },
   };
 
@@ -134,23 +144,30 @@ export default function AllMedications() {
       },
     });
   return (
-    <div className="w-full px-5 py-10">
-      <div>
-        <ThemeProvider theme={getMuiTheme()}>
-          <MUIDataTable
-            title={"All medication"}
-            data={medicine}
-            columns={columns}
-            options={options}
-          />
-        </ThemeProvider>
+    <>
+      <div className="w-full px-5 py-10">
+        <div>
+          <ThemeProvider theme={getMuiTheme()}>
+            <MUIDataTable
+              title={"All medication"}
+              data={medicines}
+              columns={columns}
+              options={options}
+            />
+          </ThemeProvider>
+        </div>
+        <SeeMedication
+          open={openSee}
+          onClose={handleCloseSee}
+          values={values}
+        />
+        <ChangeMedication
+          open={openChange}
+          onClose={handleCloseChange}
+          values={values}
+        />
       </div>
-      <SeeMedication open={openSee} onClose={handleCloseSee} values={values} />
-      <ChangeMedication
-        open={openChange}
-        onClose={handleCloseChange}
-        values={values}
-      />
-    </div>
+      <ToastContainer />
+    </>
   );
 }

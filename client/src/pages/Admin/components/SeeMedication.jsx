@@ -110,6 +110,7 @@ export default function SeeMedication(props) {
           </div>
           <input
             type="text"
+            value={values.price}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>

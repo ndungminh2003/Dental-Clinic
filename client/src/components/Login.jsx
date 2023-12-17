@@ -1,10 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import appointmentService from "../features/appointment/appointmentServices";
+import { login } from "../features/auth/authSlice";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 export default function Login({ bgcolor, ringcolor }) {
   const [value, setValue] = useState();
+  const dispatch = useDispatch();
+  const handleClick = () => {
+    dispatch(
+      login({
+        phone: "567890123",
+        password: "DentistPassword123",
+        role: "dentist",
+      })
+    );
+  };
+  const handleClick2 = async () => {
+    appointmentService
+      .getAllAppointment()
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => console.log(error));
+  };
 
   return (
     <div className="w-full flex items-center	min-h-screen">
@@ -46,8 +67,15 @@ export default function Login({ bgcolor, ringcolor }) {
             <div className="mb-4">
               <button
                 className={`${bgcolor} py-2 rounded-md w-full text-white`}
+                onClick={handleClick}
               >
                 Login
+              </button>
+              <button
+                className={`${bgcolor} py-2 rounded-md w-full text-white`}
+                onClick={handleClick2}
+              >
+                Click me
               </button>
             </div>
             <div>

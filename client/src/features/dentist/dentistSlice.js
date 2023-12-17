@@ -9,11 +9,21 @@ const initialState = {
   message: "",
 };
 
+export const getAllDentist = createAsyncThunk(
+  "dentist/get-all",
+  async (thunkAPI) => {
+    try {
+      return await dentistServices.getAllDentist();
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const createDentistAccount = createAsyncThunk(
   "dentist/create-account",
   async (dentist, thunkAPI) => {
     try {
-      
       return await dentistServices.createDentistAccount(dentist);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -40,6 +50,22 @@ export const dentistSlice = createSlice({
         state.message = "success";
       })
       .addCase(createDentistAccount.rejected, (state, action) => {
+        state.error = true;
+        state.success = false;
+        state.message = action.error;
+        state.loading = false;
+      })
+      .addCase(getAllDentist.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getAllDentist.fulfilled, (state, action) => {
+        state.error = false;
+        state.loading = false;
+        state.success = true;
+        state.dentist = action.payload;
+        state.message = "success";
+      })
+      .addCase(getAllDentist.rejected, (state, action) => {
         state.error = true;
         state.success = false;
         state.message = action.error;

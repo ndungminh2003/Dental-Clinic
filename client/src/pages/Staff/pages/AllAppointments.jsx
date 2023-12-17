@@ -1,72 +1,70 @@
 import React from "react";
 import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-const data = [
-  {
-    index: 0,
-    values: [
-      "05-10-2023",
-      "09:15 -> 15h50",
-      "Yonkers",
-      "4 Nguyễn Văn Cừ Q:5 P:10",
-      "0000000000",
-      "Male",
-      "cancelled",
-    ],
-  },
-  {
-    index: 1,
-    values: [
-      "06-10-2023",
-      "09:00 -> 15h50",
-      "Jack",
-      "5 Nguyễn Văn Cừ Q:5 P:10",
-      "0000000000",
-      "Male",
-      "cancelled",
-    ],
-  },
-  {
-    index: 2,
-    values: [
-      "07-10-2023",
-      "09:30 -> 15h50",
-      "Alice",
-      "6 Nguyễn Văn Cừ Q:5 P:10",
-      "0000000000",
-      "Female",
-      "cancelled",
-    ],
-  },
-  {
-    index: 3,
-    values: [
-      "08-10-2023",
-      "09:40 -> 15h50",
-      "Blanc",
-      "7 Nguyễn Văn Cừ Q:5 P:10",
-      "0000000000",
-      "Male",
-      "cancelled",
-    ],
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { getAllAppointment } from "../../../features/appointment/appointmentSlice";
+import { useEffect } from "react";
 
-const AllAppointments = () => {
+export default function AllAppointments() {
+  const dispatch = useDispatch();
+  const { appointment, loading, success, error } = useSelector(
+    (state) => state.appointment
+  );
+  useEffect(() => {
+    dispatch(getAllAppointment());
+  }, []);
+  useEffect(() => {
+    console.log(appointment);
+  }, [appointment]);
   const columns = [
-    "Appointment date",
-    "Appointment time",
-    "Patient name",
     {
-      name: "Adress",
-      options: { display: false },
+      name: "startTime",
+      label: "Start Time",
+      options: {
+        filter: true,
+        sort: true,
+      },
     },
-    "Phone Number",
     {
-      name: "Gender",
-      options: { display: false },
+      name: "endTime",
+      label: "End Time",
+      options: {
+        filter: true,
+        sort: true,
+      },
     },
-    "Status",
+    {
+      name: "customerName",
+      label: "Customer",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "dentistName",
+      label: "Dentist",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "staffName",
+      label: "Staff",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "status",
+      label: "Status",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
   ];
 
   const options = {
@@ -94,11 +92,11 @@ const AllAppointments = () => {
         MUIDataTableHeadCell: {
           root: {
             textTransform: "lowercase",
-            '&:first-child': {
-              textTransform: 'capitalize', // Optional: capitalize the first letter
+            "&:first-child": {
+              textTransform: "capitalize", // Optional: capitalize the first letter
             },
           },
-        }, 
+        },
       },
     });
   return (
@@ -107,7 +105,7 @@ const AllAppointments = () => {
         <ThemeProvider theme={getMuiTheme()}>
           <MUIDataTable
             title={"All appoinment"}
-            data={data.map((entry) => entry.values)}
+            data={appointment}
             columns={columns}
             options={options}
           />
@@ -115,6 +113,4 @@ const AllAppointments = () => {
       </div>
     </div>
   );
-};
-
-export default AllAppointments;
+}

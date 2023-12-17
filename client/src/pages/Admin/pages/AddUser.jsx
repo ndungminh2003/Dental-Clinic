@@ -25,7 +25,9 @@ export default function AddUser() {
     validationSchema: Yup.object({
       name: Yup.string().max(50, "Must be less than 50").required("Required"),
       phoneNumber: Yup.number().required("Required"),
-      password: Yup.string().required("Required"),
+      password: Yup.string()
+        .min(10, "Mật khẩu phải nhiều hơn 10 kí tự")
+        .required("Required"),
       dateOfBirth: Yup.string().required("Required"),
     }),
 

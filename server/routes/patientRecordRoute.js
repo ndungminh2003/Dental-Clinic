@@ -21,8 +21,8 @@ router.delete(
 router.get("/get-patient-record", patientRecordCtrl.getOnePatientRecord);
 router.get(
   "/get-all-patient-record",
-  authM.isNotDentist,
-  authM.isNotCustomer,
+  // authM.isNotDentist,
+  // authM.isNotCustomer,
   patientRecordCtrl.getAllPatientRecord
 );
 router.get(

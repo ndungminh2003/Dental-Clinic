@@ -57,8 +57,8 @@ export default function DentalRecords() {
         </div>
         <div className='pt-10 pb-10'>FILTER</div>
        
-        <div className='flex flex-col items-center h-[600px] w-11/12 overflow-y-scroll shadow-xl rounded-2xl'>
-            <div className=' flex flex-row gap-20 pb-10 pt-10'>
+        <div className='flex flex-col items-start pl-40 h-[600px] w-11/12 overflow-y-scroll shadow-xl rounded-2xl'>
+            <div className=' flex flex-row gap-20 pb-6'>
                 <div className='border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center record-container'>
                     <div className='font-bold text-4xl'>
                         TOOTH DECAY
@@ -101,7 +101,7 @@ export default function DentalRecords() {
                     <button className='text-blue-hosta hover:underline text-xl flex flex-row justify-end pr-10'><Link to= "/prescriptions">View details  &#8250;</Link></button>
                 </div>
             </div>
-            <div className=' flex flex-row gap-20 pb-10'>
+            <div className=' flex flex-row gap-20 pb-6'>
                 <div className='border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center record-container'>
                     <div className='font-bold text-4xl'>
                         GINGIVITIS
@@ -144,7 +144,7 @@ export default function DentalRecords() {
                     <button className='text-blue-hosta hover:underline text-xl flex flex-row justify-end pr-10'><Link to= "/prescriptions">View details  &#8250;</Link></button>
                 </div>
             </div>
-            <div className=' flex flex-row gap-20 pb-10'>
+            <div className=' flex flex-row gap-20 pb-6'>
                 <div className='border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center record-container'>
                     <div className='font-bold text-4xl'>
                         TOOTH DECAY

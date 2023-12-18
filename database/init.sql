@@ -29,6 +29,7 @@ CREATE TABLE CUSTOMER (
   birthday DATE,
   isBlocked BIT NOT NULL DEFAULT(0)
 );
+select * from customer
 
 CREATE TABLE DENTIST (
 
@@ -467,9 +468,15 @@ BEGIN
 	GRANT EXEC ON dbo.sp_viewAllDentist TO guestRole
 	GRANT EXEC ON dbo.sp_viewAllStaff TO guestRole
 
+	GRANT EXEC ON dbo.sp_viewInvoiceByRecordId TO guestRole
+	GRANT EXEC ON dbo.sp_updateInvoiceStatus TO guestRole
+	GRANT EXEC ON dbo.sp_makeAppointment to guestRole
+	GRANT EXEC ON dbo.sp_updateService to guestRole
+
 	GRANT EXEC ON dbo.sp_createDentist TO guestRole
 	GRANT EXEC ON dbo.sp_createStaff TO guestRole
 	GRANT EXEC ON dbo.sp_blockUser1 to guestRole
+	
 
   END TRY
   BEGIN CATCH
@@ -479,4 +486,11 @@ END
 
 EXEC sp_createDatabaseUser
 
-select * from CUSTOMER
+select * from service
+
+select * from appointment
+
+select * from invoice
+select * from PATIENT_RECORD
+select * from PRESCRIBE_MEDICINE
+delete from invoice where recordId = 1

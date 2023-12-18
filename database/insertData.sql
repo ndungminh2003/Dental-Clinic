@@ -70,9 +70,13 @@ VALUES (1, '2023-11-10 08:00:00', '2023-11-10 09:00:00', 0);
 INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
 VALUES (1, '2023-12-14 09:00:00', '2023-12-14 10:00:00', 0);
 
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (1, '2023-12-19 09:00:00', '2023-12-19 10:00:00', 0);
+
 -- Insert data into the SERVICE_USE table to associate services with a patient record
 INSERT INTO SERVICE_USE (recordId, serviceId, price)
 VALUES (2, 1, 50.00);
 
-select * from PRESCRIBE_MEDICINE
+select * from schedule
 

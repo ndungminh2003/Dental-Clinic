@@ -36,10 +36,25 @@ const getServiceUseByRecordId = async (recordId) => {
     }
   }
 };
+const deleteService = async (serviceId) => {
+  const response = await Axios.delete(`service/delete-service/${serviceId}`);
+  return response.data;
+};
+const updateService = async (service) => {
+  const response = await Axios.put("service/update-service", service);
+  return response.data;
+};
+const createService = async (service) => {
+  const response = await Axios.post("service/create-service", service);
+  return response.data;
+};
 
 const serviceService = {
     getAllService,
     getServiceUseByRecordId,
+    deleteService,
+    updateService,
+    createService
 };
 
 export default serviceService;

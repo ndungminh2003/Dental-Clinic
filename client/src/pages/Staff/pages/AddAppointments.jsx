@@ -31,7 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getAllScheduleAvailable } from "../../../features/schedule/scheduleSlice";
 import { getAllDentist } from "../../../features/dentist/dentistSlice";
-
+import { makeAppointment } from "../../../features/appointment/appointmentSlice";
 function getDate() {
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -53,18 +53,44 @@ function getDateforinput() {
 }
 function SimpleDialog(props) {
   const { onClose, open, dentist } = props;
+  console.log("dentist", dentist);
+  
+  const dispatch = useDispatch();
+  const message = useSelector((state) => state.appointment.message);
+
+  const [add, isAdd] = useState(false);
+  const [field, setField] = useState(false);
   const [data, setData] = useState({
     phone: "",
     name: "",
-    gender: "",
+    gender: "Male",
     birthday: "",
     address: "",
-    dentist: "",
-    staffId: "",
+    dentistId: dentist && dentist[0].id,
     date: "",
     start: "",
     value: [],
   });
+  useEffect(() => {
+    setField(
+      data.name.length > 0 &&
+        data.name.length < 51 &&
+        data.birthday.length != 0 &&
+        data.phone.length > 0 &&
+        data.phone.length < 12 &&
+        data.address.length > 0 &&
+        data.address.length < 51 &&
+        data.date.length != 0 &&
+        data.start.length != 0
+    );
+  }, [
+    data.name,
+    data.birthday,
+    data.address,
+    data.phone,
+    data.date,
+    data.start,
+  ]);
   const handleClose = () => {
     onClose();
   };
@@ -75,16 +101,24 @@ function SimpleDialog(props) {
   const handleListItemClick = (value) => {
     onClose(value);
   };
-  const handleListItemAdd = (value) => {
+  const handleListItemAdd = () => {
+    isAdd(true);
     const pushData = {
       phone: data.phone,
       name: data.name,
-      gender: data.gender,
+      gender: data.gender === "Male" ? "Nam" : "Nữ",
       birthday: data.birthday,
       address: data.address,
+      dentistId: data.dentistId,
+      staffId: null,
+      startTime: `${data.date} ${data.start}.000`,
     };
-    console.log(data);
-    // onClose(value);
+    console.log("pushData", pushData);
+    console.log("field", field);
+    if(field){
+      dispatch(makeAppointment(pushData));
+      console.log("message", message);
+    }
   };
   const handleInputChange = (name, value) => {
     setData((prevData) => ({
@@ -110,6 +144,13 @@ function SimpleDialog(props) {
             className={` w-3/4  px-3 py-2 rounded-md  border border-gray-300	`}
           ></input>
         </div>
+        {add && (data.name.length == 0 || data.name.length > 50) && (
+          <>
+            <h1 className="ml-[105px] text-xs text-red-600">
+              Patient name should have 1-50 characters
+            </h1>
+          </>
+        )}
         <div className="flex  grow mt-3">
           <div className="flex w-[250px] items-center">
             <div className="w-1/4">
@@ -137,6 +178,13 @@ function SimpleDialog(props) {
             </select>
           </div>
         </div>
+        {add && data.birthday.length == 0 && (
+          <>
+            <h1 className="ml-[105px] text-xs text-red-600">
+              Birthday required
+            </h1>
+          </>
+        )}
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Phone</label>
@@ -151,6 +199,13 @@ function SimpleDialog(props) {
             />
           </div>
         </div>
+        {add && (data.phone.length == 0 || data.phone.length > 11) && (
+          <>
+            <h1 className="ml-[105px] text-xs text-red-600">
+              Phone should have 11 number including country code
+            </h1>
+          </>
+        )}
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Adress</label>
@@ -162,13 +217,20 @@ function SimpleDialog(props) {
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>
+        {add && (data.address.length == 0 || data.address.length > 50) && (
+          <>
+            <h1 className="ml-[105px] text-xs text-red-600">
+              Patient address should have 1-120 characters
+            </h1>
+          </>
+        )}
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Dentist</label>
           </div>
           <select
-            value={data.dentist}
-            onChange={(e) => handleInputChange("dentist", e.target.value)}
+            value={data.dentistId}
+            onChange={(e) => handleInputChange("dentistId", e.target.value)}
             className="w-3/4 px-3 py-2 rounded-md border border-gray-300 "
           >
             {dentist &&
@@ -205,6 +267,18 @@ function SimpleDialog(props) {
               className={` w-3/4 ml-2  px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
+        </div>
+        <div className="flex">
+          {add && data.date.length == 0 && (
+            <>
+              <h1 className="ml-[105px] text-xs text-red-600">Date required</h1>
+            </>
+          )}
+          {add && data.start.length == 0 && (
+            <>
+              <h1 className="ml-[132px] text-xs text-red-600">Time required</h1>
+            </>
+          )}
         </div>
         <div className="flex mt-5 justify-end">
           <button
@@ -264,10 +338,10 @@ function AddAppointments() {
       title: "free schedule",
       endDate: new Date(item.endTime).toLocaleString("en-US", {
         timeZone: "UTC",
-      }), 
+      }),
       startDate: new Date(item.startTime).toLocaleString("en-US", {
         timeZone: "UTC",
-      }), 
+      }),
     }));
 
   const dentist =

@@ -19,6 +19,28 @@ export const getInvoiceByRecordId = createAsyncThunk(
   }
 );
 
+export const addInvoice = createAsyncThunk(
+  "invoice/add-invoice",
+  async (invoice, thunkAPI) => {
+    try {
+      return await invoiceService.addInvoice(invoice);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const updateInvoiceStatus = createAsyncThunk(
+  "invoice/update-invoice-status",
+  async (invoiceId, thunkAPI) => {
+    try {
+      return await invoiceService.updateInvoiceStatus(invoiceId);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const invoiceSlice = createSlice({
     name: "invoice",
     initialState: initialState,
@@ -36,6 +58,38 @@ export const invoiceSlice = createSlice({
           state.message = "success";
         })
         .addCase(getInvoiceByRecordId.rejected, (state, action) => {
+          state.error = true;
+          state.success = false;
+          state.message = action.error;
+          state.loading = false;
+        })
+        .addCase(addInvoice.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(addInvoice.fulfilled, (state, action) => {
+          state.error = false;
+          state.loading = false;
+          state.success = true;
+          state.invoice = action.payload;
+          state.message = "success";
+        })
+        .addCase(addInvoice.rejected, (state, action) => {
+          state.error = true;
+          state.success = false;
+          state.message = action.error;
+          state.loading = false;
+        })
+        .addCase(updateInvoiceStatus.pending, (state) => {
+          state.loading = true;
+        })
+        .addCase(updateInvoiceStatus.fulfilled, (state, action) => {
+          state.error = false;
+          state.loading = false;
+          state.success = true;
+          state.invoice = action.payload;
+          state.message = "success";
+        })
+        .addCase(updateInvoiceStatus.rejected, (state, action) => {
           state.error = true;
           state.success = false;
           state.message = action.error;

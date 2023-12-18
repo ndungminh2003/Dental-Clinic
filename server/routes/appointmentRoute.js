@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post(
   "/make-appointment",
-  authM.isNotDentist,
+  // authM.isNotDentist,
   appointmentCtrl.makeAppointment
 );
 router.get("/get-one-appointment", appointmentCtrl.getOneAppointment);

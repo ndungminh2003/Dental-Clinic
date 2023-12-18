@@ -1746,7 +1746,7 @@ BEGIN
 				RAISERROR(N'Lỗi: mã hồ sơ bệnh nhân không tồn tại', 16, 1)
 				ROLLBACK TRAN
 			END
-			SELECT I.status, I.total, I.date_time FROM INVOICE I WHERE recordId = @recordId
+			SELECT I.id, I.status, I.total, I.date_time FROM INVOICE I WHERE recordId = @recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH

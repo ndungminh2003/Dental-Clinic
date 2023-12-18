@@ -3,6 +3,7 @@ const { getRole } = require("../middlewares/authMiddleware");
 
 const addInvoice = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
@@ -25,6 +26,7 @@ const addInvoice = async (req, res) => {
 
 const updateInvoiceStatus = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
@@ -44,6 +46,7 @@ const updateInvoiceStatus = async (req, res) => {
 
 const getInvoiceByRecordId = async (req, res) => {
   const { recordId } = req.query;
+  console.log(recordId);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))

@@ -33,6 +33,9 @@ import AllMedication from "./pages/Admin/pages/AllMedications";
 import UserManagement from "./pages/Admin/pages/UserManagement";
 import AddUser from "./pages/Admin/pages/AddUser";
 import AllUsers from "./pages/Admin/pages/AllUsers";
+import Service from "./pages/Admin/pages/Service";
+import AllService from "./pages/Admin/pages/AllService";
+import AddService from "./pages/Admin/pages/AddService";
 
 import Profile from "./pages/Profile";
 import BookAppointment from "./pages/BookAppointment"
@@ -78,6 +81,10 @@ const router = createBrowserRouter(
 
        <Route path="admin/login" element={<AdminLogin />}></Route>
       <Route path="/admin" element={<Admin />}>
+        <Route path ="service" element ={<Service/>}>
+          <Route path="add" element ={<AddService/>}></Route>
+          <Route path="all" element ={<AllService/>}></Route>
+        </Route>
         <Route path ="medication" element ={<Medication/>}>
           <Route path="add" element ={<AddMedication/>}></Route>
           <Route path="all" element ={<AllMedication/>}></Route>

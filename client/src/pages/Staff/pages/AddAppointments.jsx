@@ -66,7 +66,7 @@ function SimpleDialog(props) {
     gender: "Male",
     birthday: "",
     address: "",
-    dentistId: dentist && dentist[0].id,
+    dentistId: "",
     date: "",
     start: "",
     value: [],
@@ -378,7 +378,7 @@ function AddAppointments() {
     const selectedMember = event.target.value;
     console.log("Selected Member:", selectedMember);
 
-    const selectedOwner = dentist.find((owner) => owner.id === selectedMember);
+    const selectedOwner = dentist && dentist.find((owner) => owner.id === selectedMember);
 
     const membersResource = {
       fieldName: "dentistId",
@@ -398,10 +398,11 @@ function AddAppointments() {
       selectedOwner,
       data: selectedMember
         ? AppointmentsData.filter((appointment) =>
-            appointment.dentistId.includes(selectedMember)
+            appointment.dentistId && appointment.dentistId.includes(selectedMember)
           )
         : AppointmentsData,
     }));
+    
   };
 
   return (
@@ -424,7 +425,7 @@ function AddAppointments() {
             {dentist &&
               dentist.map((member) => (
                 <MenuItem key={member.id} value={member.id}>
-                  {member.text}
+                  {member?.text}
                 </MenuItem>
               ))}
           </Select>

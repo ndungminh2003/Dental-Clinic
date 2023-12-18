@@ -12,22 +12,22 @@ export default function Form() {
             <div className="flex flex-row gap-16 items-center justify-center w-[1000px]  pt-10">
                 <div className="flex flex-col gap-3">
                     <h3 className="font-bold text-2xl">NAME</h3>
-                    <input type="text" className="rounded-xl w-[390px] h-[48px] text-2xl" placeholder="  Enter your name" maxLength={50}></input>
+                    <input type="text" className="rounded-xl w-[390px] h-[48px] text-2xl pl-3" placeholder="Enter your name" maxLength={50}></input>
                 </div>
                 
                 <div className="flex flex-col gap-3">
                     <h3 className="font-bold text-2xl">DATE OF BIRTH</h3>
-                    <input type="date" className="rounded-xl w-[390px] h-[48px] text-2xl text-center"></input>
+                    <input type="date" className="rounded-xl w-[390px] h-[48px] pl-3 text-2xl pr-4"></input>
                 </div>
             </div>
             <div className="flex flex-col gap-3">
                     <h3 className="font-bold text-2xl">ADDRESS</h3>
-                    <input type="text" className="rounded-xl w-[845px] h-[48px] text-2xl" placeholder="  Enter your address" maxLength={120}></input>
+                    <input type="text" className="rounded-xl w-[845px] h-[48px] text-2xl pl-3" placeholder="Enter your address" maxLength={120}></input>
             </div>
             <div className="flex flex-row gap-16 items-center justify-center w-[1000px] ">
                 <div className="flex flex-col gap-3">
                     <h3 className="font-bold text-2xl">PHONE NUMBER</h3>
-                    <input type="text" className="rounded-xl w-[390px] h-[48px] text-2xl" placeholder="  Enter your phone number" maxLength={11}></input>
+                    <input type="text" className="rounded-xl w-[390px] h-[48px] text-2xl pl-3" placeholder="Enter your phone number" maxLength={11}></input>
                 </div>
                 <div className="flex flex-col gap-3">
                     <h3 className="font-bold text-2xl">GENDER</h3>

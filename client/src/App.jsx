@@ -43,6 +43,7 @@ import BookSuccess from "./pages/BookSuccess";
 import BookFailed from "./pages/BookFailed";
 import DentalRecords from "./pages/DentalRecords";
 import Services from "./pages/Services";
+import Prescriptions from "./pages/Prescriptions";
 
 
 const router = createBrowserRouter(
@@ -96,6 +97,7 @@ const router = createBrowserRouter(
       <Route path="/book-successful" element= {<BookSuccess />}></Route>
       <Route path="/book-failed" element= {<BookFailed />}></Route>
       <Route path="/service" element= {<Services />}></Route>
+      <Route path="/prescriptions" element= {<Prescriptions />}></Route>
     </>
   )
 );

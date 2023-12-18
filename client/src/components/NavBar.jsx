@@ -16,34 +16,44 @@ export default function NavBar() {
 
   return (
     <>
-      <div className="flex w-full border-b border-solid border-gray justify-evenly items-center h-20">
+      <div className="flex w-full border-b border-solid border-gray justify-evenly items-center h-24">
         <div>Logo</div>
-        <div className="flex gap-24">
-          <Link to="/" className="text-2xl hover:underline">
+        <div className="flex flex-row gap-[60px] ">
+          <div className="text-2xl hover:bg-gray-100 w-[140px] h-14 rounded-xl flex justify-center items-center">
+            <Link to="/" >
             Home
-          </Link>
-          <Link to="/contact-us" className="text-2xl hover:underline">
-            Contact Us
-          </Link>
-          <Link to="/service" className="text-2xl hover:underline">
-            Services
-          </Link>
-          <Link to="/our-dentist" className="text-2xl hover:underline">
-            Our Dentists
-          </Link>
+            </Link>
+          </div>
+          <div className="text-2xl hover:bg-gray-100 w-[140px] h-14 rounded-xl flex justify-center items-center">
+            <Link to="/contact-us" >
+              Contact Us
+            </Link>
+          </div>
+          <div className="text-2xl hover:bg-gray-100 w-[140px] h-14 rounded-xl flex justify-center items-center ">
+            <Link to="/service" >
+                Services
+            </Link>
+          </div>
+          
+          <div className="text-2xl hover:bg-gray-100 w-[140px] h-14 rounded-xl flex justify-center items-center">
+            <Link to="/our-dentist" >
+              Our Dentists
+            </Link>
+          </div>
+          
           <br />
-          <Link
-            to="/book-appointment"
-            className="text-xl text-white font-bold bg-blue-hosta rounded-lg w-60 h-10 flex justify-center items-center border-solid border-white hover:bg-dirty-blue"
-          >
+          <div className="text-2xl text-white font-bold bg-blue-hosta rounded-lg w-[300px] h-12 flex justify-center items-center border-solid border-white hover:bg-dirty-blue">
+          <Link to="/book-appointment">
             Book an appointment
           </Link>
+          </div>
+          
         </div>
 
         <div className="flex gap-1">
           <div className="relative">
             <button
-              className="text-xl text-black bg-gray-200 hover:bg-blue-hosta hover:text-white cursor-pointer"
+              className="text-xl font-semibold text-black bg-gray-200 hover:bg-gray-300 cursor-pointer p-1 rounded-[8px] w-40"
               onClick={toggleDropdown}
             >
               Profile

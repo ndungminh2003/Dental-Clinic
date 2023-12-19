@@ -33,6 +33,9 @@ import AllMedication from "./pages/Admin/pages/AllMedications";
 import UserManagement from "./pages/Admin/pages/UserManagement";
 import AddUser from "./pages/Admin/pages/AddUser";
 import AllUsers from "./pages/Admin/pages/AllUsers";
+import Service from "./pages/Admin/pages/Service";
+import AllService from "./pages/Admin/pages/AllService";
+import AddService from "./pages/Admin/pages/AddService";
 
 import Profile from "./pages/Profile";
 import BookAppointment from "./pages/BookAppointment"
@@ -43,6 +46,7 @@ import BookSuccess from "./pages/BookSuccess";
 import BookFailed from "./pages/BookFailed";
 import DentalRecords from "./pages/DentalRecords";
 import Services from "./pages/Services";
+import Prescriptions from "./pages/Prescriptions";
 
 
 const router = createBrowserRouter(
@@ -77,6 +81,10 @@ const router = createBrowserRouter(
 
        <Route path="admin/login" element={<AdminLogin />}></Route>
       <Route path="/admin" element={<Admin />}>
+        <Route path ="service" element ={<Service/>}>
+          <Route path="add" element ={<AddService/>}></Route>
+          <Route path="all" element ={<AllService/>}></Route>
+        </Route>
         <Route path ="medication" element ={<Medication/>}>
           <Route path="add" element ={<AddMedication/>}></Route>
           <Route path="all" element ={<AllMedication/>}></Route>
@@ -96,6 +104,7 @@ const router = createBrowserRouter(
       <Route path="/book-successful" element= {<BookSuccess />}></Route>
       <Route path="/book-failed" element= {<BookFailed />}></Route>
       <Route path="/service" element= {<Services />}></Route>
+      <Route path="/prescriptions" element= {<Prescriptions />}></Route>
     </>
   )
 );

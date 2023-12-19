@@ -8,6 +8,7 @@ import scheduleReducer from "../features/schedule/scheduleSlice";
 import serviceReducer from "../features/service/serviceSlice";
 import prescribeMedicineReducer from "../features/prescribeMedicine/prescribeMedicineSlice";
 import invoiceReducer from "../features/invoice/invoiceSlice";
+import serviceUseReducer from "../features/serviceUse/serviceUseSlice";
 import storage from "redux-persist/lib/storage";
 import {
   persistStore,
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
   service: serviceReducer,
   prescribeMedicine: prescribeMedicineReducer,
   invoice:  invoiceReducer,
+  serviceUse: serviceUseReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

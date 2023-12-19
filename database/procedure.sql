@@ -1754,7 +1754,7 @@ BEGIN
 				RAISERROR(N'Lỗi: mã hồ sơ bệnh nhân không tồn tại', 16, 1)
 				ROLLBACK TRAN
 			END
-			SELECT I.status, I.total, I.date_time FROM INVOICE I WHERE recordId = @recordId
+			SELECT I.id, I.status, I.total, I.date_time FROM INVOICE I WHERE recordId = @recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1911,6 +1911,33 @@ BEGIN
         ;THROW
 	END CATCH
 END
+
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAvailableDentistSchedule')
+BEGIN
+	DROP PROCEDURE sp_viewAvailableDentistSchedule
+END
+GO
+CREATE PROC sp_viewAvailableDentistSchedule
+	@dentistId INT
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
+		BEGIN
+			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
+		END
+		SELECT * FROM SCHEDULE WHERE dentistId = @dentistId AND isBooked = 0 AND datediff(second, startTime, GETDATE()) < 0
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
 	
 --view all schedule
 GO
@@ -1948,7 +1975,7 @@ SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		SELECT * FROM SCHEDULE WHERE isBooked = 0 AND datediff(second, startTime, GETDATE()) > 0
+		SELECT * FROM SCHEDULE WHERE isBooked = 0 AND datediff(second, startTime, GETDATE()) < 0
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1956,6 +1983,55 @@ BEGIN
         ;THROW
 	END CATCH
 END
+
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewScheduleAvailableOnDay')
+BEGIN
+	DROP PROCEDURE sp_viewScheduleAvailableOnDay
+END
+GO
+CREATE PROC sp_viewScheduleAvailableOnDay
+	@date DATETIME
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		SELECT SC.*, DT.name, DT.gender FROM SCHEDULE SC JOIN DENTIST DT ON SC.dentistId = DT.id WHERE SC.isBooked = 0 AND datediff(DAY, SC.startTime, @date) = 0
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_getDentistHaveSchedule')
+BEGIN
+	DROP PROCEDURE sp_getDentistHaveSchedule
+END
+GO
+CREATE PROC sp_getDentistHaveSchedule
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		SELECT DISTINCT DT.id, DT.name, DT.gender FROM SCHEDULE SC JOIN DENTIST DT ON SC.dentistId = DT.id WHERE SC.isBooked = 0 AND datediff(second, SC.startTime, GETDATE()) < 0
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
+SELECT * FROM SCHEDULE
+
+EXEC sp_getDentistHaveSchedule
+
+EXEC sp_viewScheduleAvailableOnDay '2023-12-28'
 
 EXEC sp_signUp '01234567892', '123123123123', 'Customer2', 'Nam', '2008-11-11', N'Hà Nội'
 -- EXEC sp_customerLoginWithoutHash '01234567891', '123123123123'

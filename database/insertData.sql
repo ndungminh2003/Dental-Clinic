@@ -13,6 +13,27 @@ VALUES ('Minh7', 'CustomerPassword123', '218295423369', 'Customer', N'Nam', '123
 INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
 VALUES ('Dentist1', 'DentistPassword123', '567890123', N'Nữ', '1985-08-20', 'Experienced dentist', 0);
 
+INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
+VALUES ('Dentist2', 'DentistPassword123', '567890001', N'Nữ', '1985-08-20', 'Experienced dentist', 0);
+
+INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
+VALUES ('Dentist3', 'DentistPassword123', '567890002', N'Nữ', '1985-08-20', 'Experienced dentist', 0);
+
+INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
+VALUES ('Dentist4', 'DentistPassword123', '567890003', N'Nữ', '1985-08-20', 'Experienced dentist', 0);
+
+INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
+VALUES ('Dentist5', 'DentistPassword123', '567890004', N'Nam', '1985-08-20', 'Experienced dentist', 0);
+
+INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
+VALUES ('Dentist6', 'DentistPassword123', '567890005', N'Nam', '1985-08-20', 'Experienced dentist', 0);
+
+INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
+VALUES ('Dentist7', 'DentistPassword123', '567890006', N'Nam', '1985-08-20', 'Experienced dentist', 0);
+
+INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
+VALUES ('Dentist8', 'DentistPassword123', '567890007', N'Nam', '1985-08-20', 'Experienced dentist', 0);
+
 -- Insert data into the STAFF table
 INSERT INTO STAFF (name, password, phoneNumber, gender, isBlocked)
 VALUES ('Staff1', 'StaffPassword123', '789012345', N'Nam', 0);
@@ -67,15 +88,98 @@ VALUES (269.80, '2023-12-12 16:00:00', N'Chưa thanh toán', 2, 1);
 
 -- Insert data into the SCHEDULE table to define the schedule for a dentist
 INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
-VALUES (1, '2023-11-10 08:00:00', '2023-11-10 09:00:00', 0);
+VALUES (1, '2023-12-28 08:00:00', '2023-12-28 09:00:00', 0);
 
 INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
-VALUES (1, '2023-12-14 09:00:00', '2023-12-14 10:00:00', 0);
+VALUES (2, '2023-12-28 08:00:00', '2023-12-28 09:00:00', 0);
 
--- Insert data into the SERVICE_USE table to associate services with a patient record
-INSERT INTO SERVICE_USE (recordId, serviceId, price)
-VALUES (2, 1, 50.00);
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (3, '2023-12-28 08:00:00', '2023-12-28 09:00:00', 0);
 
-select * from PRESCRIBE_MEDICINE
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (4, '2023-12-28 08:00:00', '2023-12-28 09:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (5, '2023-12-28 08:00:00', '2023-12-28 09:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (1, '2023-12-28 09:00:00', '2023-12-28 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (2, '2023-12-28 09:00:00', '2023-12-28 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (3, '2023-12-28 09:00:00', '2023-12-28 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (4, '2023-12-28 09:00:00', '2023-12-28 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (5, '2023-12-28 09:00:00', '2023-12-28 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (1, '2023-12-28 07:00:00', '2023-12-28 08:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (2, '2023-12-28 07:00:00', '2023-12-28 08:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (3, '2023-12-28 07:00:00', '2023-12-28 08:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (4, '2023-12-28 07:00:00', '2023-12-28 08:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (5, '2023-12-28 07:00:00', '2023-12-28 08:00:00', 0);
+
+----
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (1, '2023-12-29 08:00:00', '2023-12-29 09:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (2, '2023-12-29 08:00:00', '2023-12-29 09:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (3, '2023-12-29 08:00:00', '2023-12-29 09:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (4, '2023-12-29 08:00:00', '2023-12-29 09:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (5, '2023-12-29 08:00:00', '2023-12-29 09:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (1, '2023-12-29 09:00:00', '2023-12-29 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (2, '2023-12-29 09:00:00', '2023-12-29 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (3, '2023-12-29 09:00:00', '2023-12-29 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (4, '2023-12-29 09:00:00', '2023-12-29 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (5, '2023-12-29 09:00:00', '2023-12-29 10:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (1, '2023-12-29 07:00:00', '2023-12-29 08:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (2, '2023-12-29 07:00:00', '2023-12-29 08:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (3, '2023-12-29 07:00:00', '2023-12-29 08:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (4, '2023-12-29 07:00:00', '2023-12-29 08:00:00', 0);
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (5, '2023-12-29 07:00:00', '2023-12-29 08:00:00', 0);
+
+SELECT * FROM DENTIST
+SELECT * FROM SCHEDULE
+SELECT * FROM APPOINTMENT
 
 select * from CUSTOMER	

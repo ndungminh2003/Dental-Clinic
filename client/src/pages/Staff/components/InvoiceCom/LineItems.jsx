@@ -71,9 +71,6 @@ export default LineItems;
 LineItems.propTypes = {
   items: PropTypes.array.isRequired,
   currencyFormatter: PropTypes.func.isRequired,
-  addHandler: PropTypes.func.isRequired,
   changeHandler: PropTypes.func.isRequired,
   focusHandler: PropTypes.func.isRequired,
-  deleteHandler: PropTypes.func.isRequired,
-  reorderHandler: PropTypes.func.isRequired,
 };

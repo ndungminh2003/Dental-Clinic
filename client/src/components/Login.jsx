@@ -1,57 +1,102 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import appointmentService from "../features/appointment/appointmentServices";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "../features/auth/authSlice";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import toast from "react-hot-toast";
 
-export default function Login({ bgcolor, ringcolor }) {
-  const [value, setValue] = useState();
+const initialValues = {
+  phone: "",
+  password: "",
+};
+
+const phoneRegExp =
+  /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+
+const validationSchema = Yup.object({
+  phone: Yup.string()
+    .required("Enter phone number")
+    .matches(phoneRegExp, "Phone number is not valid"),
+  password: Yup.string()
+    .required("Please enter a password")
+    .min(11, "Password must be at least 11 characters"),
+});
+
+export default function Login({ bgcolor, ringcolor, role }) {
+  const [isSubmited, setIsSubmited] = useState();
   const dispatch = useDispatch();
-  const handleClick = () => {
-    dispatch(
-      login({
-        phone: "567890123",
-        password: "DentistPassword123",
-        role: "dentist",
-      })
-    );
-  };
-  const handleClick2 = async () => {
-    appointmentService
-      .getAllAppointment()
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => console.log(error));
-  };
+  const navigate = useNavigate();
 
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initialValues,
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      values = { ...values, role: role };
+      dispatch(login(values));
+      setIsSubmited(true);
+      formik.resetForm();
+    },
+  });
+
+  const { loading, error, success, message } = useSelector(
+    (state) => state.auth
+  );
+  useEffect(() => {
+    if (isSubmited && !loading && success) {
+      toast.success("Login Successfull!");
+      setIsSubmited(false);
+      let path = role;
+      if (role == "guest") path = "";
+      navigate(`/${path}`);
+    } else if (isSubmited && !loading && error) {
+      toast.error(message);
+      setIsSubmited(false);
+    }
+  }, [isSubmited, success, error, loading]);
   return (
     <div className="w-full flex items-center	min-h-screen">
       <div className="w-full max-w-md mx-auto">
         <div className=" bg-white	p-10 rounded-md ">
           <h2 className="text-center text-5xl font-extrabold pb-10">Login</h2>
-          <div>
+          <form onSubmit={formik.handleSubmit}>
             <div className="mb-4">
               <label className="font-mono ">Phone</label>
               <hr />
-              <PhoneInput
-                inputClass="!w-full !h-[45px] "
+              <input
+                className={` ${ringcolor} w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-25 border border-gray-300	`}
                 placeholder="Enter phone number"
-                country="vn"
-                regions={"asia"}
-                value={value}
-                onChange={setValue}
+                // country="vn"
+                // regions={"asia"}
+                type="text"
+                id="phone"
+                name="phone"
+                value={formik.values.phone}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
+              {formik.touched.phone && formik.errors.phone && (
+                <div>{formik.errors.phone}</div>
+              )}
             </div>
             <div className="mb-4">
               <label className="font-mono rounded-md	">Password</label>
               <hr />
               <input
                 type="password"
+                id="password"
+                name="password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 className={` ${ringcolor} w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-25 border border-gray-300	`}
               ></input>
+              {formik.touched.password && formik.errors.password && (
+                <div>{formik.errors.password}</div>
+              )}
             </div>
             <div className="flex justify-between mb-6">
               <div>
@@ -67,15 +112,9 @@ export default function Login({ bgcolor, ringcolor }) {
             <div className="mb-4">
               <button
                 className={`${bgcolor} py-2 rounded-md w-full text-white`}
-                onClick={handleClick}
+                type="submit"
               >
                 Login
-              </button>
-              <button
-                className={`${bgcolor} py-2 rounded-md w-full text-white`}
-                onClick={handleClick2}
-              >
-                Click me
               </button>
             </div>
             <div>
@@ -86,7 +125,7 @@ export default function Login({ bgcolor, ringcolor }) {
                 </Link>
               </h2>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

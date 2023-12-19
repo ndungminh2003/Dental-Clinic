@@ -5,7 +5,6 @@ const createDentistSchedule = async (req, res) => {
   const input = req.body;
   try {
     const role = getRole(req);
-    console.log(role);
     const db = await (await getDb(role))
       .input("startTime", input.startTime)
       .input("dentistId", input.dentistId)
@@ -41,7 +40,7 @@ const deleteDentistSchedule = async (req, res) => {
 };
 
 const getOneDentistSchedule = async (req, res) => {
-  const { dentistId } = req.body;
+  const { dentistId } = req.params;
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
@@ -61,8 +60,7 @@ const getOneDentistSchedule = async (req, res) => {
 const getAllSchedule = async (req, res) => {
   try {
     const role = getRole(req);
-    const db = await (await getDb(role))
-      .execute("sp_viewAllSchedule");
+    const db = await (await getDb(role)).execute("sp_viewAllSchedule");
     res.status(200).json(db.recordset);
   } catch (error) {
     if (error instanceof Error) {
@@ -77,8 +75,40 @@ const getAllSchedule = async (req, res) => {
 const getAllScheduleAvailable = async (req, res) => {
   try {
     const role = getRole(req);
+    const db = await (await getDb(role)).execute("sp_viewAllScheduleAvailable");
+    res.status(200).json(db.recordset);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+      const statuscode = res.statusCode == 200 ? 500 : res.statusCode;
+      return res.status(statuscode).send(error.message);
+    }
+    return res.status(500).send("Action Failed");
+  }
+};
+
+const getScheduleAvailableOnDay = async (req, res) => {
+  const { date } = req.params;
+  try {
+    const role = getRole(req);
     const db = await (await getDb(role))
-      .execute("sp_viewAllScheduleAvailable");
+      .input("date", date)
+      .execute("sp_viewScheduleAvailableOnDay");
+    res.status(200).json(db.recordset);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+      const statuscode = res.statusCode == 200 ? 500 : res.statusCode;
+      return res.status(statuscode).send(error.message);
+    }
+    return res.status(500).send("Action Failed");
+  }
+};
+
+const getDentistHaveSchedule = async (req, res) => {
+  try {
+    const role = getRole(req);
+    const db = await (await getDb(role)).execute("sp_getDentistHaveSchedule");
     res.status(200).json(db.recordset);
   } catch (error) {
     if (error instanceof Error) {
@@ -95,6 +125,7 @@ module.exports = {
   deleteDentistSchedule,
   getOneDentistSchedule,
   getAllSchedule,
-  getAllScheduleAvailable
+  getAllScheduleAvailable,
+  getScheduleAvailableOnDay,
+  getDentistHaveSchedule,
 };
-

@@ -3,6 +3,7 @@ const { getRole } = require("../middlewares/authMiddleware");
 
 const createPatientRecord = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
@@ -13,9 +14,7 @@ const createPatientRecord = async (req, res) => {
       .input("symptom", input.symptom)
       .input("advice", input.advice)
       .execute("sp_createPatientRecord");
-      console.log(db.recordset);
-      console.log(db);
-    res.status(200).json(db.recordset[0]);
+    res.status(200).json(db.recordset);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);

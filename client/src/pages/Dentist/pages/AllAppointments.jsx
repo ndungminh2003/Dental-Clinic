@@ -15,7 +15,15 @@ import { TextField, Autocomplete } from "@mui/material";
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
 function SimpleDialog(props) {
-  const { onClose, selectedValue, open, values, services, medicines, newPatientRecord } = props;
+  const {
+    onClose,
+    selectedValue,
+    open,
+    values,
+    services,
+    medicines,
+    newPatientRecord,
+  } = props;
   const [medicineRows, setMedicineRows] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [symptom, setSymptom] = useState("");
@@ -44,18 +52,39 @@ function SimpleDialog(props) {
 
     console.log(sqlDateTime);
 
+    // Get the current date and time in the local timezone
+    const currentDate1 = new Date();
+
+    // Define the options for formatting the date and time
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Ho_Chi_Minh", // Set the timezone to Vietnam's timezone
+    };
+
+    // Format the date and time for Vietnam timezone
+    const vietnamDateTime = currentDate1
+      .toLocaleString("en-US", options)
+      .replace(/\//g, "-");
+
+    console.log(vietnamDateTime);
+
     const patientRecord = {
       symptom: symptom,
       advice: advice,
       diagnostic: diagnostic,
       dentistId: 1,
-      data_time: sqlDateTime,
+      date_time: '2023-12-19 16:30:00',
       customerId: values.customerId,
     };
 
     dispatch(createPatientRecord(patientRecord));
     console.log(newPatientRecord);
-  
   };
 
   const handleOptionChange = (event, newValues) => {
@@ -267,7 +296,9 @@ const AllAppointments = () => {
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState([""]);
 
-  const { error, loading, success, newPatientRecord } = useSelector((state) => state.patientRecord);
+  const { error, loading, success, newPatientRecord } = useSelector(
+    (state) => state.patientRecord
+  );
   console.log(error);
   console.log(newPatientRecord);
 
@@ -301,7 +332,7 @@ const AllAppointments = () => {
   const [dataAppointment, setDataAppointment] = React.useState([]);
   const [services, setServices] = React.useState([]);
   const [medicines, setMedicines] = React.useState([]);
- 
+
   React.useEffect(() => {
     fetchData();
   }, [error, loading, success]);
@@ -442,7 +473,7 @@ const AllAppointments = () => {
         services={services}
         medicines={medicines}
         data={dataAppointment}
-        newPatientRecord = {newPatientRecord}
+        newPatientRecord={newPatientRecord}
       />
     </div>
   );

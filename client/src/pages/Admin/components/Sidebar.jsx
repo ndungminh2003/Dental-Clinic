@@ -1,9 +1,11 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import TodayIcon from "@mui/icons-material/Today";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import VaccinesIcon from '@mui/icons-material/Vaccines';
+import PersonIcon from '@mui/icons-material/Person';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -20,6 +22,58 @@ const Sidebar = () => {
         <ul>
           <li>
             <NavLink
+              to="service/all"
+              className={`${
+                pathname.includes("service")
+                  ? "bg-light-ebony-clay"
+                  : "bg-ebony-clay"
+              } side`}
+            >
+              <MedicalServicesIcon style={{ color: "white" }} />
+              <span className="ml-2 mr-3 text-white	">
+                Service management
+              </span>
+              {pathname.includes("service") ? (
+                <ExpandLessIcon style={{ color: "white" }} />
+              ) : (
+                <ExpandMoreIcon style={{ color: "white" }} />
+              )}
+            </NavLink>
+          </li>
+          {pathname.includes("service") && (
+            <div>
+              <li>
+                <NavLink to="service/all" className=" side">
+                  <span
+                    className={`ml-8  
+                    ${
+                      pathname.includes("service/all")
+                        ? "text-white"
+                        : "text-dark-ebony-clay"
+                    }`}
+                  >
+                    All services
+                  </span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="service/add" className=" side">
+                  <span
+                    className={`ml-8 
+                    ${
+                      pathname.includes("service/add")
+                        ? "text-white"
+                        : "text-dark-ebony-clay"
+                    }`}
+                  >
+                    Add service
+                  </span>
+                </NavLink>
+              </li>
+            </div>
+          )}
+          <li>
+            <NavLink
               to="medication/all"
               className={`${
                 pathname.includes("medication")
@@ -27,7 +81,7 @@ const Sidebar = () => {
                   : "bg-ebony-clay"
               } side`}
             >
-              <TodayIcon style={{ color: "white" }} />
+              <VaccinesIcon style={{ color: "white" }} />
               <span className="ml-2 mr-3 text-white	">
                 Medication management
               </span>
@@ -79,7 +133,7 @@ const Sidebar = () => {
                   : "bg-ebony-clay"
               } side`}
             >
-              <TodayIcon style={{ color: "white" }} />
+              <PersonIcon style={{ color: "white" }} />
               <span className="ml-2 mr-3 text-white	">User management</span>
               {pathname.includes("user") ? (
                 <ExpandLessIcon style={{ color: "white" }} />

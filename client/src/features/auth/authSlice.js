@@ -15,7 +15,7 @@ export const login = createAsyncThunk("auth/login", async (user, thunkAPI) => {
   try {
     return await authService.login(user);
   } catch (error) {
-    return thunkAPI.rejectWithValue(error);
+    return thunkAPI.rejectWithValue(error.response.data);
   }
 });
 
@@ -25,7 +25,7 @@ export const signUp = createAsyncThunk(
     try {
       return await authService.signUp(user);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(error.response.data);
     }
   }
 );
@@ -68,7 +68,7 @@ export const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.error = true;
         state.success = false;
-        state.message = action.error;
+        state.message = action.payload;
         state.loading = false;
       })
       .addCase(signUp.pending, (state) => {
@@ -84,7 +84,7 @@ export const authSlice = createSlice({
       .addCase(signUp.rejected, (state, action) => {
         state.error = true;
         state.success = false;
-        state.message = action.error;
+        state.message = action.payload;
         state.loading = false;
       })
       .addCase(logout.pending, (state) => {
@@ -94,12 +94,13 @@ export const authSlice = createSlice({
         state.error = false;
         state.loading = false;
         state.success = true;
+        state.user = null;
         state.message = action.payload;
       })
       .addCase(logout.rejected, (state, action) => {
         state.error = true;
         state.success = false;
-        state.message = action.error;
+        state.message = action.payload;
         state.loading = false;
       })
       .addCase(blockUser.pending, (state) => {

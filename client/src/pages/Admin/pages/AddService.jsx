@@ -30,7 +30,6 @@ export default function AddService() {
       price: Yup.number()
         .typeError("Price must be a number")
         .required("Required"),
-      expirationDate: Yup.string().required("Required"),
     }),
 
     onSubmit: (values) => {

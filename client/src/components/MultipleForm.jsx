@@ -1,37 +1,96 @@
 import React, { useState, useEffect } from "react";
+import { useFormikContext } from "formik";
+import scheduleService from "../features/schedule/scheduleServices";
 
 const YourFormComponent = () => {
-  const [selectedOption, setSelectedOption] = useState('');
+  const [dentists, setDentists] = useState([]);
+  const [schedules, setSchedules] = useState([]);
+  const [appointmentDate, setAppointmentDate] = useState([]);
+  const [appointmentTime, setAppointmentTime] = useState([]);
+  const [appointmentWith, setAppointmentWith] = useState([]);
+  const [selectedOption, setSelectedOption] = useState("");
   const [activeButton, setActiveButton] = useState(null);
-
+  const { values, handleBlur, touched, errors, setFieldValue } =
+    useFormikContext();
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
+    setAppointmentDate([]);
+    setAppointmentTime([]);
+    setAppointmentWith([]);
+    setSchedules([]);
     setActiveButton(null); // Reset activeButton when radio options change
   };
+  const handleDateChange = async (e) => {
+    setFieldValue("date", e.target.value);
+    if (!e.target.value) return;
+    await scheduleService
+      .getScheduleAvailableOnDay(e.target.value)
+      .then((res) => {
+        let times = [];
+        res.forEach((element) => {
+          if (!times.includes(element.startTime)) {
+            times.push(element.startTime);
+          }
+        });
+        setAppointmentTime(times);
+        setAppointmentWith([]);
+        setSchedules(res);
+      });
+  };
+  const handleDateChange2 = (e) => {
+    setFieldValue("date", e.target.value);
+    let times = [];
+    schedules.forEach((element) => {
+      const date = formatDate(element.startTime);
+      if (date === e.target.value) {
+        times.push(element.startTime);
+      }
+    });
+    setAppointmentTime(times);
+  };
 
-  const buttonsContent1 = [
-    { time: '9:00AM'},
-    { time: '10:00AM'},
-    { time: '3:00PM'},
-    { time: '4:00PM'},
-  ];
+  const handleDentistChange = async (e) => {
+    setFieldValue("dentistId", e.target.value);
+    scheduleService.getDentistSchedule(e.target.value).then((res) => {
+      let dates = [];
+      res.forEach((element) => {
+        const date = formatDate(element.startTime);
+        if (!dates.includes(date)) {
+          dates.push(date);
+        }
+      });
+      setAppointmentDate(dates);
+      setAppointmentTime([]);
+      setSchedules(res);
+    });
+  };
 
-  const buttonsContent2 = [
-    { dentist: 'Dr. Anh Nguyen'},
-    { dentist: 'Dr. Khanh Nguyen'},
-    { dentist: 'Dr. Minh Nguyen'},
-    { dentist: 'Dr. Nguyen Le'},
-    { dentist: 'Dr. Unknown'},
-    { dentist: 'Dr. NoName'},
-  ];
+  const handleTimeChange = (e) => {
+    setFieldValue("startTime", e.target.value);
+    let dt = [];
+    schedules.forEach((element) => {
+      const time = formatTime(element.startTime);
+      if (time === formatTime(e.target.value)) {
+        dt.push({ id: element.dentistId, name: element.name });
+      }
+    });
+    setAppointmentWith(dt);
+  };
 
   const handleButtonClick = (buttonNumber) => {
-    // If the button is already active, do nothing
+    if (activeButton === buttonNumber) {
+      return;
+    }
+    setFieldValue("dentistId", appointmentWith[buttonNumber].id);
+    setActiveButton(buttonNumber);
+  };
+
+  const handleButtonClick2 = (buttonNumber) => {
     if (activeButton === buttonNumber) {
       return;
     }
 
-    // Set the state for the selected button
+    setFieldValue("startTime", appointmentTime[buttonNumber]);
     setActiveButton(buttonNumber);
   };
 
@@ -39,6 +98,10 @@ const YourFormComponent = () => {
   const [maxDate, setMaxDate] = useState("");
 
   useEffect(() => {
+    scheduleService.getDentistHaveSchedule().then((res) => {
+      setDentists(res || []);
+    });
+
     const currentDate = new Date();
     const oneMonthLater = new Date();
     oneMonthLater.setMonth(currentDate.getMonth() + 1);
@@ -50,18 +113,36 @@ const YourFormComponent = () => {
     setMinDate(formattedCurrentDate);
     setMaxDate(formattedOneMonthLater);
   }, []);
-
   const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
+    if (typeof date != "string") return "";
+    if (date.includes("T")) {
+      const dateParts = date.split("-");
+      const jsDate = new Date(
+        dateParts[0],
+        dateParts[1] - 1,
+        dateParts[2].substr(0, 2)
+      );
+      const year = jsDate.getFullYear();
+      const month = (jsDate.getMonth() + 1).toString().padStart(2, "0");
+      const day = jsDate.getDate().toString().padStart(2, "0");
 
-    return `${year}-${month}-${day}`;
+      return `${year}-${month}-${day}`;
+    } else return date;
+  };
+
+  const formatTime = (time) => {
+    if (typeof time != "string") return "";
+    if (time.includes("T")) {
+      const timeParts = time.split(":");
+      const hour = timeParts[0].substr(-2);
+      const minute = timeParts[1];
+      return `${hour}:${minute}`;
+    } else return time;
   };
 
   return (
-    <div className='flex flex-col justify-start items-start pl-20 pt-5'>
-      <label className='text-xl font-bold'>
+    <div className="flex flex-col justify-start items-start pl-20 pt-5">
+      <label className="text-xl font-bold">
         <input
           type="radio"
           name="khamOption"
@@ -72,7 +153,7 @@ const YourFormComponent = () => {
         Choose by Date & Hour
       </label>
 
-      <label className='text-xl font-bold'>
+      <label className="text-xl font-bold">
         <input
           type="radio"
           name="khamOption"
@@ -83,86 +164,143 @@ const YourFormComponent = () => {
         Choose by Dentist
       </label>
 
-      {selectedOption === "chonBacsi" && (
-        <div className="flex flex-col gap-3">
-        <div className="flex flex-row gap-16 items-center justify-center pt-4">
-          <div className="flex flex-col gap-3">
-            <h3 className="font-bold text-2xl">DATE</h3>
-            <input
-                  type="date"
-                  className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
-                  min={minDate}
-                  max={maxDate}
-                />
-          </div>
-          <div className="flex flex-col gap-3">
-            <h3 className="font-bold text-2xl">DENTIST</h3>
-            <select name="" className='rounded-xl w-[390px] h-[48px] text-2xl text-center'>
-              <option>Dr.Anh Nguyen</option>
-              <option>Dr.Khanh Nguyen</option>
-              <option>Dr.Minh Nguyen</option>
-              <option>Dr.Nguyen Le</option>
-              <option>Dr.Unknown</option>
-            </select>
-          </div>
-        </div>
-        <div className="flex flex-col gap-3">
-  <h3 className="font-bold text-2xl">AVAILABLE TIME</h3>
-  <div className="max-w-[845px] text-2xl border-2 border-solid bg-white rounded-xl overflow-x-scroll">
-    <div className="flex flex-row">
-      {buttonsContent1.map((button, index) => (
-        <button
-          key={index}
-          className={`rounded-3xl w-[220px] flex-shrink-0 h-[62px] text-2xl border-2 border-solid border-blue-hosta bg-white ${
-            activeButton === index
-              ? 'border-4 border-solid border-blue-hosta text-blue-hosta'
-              : 'border-2 border-solid border-grullo'
-          }`}
-          onClick={() => handleButtonClick(index)}
-        >
-          {button.time}
-        </button>
-      ))}
-    </div>
-  </div>
-</div>
-      </div>
-      )}
-
       {selectedOption === "chonNgay" && (
         <div className="flex flex-col gap-3">
           <div className="flex flex-row gap-16 items-center justify-center pt-4">
             <div className="flex flex-col gap-3">
               <h3 className="font-bold text-2xl">DATE</h3>
               <input
-                  type="date"
-                  className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
-                  min={minDate}
-                  max={maxDate}
-                />
+                type="date"
+                id="date1"
+                name="date1"
+                value={values.date}
+                onBlur={handleBlur}
+                onChange={handleDateChange}
+                className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
+                min={minDate}
+                max={maxDate}
+              />
+              {touched.date1 && errors.date1 && <div>{errors.date1}</div>}
             </div>
             <div className="flex flex-col gap-3">
               <h3 className="font-bold text-2xl">TIME</h3>
-              <input type="time" className="rounded-xl w-[390px] h-[48px] text-2xl pl-12 text-center" />
+              <select
+                id="time"
+                name="time"
+                value={values.startTime}
+                onBlur={handleBlur}
+                onChange={handleTimeChange}
+                className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
+              >
+                <option value="" disabled selected hidden>
+                  Choose time
+                </option>
+                {appointmentTime?.map((time, index) => (
+                  <option key={index} value={time}>
+                    {formatTime(time)}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="flex flex-col gap-3">
             <h3 className="font-bold text-2xl">DENTIST</h3>
             <div className="  text-2xl border-2 border-solid bg-white rounded-xl overflow-x-scroll ">
-              <div className='flex flex-row max-w-[845px] h-20'>
-                {buttonsContent2.map((button, index) => (
+              <div className="flex flex-row max-w-[845px] h-20">
+                {appointmentWith?.map((button, index) => (
                   <button
+                    type="button"
                     key={index}
                     className={`rounded-3xl w-[220px] flex-shrink-0  text-2xl border-2 border-solid border-blue-hosta bg-white ${
-                      activeButton === index ? 'border-4 border-solid border-blue-hosta text-blue-hosta' : 'border-2 border-solid border-grullo'
+                      activeButton === index
+                        ? "border-4 border-solid border-blue-hosta text-blue-hosta"
+                        : "border-2 border-solid border-grullo"
                     }`}
                     onClick={() => handleButtonClick(index)}
                   >
-                    {button.dentist}
+                    {button.name}
                   </button>
                 ))}
               </div>
-              
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedOption === "chonBacsi" && (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-row gap-16 items-center justify-center pt-4">
+            <div className="flex flex-col gap-3">
+              <h3 className="font-bold text-2xl">DENTIST</h3>
+              <select
+                id="dentistId"
+                name="dentistId"
+                value={values.dentistId}
+                onBlur={handleBlur}
+                onChange={handleDentistChange}
+                className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
+              >
+                <option value="" disabled selected hidden>
+                  Choose your dentist
+                </option>
+                {dentists?.map((dentist) => (
+                  <option value={Number(dentist.id)}>Dr.{dentist.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-3">
+              <h3 className="font-bold text-2xl">DATE</h3>
+              <select
+                id="date2"
+                name="date2"
+                value={values.date}
+                onBlur={handleBlur}
+                onChange={handleDateChange2}
+                className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
+              >
+                <option value="" disabled selected hidden>
+                  Choose date
+                </option>
+                {appointmentDate?.map((date, index) => (
+                  <option key={index} value={date}>
+                    {date}
+                  </option>
+                ))}
+              </select>
+              {/* <input
+                type="date"
+                id="date2"
+                name="date2"
+                value={values.date}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
+                min={minDate}
+                max={maxDate}
+              /> */}
+              {touched.date2 && errors.date2 && <div>{errors.date2}</div>}
+            </div>
+          </div>
+          <div className="flex flex-col gap-3">
+            <h3 className="font-bold text-2xl">AVAILABLE TIME</h3>
+            <div className="max-w-[845px] text-2xl border-2 border-solid bg-white rounded-xl overflow-x-scroll">
+              <div className="flex flex-row">
+                {appointmentTime?.map((button, index) => (
+                  <button
+                    type="button"
+                    key={index}
+                    value={button}
+                    className={`rounded-3xl w-[220px] flex-shrink-0 h-[62px] text-2xl border-2 border-solid border-blue-hosta bg-white ${
+                      activeButton === index
+                        ? "border-4 border-solid border-blue-hosta text-blue-hosta"
+                        : "border-2 border-solid border-grullo"
+                    }`}
+                    onClick={() => handleButtonClick2(index)}
+                  >
+                    {formatTime(button)}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -172,5 +310,3 @@ const YourFormComponent = () => {
 };
 
 export default YourFormComponent;
-
-

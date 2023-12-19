@@ -1,4 +1,5 @@
-import * as React from "react";
+import React from "react";
+import { useState } from "react";
 import {
   ViewState,
   GroupingState,
@@ -6,6 +7,7 @@ import {
 } from "@devexpress/dx-react-scheduler";
 import PropTypes from "prop-types";
 import { TextField, Autocomplete } from "@mui/material";
+import PhoneInput from "react-phone-input-2";
 
 import {
   Scheduler,
@@ -25,31 +27,70 @@ import { owners } from "../components/CalendarData/Task";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Dialog from "@mui/material/Dialog";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getAllScheduleAvailable } from "../../../features/schedule/scheduleSlice";
+import { getAllDentist } from "../../../features/dentist/dentistSlice";
+import { makeAppointment } from "../../../features/appointment/appointmentSlice";
+function getDate() {
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
+  const date = today.getDate();
+  return `${month}/${date}/${year}`;
+}
+function getDateforinput() {
+  const today = new Date();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
+  const date = today.getDate();
 
+  // Pad month and date with leading zeros if needed
+  const formattedMonth = month < 10 ? `0${month}` : month;
+  const formattedDate = date < 10 ? `0${date}` : date;
 
-const service = [
-  {
-    id: 1,
-    price: 50,
-    name: "Service1",
-    description: "Basic dental checkup",
-  },
-  {
-    id: 2,
-    price: 60,
-    name: "Service2",
-    description: "dental filling service",
-  },
-  {
-    id: 3,
-    price: 160,
-    name: "Service3",
-    description: "dental filling service",
-  },
-];
-
+  return `${year}-${formattedMonth}-${formattedDate}`;
+}
 function SimpleDialog(props) {
-  const { onClose, open,services } = props;
+  const { onClose, open, dentist } = props;
+  console.log("dentist", dentist);
+  
+  const dispatch = useDispatch();
+  const message = useSelector((state) => state.appointment.message);
+
+  const [add, isAdd] = useState(false);
+  const [field, setField] = useState(false);
+  const [data, setData] = useState({
+    phone: "",
+    name: "",
+    gender: "Male",
+    birthday: "",
+    address: "",
+    dentistId: "",
+    date: "",
+    start: "",
+    value: [],
+  });
+  useEffect(() => {
+    setField(
+      data.name.length > 0 &&
+        data.name.length < 51 &&
+        data.birthday.length != 0 &&
+        data.phone.length > 0 &&
+        data.phone.length < 12 &&
+        data.address.length > 0 &&
+        data.address.length < 51 &&
+        data.date.length != 0 &&
+        data.start.length != 0
+    );
+  }, [
+    data.name,
+    data.birthday,
+    data.address,
+    data.phone,
+    data.date,
+    data.start,
+  ]);
   const handleClose = () => {
     onClose();
   };
@@ -60,9 +101,32 @@ function SimpleDialog(props) {
   const handleListItemClick = (value) => {
     onClose(value);
   };
-  const handleInvoiceClick = () => {
-    setOpenInvoice(true);
+  const handleListItemAdd = () => {
+    isAdd(true);
+    const pushData = {
+      phone: data.phone,
+      name: data.name,
+      gender: data.gender === "Male" ? "Nam" : "Nữ",
+      birthday: data.birthday,
+      address: data.address,
+      dentistId: data.dentistId,
+      staffId: null,
+      startTime: `${data.date} ${data.start}.000`,
+    };
+    console.log("pushData", pushData);
+    console.log("field", field);
+    if(field){
+      dispatch(makeAppointment(pushData));
+      console.log("message", message);
+    }
   };
+  const handleInputChange = (name, value) => {
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   return (
     <Dialog onClose={handleClose} open={open}>
       <div className="w-[500px] p-10">
@@ -75,96 +139,148 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
+            value={data.name}
+            onChange={(e) => handleInputChange("name", e.target.value)}
             className={` w-3/4  px-3 py-2 rounded-md  border border-gray-300	`}
           ></input>
         </div>
+        {add && (data.name.length == 0 || data.name.length > 50) && (
+          <>
+            <h1 className="ml-[105px] text-xs text-red-600">
+              Patient name should have 1-50 characters
+            </h1>
+          </>
+        )}
         <div className="flex  grow mt-3">
-          <div className="flex w-2/3 items-center">
+          <div className="flex w-[250px] items-center">
             <div className="w-1/4">
-              <label className="font-mono rounded-md text-center	">Phone</label>
+              <label className="font-mono rounded-md text-center	">
+                Birthday
+              </label>
             </div>
             <input
-              type="text"
-              className={` w-3/4 ml-[50px] px-3 py-2 rounded-md border border-gray-300	`}
+              type="date"
+              value={data.birthday}
+              onChange={(e) => handleInputChange("birthday", e.target.value)}
+              className={` w-3/4 ml-[42px]  px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
-          <div className="flex w-1/3 items-center ml-3">
-            <div className="w-1/2">
+          <div className="flex items-center ml-2">
+            <div className="w-1/3">
               <label className="font-mono rounded-md text-center	">Gender</label>
             </div>
-            <input
-              type="text"
-              className={` w-1/2  px-3 py-2 rounded-md  border border-gray-300	`}
-            ></input>
+            <select
+              className={`ml-1 w-2/3  px-3 py-2 rounded-md  border border-gray-300	`}
+              onChange={(e) => handleInputChange("gender", e.target.value)}
+            >
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
           </div>
         </div>
+        {add && data.birthday.length == 0 && (
+          <>
+            <h1 className="ml-[105px] text-xs text-red-600">
+              Birthday required
+            </h1>
+          </>
+        )}
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
-            <label className="font-mono rounded-md text-center	">Birthday</label>
+            <label className="font-mono rounded-md text-center	">Phone</label>
           </div>
-          <input
-            type="date"
-            className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
-          ></input>
+          <div className="w-3/4">
+            <PhoneInput
+              onChange={(value) => handleInputChange("phone", value)}
+              inputClass="!w-full !h-[45px] !border !border-gray-300 "
+              placeholder="Enter phone number"
+              country="vn"
+              regions={"asia"}
+            />
+          </div>
         </div>
+        {add && (data.phone.length == 0 || data.phone.length > 11) && (
+          <>
+            <h1 className="ml-[105px] text-xs text-red-600">
+              Phone should have 11 number including country code
+            </h1>
+          </>
+        )}
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Adress</label>
           </div>
           <input
             type="text"
+            value={data.address}
+            onChange={(e) => handleInputChange("address", e.target.value)}
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>
+        {add && (data.address.length == 0 || data.address.length > 50) && (
+          <>
+            <h1 className="ml-[105px] text-xs text-red-600">
+              Patient address should have 1-120 characters
+            </h1>
+          </>
+        )}
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
-            <label className="font-mono rounded-md text-center	">Doctor</label>
+            <label className="font-mono rounded-md text-center	">Dentist</label>
           </div>
-          <input
-            type="text"
-            value={"Nguyễn Văn A"}
-            disabled="true"
-            className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
-          ></input>
+          <select
+            value={data.dentistId}
+            onChange={(e) => handleInputChange("dentistId", e.target.value)}
+            className="w-3/4 px-3 py-2 rounded-md border border-gray-300 "
+          >
+            {dentist &&
+              dentist.map((dentist) => (
+                <option key={dentist.id} value={dentist.id}>
+                  {dentist.text}
+                </option>
+              ))}
+          </select>
         </div>
         <div className="flex items-center grow mt-3">
-          <div  className="flex w-3/5 items-center">
+          <div className="flex w-3/5 items-center">
             <div className="w-1/4">
               <label className="font-mono rounded-md text-center	">Day</label>
             </div>
             <input
+              defaultValue={getDateforinput()}
+              value={data.date}
+              onChange={(e) => handleInputChange("date", e.target.value)}
               type="date"
-              className={` w-3/4 ml-[58px] px-3 py-2 rounded-md border border-gray-300	`}
+              className={` w-3/4 ml-[57px] px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
           <div className="flex w-2/5 items-center ml-3">
             <div className="w-1/4">
-              <label className="font-mono rounded-md text-center	">Hour</label>
+              <label className="font-mono rounded-md text-center	">Start</label>
             </div>
             <input
+              value={data.start}
+              onChange={(e) => handleInputChange("start", e.target.value)}
               type="time"
               step="1"
               placeholder="Time"
-              className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
+              className={` w-3/4 ml-2  px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
         </div>
-        <div className="flex items-center grow mt-3">
-          <div className="w-1/4">
-            <label className="font-mono rounded-md text-center	">Service</label>
-          </div>
-          <Autocomplete
-            sx={{ marginLeft: "26px", width: "100%" }}
-            multiple
-            options={service.map((data) => data.name)}
-            getOptionLabel={(option) => option}
-            disableCloseOnSelect
-            renderInput={(params) => (
-              <TextField {...params} variant="outlined" placeholder="Add" />
-            )}
-          />
+        <div className="flex">
+          {add && data.date.length == 0 && (
+            <>
+              <h1 className="ml-[105px] text-xs text-red-600">Date required</h1>
+            </>
+          )}
+          {add && data.start.length == 0 && (
+            <>
+              <h1 className="ml-[132px] text-xs text-red-600">Time required</h1>
+            </>
+          )}
         </div>
-        <div className ="flex mt-5 justify-end">
+        <div className="flex mt-5 justify-end">
           <button
             onClick={() => handleListItemClick()}
             className="bg-neutral-300 rounded-md px-3 py-2"
@@ -172,7 +288,7 @@ function SimpleDialog(props) {
             Close
           </button>
           <button
-            onClick={() => handleListItemClick()}
+            onClick={() => handleListItemAdd()}
             className="ml-2 bg-dirty-blue text-white rounded-md px-3 py-2"
           >
             Add
@@ -186,133 +302,182 @@ function SimpleDialog(props) {
 SimpleDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  serviceName: PropTypes.array.isRequired,
+  dentist: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      text: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
+function AddAppointments() {
+  const dispatch = useDispatch();
+  const {
+    schedule: scheduleData,
+    loading: scheduleLoading,
+    success: scheduleSuccess,
+    error: scheduleError,
+  } = useSelector((state) => state.schedule);
 
+  const {
+    dentist: dentistData,
+    loading: dentistLoading,
+    success: dentistSuccess,
+    error: dentistError,
+  } = useSelector((state) => state.dentist);
+  useEffect(() => {
+    dispatch(getAllDentist());
+    dispatch(getAllScheduleAvailable());
+  }, []);
+  let currentId = 1;
+  const schedule =
+    scheduleData &&
+    scheduleData.map((item) => ({
+      id: currentId++,
+      dentistId: item.dentistId,
+      title: "free schedule",
+      endDate: new Date(item.endTime).toLocaleString("en-US", {
+        timeZone: "UTC",
+      }),
+      startDate: new Date(item.startTime).toLocaleString("en-US", {
+        timeZone: "UTC",
+      }),
+    }));
 
-export default class Demo extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false,
-      data: AppointmentsData,
-      currentDate: "2017-05-28",
-      resources: [
-        {
-          fieldName: "members",
-          title: "Members",
-          instances: owners,
-        },
-      ],
-      grouping: [
-        {
-          resourceName: "members",
-        },
-      ],
-      selectedMember: null, // Newly added state for selected member
-    };
-    this.handleMemberChange = this.handleMemberChange.bind(this);
-  }
+  const dentist =
+    dentistData &&
+    dentistData.map((item) => ({
+      id: item.id,
+      text: item.name,
+    }));
+  useEffect(() => {
+    console.log(dentist);
+  }, [dentist]);
 
-  handleMemberChange(event) {
+  const [state, setState] = useState({
+    open: false,
+    data: schedule,
+    currentDate: getDate(),
+    resources: [
+      {
+        fieldName: "dentistId",
+        title: "Dentist",
+        instances: dentist,
+      },
+    ],
+    grouping: [
+      {
+        resourceName: "dentistId",
+      },
+    ],
+    selectedMember: null,
+  });
+
+  const handleMemberChange = (event) => {
     console.log("Event:", event);
     const selectedMember = event.target.value;
     console.log("Selected Member:", selectedMember);
-    // Filter appointments data based on the selected member
-    const selectedOwner = owners.find((owner) => owner.id === selectedMember);
 
-    // Update the instances for the "Members" resource
+    const selectedOwner = dentist && dentist.find((owner) => owner.id === selectedMember);
+
     const membersResource = {
-      fieldName: "members",
-      title: "Members",
-      instances: selectedOwner ? [selectedOwner] : owners,
+      fieldName: "dentistId",
+      title: "Dentist",
+      instances: selectedOwner ? [selectedOwner] : dentist,
     };
 
-    // Update the state with the selected member and the new resource instances
-    this.setState((prevState) => ({
+    setState((prevState) => ({
+      ...prevState,
       selectedMember,
       resources: [
         ...prevState.resources.filter(
-          (resource) => resource.fieldName !== "members"
+          (resource) => resource.fieldName !== "dentistId"
         ),
         membersResource,
       ],
       selectedOwner,
-      // Use the original AppointmentsData if no member is selected
       data: selectedMember
         ? AppointmentsData.filter((appointment) =>
-            appointment.members.includes(selectedMember)
+            appointment.dentistId && appointment.dentistId.includes(selectedMember)
           )
         : AppointmentsData,
     }));
-  }
+    
+  };
 
-  render() {
-    const { data, currentDate, resources, grouping, selectedMember } =
-      this.state;
-    return (
-      <div>
-        <div className="w-full flex">
-          <div className="flex w-1/3">
-            <label className=" flex items-center w-1/3 justify-center">Select Doctor</label>
-            <Select
-              className="w-2/3"
-              value={selectedMember}
-              onChange={this.handleMemberChange}
-              inputProps={{
-                name: "member",
-                id: "member-select",
-              }}
-            >
-              <MenuItem value={0}>All Members</MenuItem>
-              {owners.map((member) => (
+  return (
+    <div>
+      <div className="w-full flex">
+        <div className="flex w-1/3">
+          <label className=" flex items-center w-1/3 justify-center">
+            Select Doctor
+          </label>
+          <Select
+            className="w-2/3"
+            value={state.selectedMember}
+            onChange={handleMemberChange}
+            inputProps={{
+              name: "member",
+              id: "member-select",
+            }}
+          >
+            <MenuItem value={0}>All Members</MenuItem>
+            {dentist &&
+              dentist.map((member) => (
                 <MenuItem key={member.id} value={member.id}>
-                  {member.text}
+                  {member?.text}
                 </MenuItem>
               ))}
-            </Select>
-          </div>
-          <div className ="ml-5 w-1/3">
-            <button 
-              onClick={()=> this.setState({open: true})}
-              className ="p-4 border rounded-md bg-dirty-blue text-white">
-              Add appointment
-            </button>
-          </div>
-          <SimpleDialog
-            open={this.state.open}
-            onClose={()=> this.setState({open: false})}
-          />
+          </Select>
         </div>
-        <div
-          style={{
-            height: "calc(100vh - 150px)",
-            width: "80vw",
-            overflowX: "auto",
-          }}
-        >
-          <Scheduler data={data} height="auto">
-            <ViewState
-              defaultCurrentDate={currentDate}
-              defaultCurrentViewName="Week"
-            />
-            <GroupingState grouping={grouping} />
-            <DayView startDayHour={9} endDayHour={18} />
-            <WeekView startDayHour={10} endDayHour={19} />
-
-            <Toolbar />
-            <ViewSwitcher />
-            <DateNavigator />
-            <TodayButton />
-            <Appointments />
-            <Resources data={resources} mainResourceName="members" />
-            <IntegratedGrouping />
-            <AppointmentTooltip showOpenButton showDeleteButton />
-            <GroupingPanel />
-          </Scheduler>
+        <div className="ml-5 w-1/3">
+          <button
+            onClick={() =>
+              setState((prevState) => ({ ...prevState, open: true }))
+            }
+            className="p-4 border rounded-md bg-dirty-blue text-white"
+          >
+            Add appointment
+          </button>
         </div>
+        <SimpleDialog
+          open={state.open}
+          dentist={dentist}
+          onClose={() =>
+            setState((prevState) => ({ ...prevState, open: false }))
+          }
+        />
       </div>
-    );
-  }
+      <div
+        style={{
+          height: "calc(100vh - 150px)",
+          width: "80vw",
+          overflowX: "auto",
+        }}
+      >
+        <Scheduler data={state.data} height="auto">
+          <ViewState
+            defaultCurrentDate={state.currentDate}
+            defaultCurrentViewName="Week"
+            timeScale={{ startDayHour: 7, endDayHour: 18 }}
+          />
+          <GroupingState grouping={state.grouping} />
+          <DayView startDayHour={7} endDayHour={18} />
+          <WeekView startDayHour={7} endDayHour={18} />
+
+          <Toolbar />
+          <ViewSwitcher />
+          <DateNavigator />
+          <TodayButton />
+          <Appointments />
+          <Resources data={state.resources} mainResourceName="dentistId" />
+          <IntegratedGrouping />
+          <AppointmentTooltip />
+          <GroupingPanel />
+        </Scheduler>
+      </div>
+    </div>
+  );
 }
+
+export default AddAppointments;

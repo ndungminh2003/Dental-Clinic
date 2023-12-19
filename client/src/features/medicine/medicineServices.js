@@ -37,59 +37,21 @@ const getOneMedicine = async (medicineId) => {
 };
 
 const createMedicine = async (medicine) => {
-  try {
-    const response = await Axios.post("medicine/create-medicine", medicine);
-    return response.data;
-  } catch (error) {
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      console.log(error.request);
-    } else {
-      console.log("Error", error.message);
-    }
-  }
+  const response = await Axios.post("medicine/create-medicine", medicine);
+  return response.data;
 };
 
 const updateMedicine = async (medicine) => {
-  try {
-    const response = await Axios.put("medicine/update-medicine", medicine);
-    return response.data;
-  } catch (error) {
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      console.log(error.request);
-    } else {
-      console.log("Error", error.message);
-    }
-  }
+  const response = await Axios.put("medicine/update-medicine", medicine);
+  return response.data;
 };
 
 const deleteMedicine = async (medicineId) => {
-  try {
-    const response = await Axios.delete("medicine/delete-medicine", {
-      medicineId,
-    });
-    return response.data;
-  } catch (error) {
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      console.log(error.request);
-    } else {
-      console.log("Error", error.message);
-    }
-  }
+  const response = await Axios.delete(`medicine/delete-medicine/${medicineId}`);
+  return response.data;
 };
 
-const customerService = {
+const medicineService = {
   createMedicine,
   getAllMedicine,
   getOneMedicine,
@@ -97,4 +59,4 @@ const customerService = {
   updateMedicine,
 };
 
-export default customerService;
+export default medicineService;

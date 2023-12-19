@@ -4,100 +4,58 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import PropTypes from "prop-types";
 import Invoice from "../components/Invoice";
-const emails = ["username@gmail.com", "user02@gmail.com"];
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import serviceUseServices from "../../../features/service/serviceServices";
+import invoiceServices from "../../../features/invoice/invoiceServices";
+import prescribeMedicineServices from "../../../features/prescribeMedicine/prescribeMedicineServices";
+import patientRecordServices from "../../../features/patientRecord/patientRecordServices";
 
-const data = [
-  {
-    index: 0,
-    values: [
-      "Yonkers",
-      "Jack1",
-      "05-10-2023",
-      "Fever, cough, sore throat",
-      "Get plenty of rest. ",
-      "COVID-19",
-    ],
-    status: "Đã thanh toán",
-    services: {
-      name: ["tooth filling", "service 2", "service 1" , "service 0"],
-      servicePrices: ["100.000", "100.000", "100.000", "200.000"],
-    },
-    medicine: {
-      name: ["Med 0", "Med 5", "Med 1", "Med 2"],
-      quantity: [1, 2, 3, 4],
-      Prices: ["100.000", "100.000", "100.000", "200.000"],
-    },
-  },
-  {
-    index: 1,
-    values: [
-      "Yonkers",
-      "Jack2",
-      "05-10-2023",
-      "Fever, cough, sore throat",
-      "Get plenty of rest. ",
-      "COVID-19",
-    ],
-    status: "Chưa thanh toán",
-    services: {
-      name: ["tooth filling", "service 2", "service 1", "service 0"],
-      servicePrices: ["100.000", "100.000", "100.000", "200.000"],
-    },
-    medicine: {
-      name: ["Med 0", "Med 5", "Med 1", "Med 2"],
-      quantity: [1, 2, 3, 4],
-      Prices: ["100.000", "100.000", "100.000", "200.000"],
-    },
-  },
-  {
-    index: 2,
-    values: [
-      "Yonkers",
-      "Jack3",
-      "05-10-2023",
-      "Fever, cough, sore throat",
-      "Get plenty of rest. ",
-      "COVID-19",
-    ],
-    status: "Chưa thanh toán",
-    services: {
-      name: ["tooth filling", "service 2", "service 1", "service 0"],
-      servicePrices: ["100.000", "100.000", "100.000", "200.000"],
-    },
-    medicine: {
-      name: ["Med 0", "Med 5", "Med 1", "Med 2"],
-      quantity: [1, 2, 3, 4],
-      Prices: ["100.000", "100.000", "100.000", "200.000"],
-    },
-  },
-  {
-    index: 3,
-    values: [
-      "Yonkers",
-      "Jack4",
-      "05-10-2023",
-      "Fever, cough, sore throat",
-      "Get plenty of rest. ",
-      "COVID-19",
-    ],
-    status: "Chưa thanh toán",
-    services: {
-      name: ["tooth filling", "service 2", "service 1", "service 0"],
-      servicePrices: ["100.000", "100.000", "100.000", "200.000"],
-    },
-    medicine: {
-      name: [ "Med 0", "Med 5", "Med 1", "Med 2"],
-      quantity: [1, 2, 3, 4],
-      Prices: ["100.000", "100.000", "100.000", "200.000"],
-    },
-  },
-];
-
+import { addInvoice } from "../../../features/invoice/invoiceSlice";
 function SimpleDialog(props) {
-  const { onClose, selectedValue, open, values ,serviceName,medicine,status,services } = props;
+  const {
+    onClose,
+    open,
+    customer,
+    dentist,
+    date,
+    invoice,
+    service,
+    prescribeMedicine,
+    recordId,
+  } = props;
+  const dispatch = useDispatch();
+  const [total, setTotal] = React.useState();
   const handleClose = () => {
-    onClose(selectedValue);
+    onClose();
   };
+
+  const getTotal = (e) => {
+    setTotal(e);
+  };
+  const getCurrentDateTime = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const hours = String(currentDate.getHours()).padStart(2, "0");
+    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.000`;
+    return formattedDateTime;
+  };
+  useEffect(() => {
+    if (total && !invoice?.length) {
+      let data = {
+        recordId: recordId,
+        date_time: getCurrentDateTime(),
+        status: "Chưa thanh toán",
+        total: total,
+        staffId: 1,
+      };
+      dispatch(addInvoice(data));
+    }
+  }, [total, recordId]);
   const [openInvoice, setOpenInvoice] = React.useState(false);
   const handleCloseInvoice = () => {
     setOpenInvoice(false);
@@ -120,7 +78,7 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
-            value={values[2]}
+            value={customer}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md  border border-gray-300	`}
           ></input>
@@ -131,7 +89,7 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
-            value={"Nguyễn Văn A"}
+            value={dentist}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
@@ -141,7 +99,8 @@ function SimpleDialog(props) {
             <label className="font-mono rounded-md text-center	">Day</label>
           </div>
           <input
-            type="date"
+            type="text"
+            value={date}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
@@ -150,11 +109,11 @@ function SimpleDialog(props) {
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Service</label>
           </div>
-          <div className ="w-3/4">
+          <div className="w-3/4">
             <input
               type="text"
-              value={serviceName}
               disabled="true"
+              value={service && service.map((item) => item.serviceName)}
               className={` w-full  px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
@@ -163,47 +122,33 @@ function SimpleDialog(props) {
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Medicine</label>
           </div>
-          <div className ="w-3/4">
-            {medicine && medicine.name.map((medName, index) => (
-              <div className="m-1 flex grow"key={index}>
-                <input
-                  type="text"
-                  value={medName}
-                  disabled="true"
-                  className={` w-2/3  px-3 py-2 rounded-md border border-gray-300	`}
-                ></input>
-                <input
-                  type="text"
-                  value={medicine.quantity[index]}
-                  disabled="true"
-                  className={` w-1/3 ml-1  px-3 py-2 rounded-md border border-gray-300	`}
-                ></input>
-              </div>
-            ))}
+          <div className="w-3/4">
+            {prescribeMedicine &&
+              prescribeMedicine.map((medName, index) => (
+                <div className="m-1 flex grow" key={index}>
+                  <input
+                    type="text"
+                    value={medName.medicineName}
+                    disabled="true"
+                    className={` w-2/3  px-3 py-2 rounded-md border border-gray-300	`}
+                  ></input>
+                  <input
+                    type="text"
+                    value={medName.quantity}
+                    disabled="true"
+                    className={` w-1/3 ml-1  px-3 py-2 rounded-md border border-gray-300	`}
+                  ></input>
+                </div>
+              ))}
           </div>
         </div>
-        
+
         <div className="text-right mt-5">
-          {status === "Chưa thanh toán" 
-          ?
-          <button
-            onClick={() => handleListItemClick("hi")}
-            className="bg-sky-500 rounded-md px-3 py-2 mr-2"
-          >
-            Already Paid
-          </button>
-          :
-          <button
-            className="bg-yellow-300 rounded-md px-3 py-2 mr-2"
-          >
-            Pay
-          </button>
-          }
           <button
             onClick={handleInvoiceClick}
             className="bg-sky-500 rounded-md px-3 py-2 mr-2"
           >
-            Invoice
+            {invoice && !invoice.length ? "Add Invoice" : "See Invoice"}
           </button>
           <button
             onClick={() => handleListItemClick("hi")}
@@ -215,11 +160,11 @@ function SimpleDialog(props) {
         <Invoice
           open={openInvoice}
           onClose={handleCloseInvoice}
-          services={services}
-          medicine={medicine}
-          status ={status}
+          services={service}
+          medicine={prescribeMedicine}
+          getTotal={getTotal}
+          recordId={recordId}
         />
-        
       </div>
     </Dialog>
   );
@@ -228,48 +173,96 @@ function SimpleDialog(props) {
 SimpleDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  selectedValue: PropTypes.string.isRequired,
-  values: PropTypes.array.isRequired,
-  serviceName: PropTypes.array.isRequired,
-  medicine: PropTypes.shape({
-    name: PropTypes.array.isRequired,
-    quantity: PropTypes.array.isRequired,
-    price: PropTypes.array.isRequired,
-  }),
-  services: PropTypes.shape({
-    name: PropTypes.array.isRequired,
-    price: PropTypes.array.isRequired,
-  }),
-  status: PropTypes.string.isRequired,
+  customer: PropTypes.string,
+  dentist: PropTypes.string,
+  date: PropTypes.string,
+  recordId: PropTypes.number,
+  service: PropTypes.arrayOf(
+    PropTypes.shape({
+      price: PropTypes.float,
+      serviceName: PropTypes.string,
+    })
+  ),
+  prescribeMedicine: PropTypes.arrayOf(
+    PropTypes.shape({
+      price: PropTypes.float,
+      quantity: PropTypes.number,
+      medicineName: PropTypes.string,
+    })
+  ),
+  invoice: PropTypes.arrayOf(
+    PropTypes.shape({
+      date_time: PropTypes.string,
+      total: PropTypes.number,
+      status: PropTypes.string,
+      id: PropTypes.number,
+    })
+  ),
 };
 
-const AllAppointments = () => {
-
-  const [serviceName, setServiceName] = React.useState();
-  const [medicine, setMedicine] = React.useState();
-  const [services, setServices] = React.useState();
-  const [status, setStatus] = React.useState();
-
-  const [open, setOpen] = React.useState(false);
-  const [values, setValues] = React.useState([""]);
-
-  const [selectedValue, setSelectedValue] = React.useState(emails[1]);
+export default function AllAppointments() {
+  const dispatch = useDispatch();
+  let { error, loading, success } = useSelector((state) => state.auth);
   const handleClose = (value) => {
     setOpen(false);
-    setSelectedValue(value);
   };
   const columns = [
-    "Patient ",
-    "Dentist",
-    "Examination day",
-    "Symptom",
     {
-      name: "Advice ",
-      options: { display: false },
+      name: "id",
+      label: "ID",
+      options: {
+        filter: true,
+        sort: true,
+      },
     },
     {
-      name: "Diagnostic",
-      options: { display: false },
+      name: "customerName",
+      label: "Customer",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "dentistName",
+      label: "Dentist",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "date_time",
+      label: "Time",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "symptom",
+      label: "Symtom",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "diagnostic",
+      label: "Diagnostic",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+    {
+      name: "advice",
+      label: "Advice",
+      options: {
+        filter: true,
+        sort: true,
+        display: false,
+      },
     },
     {
       name: "Action",
@@ -286,14 +279,92 @@ const AllAppointments = () => {
       },
     },
   ];
+  useEffect(() => {
+    fetchPatientRecordData();
+  },[error, loading, success]);
+  
+  const fetchPatientRecordData = async () => {
+    try {
+      const response = await patientRecordServices.getAllPatientRecord();
+      setPatientRecordData(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const [allData, setAllData] = useState([{
+    customer: "",
+    dentist: "",
+    date: "",
+    status: "",
+    service: ["null"],
+    prescribeMedicine: ["null"],
+    recordId: "",
+  }]);
+  const [open, setOpen] = useState(false);
+  const [dataDialog, setDataDialog] = useState(
+    {
+      customer: "",
+      dentist: "",
+      date: "",
+      status: "",
+      service: ["null"],
+      prescribeMedicine: ["null"],
+      recordId: "",
+    }
+  );
+  const [patientRecordData,setPatientRecordData] = useState();
+  const [bool,setBool]= useState(false);
+  
+  useEffect(()=>{
+    if(patientRecordData && !bool){
+      let dateObject; // Declare dateObject with let
+      patientRecordData.map((item) => {
+        fetchData(item.id)
+        dateObject = new Date(item.date_time);
+        const newData = {
+          customer: item.customerName,
+          dentist: item.dentistName,
+          date: dateObject.toISOString().split('T')[0],
+          recordId: item.id,
+        }
+        setAllData(prevData => [...prevData, newData]);
+        setBool(true);
+      });
+    }
+  },[patientRecordData])
+
+  const fetchData = async (recordId) => {
+    try {
+      const [serviceResponse, invoiceResponse, prescribeMedicineResponse] = await Promise.all([
+        serviceUseServices.getServiceUseByRecordId(recordId),
+        invoiceServices.getInvoiceByRecordId(recordId),
+        prescribeMedicineServices.getPrescribeMedicineByRecordId(recordId),
+      ]);
+      setAllData((prevData) => {
+        return prevData.map((item) => {
+          if (item.recordId === recordId) {
+            return {
+              ...item,
+              invoice: invoiceResponse,
+              service: serviceResponse,
+              prescribeMedicine: prescribeMedicineResponse,
+            };
+          }
+          return item;
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    console.log("Dia",dataDialog)
+  },[dataDialog])
 
   const handleActionClick = (row) => {
+    let recordId = patientRecordData[row.dataIndex].id;
+    setDataDialog(allData.find(item => item.recordId === recordId))
     setOpen(true);
-    setValues(data[row.dataIndex].values);
-    setServiceName((data[row.dataIndex].services.name));
-    setMedicine(data[row.dataIndex].medicine);
-    setServices(data[row.dataIndex].services);
-    setStatus(data[row.dataIndex].status)
   };
 
   const options = {
@@ -323,24 +394,23 @@ const AllAppointments = () => {
         <ThemeProvider theme={getMuiTheme()}>
           <MUIDataTable
             title={"Patient record"}
-            data={data.map((entry) => entry.values)}
+            data={patientRecordData}
             columns={columns}
             options={options}
           />
         </ThemeProvider>
       </div>
       <SimpleDialog
-        selectedValue={selectedValue}
         open={open}
         onClose={handleClose}
-        values={values}
-        serviceName={serviceName}
-        medicine={medicine}
-        status ={status}
-        services={services}
+        customer={dataDialog.customer}
+        dentist={dataDialog.dentist}
+        date={dataDialog.date}
+        service={dataDialog.service}
+        prescribeMedicine={dataDialog.prescribeMedicine}
+        invoice={dataDialog.invoice}
+        recordId={dataDialog.recordId}
       />
     </div>
   );
-};
-
-export default AllAppointments;
+}

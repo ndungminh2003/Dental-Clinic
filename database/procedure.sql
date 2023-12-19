@@ -1,3 +1,5 @@
+USE QLPhongKham
+GO
 -- customer sign up
 GO
 USE QLPhongKham
@@ -219,13 +221,13 @@ END
 
 --block user
 GO
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockCustomer')
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_blockUser1')
 BEGIN
-	DROP PROCEDURE sp_blockUser
+	DROP PROCEDURE sp_blockUser1
 END
-GO
 
-CREATE OR ALTER PROC  sp_blockUser
+GO
+CREATE OR ALTER PROC sp_blockUser1
 	@userId INT,
 	@role VARCHAR(16) 
 AS
@@ -258,6 +260,8 @@ BEGIN
         ;THROW
 	END CATCH
 END
+
+
 
 -- LOST UPDATE (Admin cùng cập nhật password sẽ bị ghi đè) 
 -- change customer password  (CUSTOMER, ADMIN)
@@ -782,7 +786,11 @@ SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-			SELECT * FROM APPOINTMENT
+			SELECT A.startTime,A.endTime,A.recordId,A.status,D.name AS dentistName, C.name AS customerName, S.name AS staffName
+			FROM APPOINTMENT A
+			JOIN DENTIST D ON A.dentistId = D.id
+			JOIN CUSTOMER C ON A.customerId = C.id
+			LEFT JOIN STAFF S ON A.staffId = S.id
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1016,7 +1024,10 @@ SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-			SELECT * FROM PATIENT_RECORD
+			SELECT P_R.id,P_R.advice, P_R.date_time,P_R.diagnostic,P_R.symptom,D.name AS dentistName, C.name AS customerName
+			FROM PATIENT_RECORD P_R
+			JOIN DENTIST D ON P_R.dentistId = D.id
+			JOIN CUSTOMER C ON P_R.customerId = C.id
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1084,7 +1095,7 @@ BEGIN
 			RAISERROR(N'Lỗi: Tên thuốc đã tồn tại', 16, 1)
 			ROLLBACK TRAN
 		END
-		INSERT INTO MEDICINE VALUES(@unit, @name, @description, @expirationDate, @indication, @quantity, @price)
+		INSERT INTO MEDICINE VALUES(@name, @unit, @description, @expirationDate, @indication, @quantity, @price)
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1371,7 +1382,7 @@ BEGIN
 			RAISERROR(N'Lỗi: Không có đơn thuốc nào' ,16, 1)
 			ROLLBACK TRAN
 		END
-		SELECT * FROM PRESCRIBE_MEDICINE WHERE recordId = @recordId
+		SELECT P_M.medicineName , P_M.price, P_M.quantity FROM PRESCRIBE_MEDICINE P_M WHERE recordId = recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1601,7 +1612,10 @@ BEGIN
 				RAISERROR(N'Lỗi: không có dịch vụ nào được sử dụng', 16, 1)
 				ROLLBACK TRAN
 			END
-			SELECT * FROM SERVICE_USE WHERE recordId = @recordId
+			SELECT S_U.price AS price, S.name as serviceName
+			FROM SERVICE_USE S_U
+			JOIN SERVICE S ON S_U.serviceId = S.id 
+			WHERE recordId = @recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1732,7 +1746,7 @@ BEGIN
 				RAISERROR(N'Lỗi: mã hồ sơ bệnh nhân không tồn tại', 16, 1)
 				ROLLBACK TRAN
 			END
-			SELECT * FROM INVOICE WHERE recordId = @recordId
+			SELECT I.id, I.status, I.total, I.date_time FROM INVOICE I WHERE recordId = @recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -2019,3 +2033,4 @@ EXEC sp_signUp '01234567892', '123123123123', 'Customer2', 'Nam', '2008-11-11', 
 -- EXEC sp_makeAppointment '0327116254', 'Customer4b', 'Nam', '2008-11-11', N'Hà Nội', 2, NULL, '2024-05-15 09:00:00', '2024-05-15 010:00:00'
 -- EXEC sp_addDentistSchedule '2023-11-15 07:00:00.000','2023-11-15 08:00:00.000',7
 -- EXEC sp_addPrescribeMedicine 1, 2, 100
+

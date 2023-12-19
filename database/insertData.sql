@@ -70,6 +70,9 @@ VALUES (1, 1, N'Toothache', N'Rest and use painkiller', N'Cavity detected', '202
 INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, medicineName, price, quantity)
 VALUES (1, 1, 'Hello', 10.99, 20);
 
+INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, medicineName, price, quantity)
+VALUES (2, 1, 'Hello', 10.99, 20);
+
 -- Insert another prescription for a different patient record
 INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, medicineName, price, quantity)
 VALUES (1, 2, 'Hello2', 10.99, 20);
@@ -77,6 +80,9 @@ VALUES (1, 2, 'Hello2', 10.99, 20);
 -- Insert data into the INVOICE table to create an invoice
 INSERT INTO INVOICE (total, date_time, status, recordId, staffId)
 VALUES (100.00, '2023-11-10 12:00:00', N'Chưa thanh toán', 1, 1);
+
+INSERT INTO INVOICE (total, date_time, status, recordId, staffId)
+VALUES (269.80, '2023-12-12 16:00:00', N'Chưa thanh toán', 2, 1);
 
 -- Insert data into the SCHEDULE table to define the schedule for a dentist
 INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)

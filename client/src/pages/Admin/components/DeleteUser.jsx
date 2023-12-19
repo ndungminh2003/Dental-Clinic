@@ -9,7 +9,6 @@ export default function DeleteUser(props) {
       onClose();
     };
   
-  
     return (
         <Dialog onClose={handleClose} open={open}>
         <div className="w-[400px] p-10">

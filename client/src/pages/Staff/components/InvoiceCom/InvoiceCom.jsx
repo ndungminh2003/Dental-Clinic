@@ -1,167 +1,201 @@
-import React, { Component } from 'react'
-import LineItems from './LineItems'
+import React, { useEffect, useState } from "react";
+import LineItems from "./LineItems";
 
-class InvoiceCom extends Component {
-  locale = 'en-US'
-  currency = 'USD'
-  mapServicesToLineItems = () => {
-    const servicesData = this.props.services;
+const InvoiceCom = (props) => {
+  const locale = "en-US";
+  const currency = "USD";
+  useEffect(() => {
+    props.total(calcLineItemsTotal());
+  }, []);
+  const mapServicesToLineItems = () => {
+    const servicesData = props.services;
+    let currentId = 1;
+    const service = servicesData.map((item) => ({
+      id: currentId++,
+      name: item.serviceName,
+      quantity: 1,
+      price: item.price,
+    }));
 
-    const lineItems = [];
-
-    for (let i = 0; i < servicesData.name.length; i++) {
-      lineItems.push({
-        id: i + 1, 
-        name: servicesData.name[i],
-        quantity: 1, 
-        price: servicesData.servicePrices[i], 
-      });
-    }
-
-    return lineItems;
+    return service;
   };
 
-  mapMedicine = () => {
-    const medicineData = this.props.medicine;
+  const mapMedicine = () => {
+    const medicineData = props.medicine;
 
-    const lineMedicine = [];
+    let currentId = 1;
+    const medicine = medicineData.map((item) => ({
+      id: currentId++,
+      name: item.medicineName,
+      quantity: item.quantity,
+      price: item.price,
+    }));
 
-    for (let i = 0; i < medicineData.name.length; i++) {
-      lineMedicine.push({
-        id: i + 1, 
-        name: medicineData.name[i],
-        quantity: medicineData.quantity[i], 
-        price: medicineData.Prices[i], 
-      });
-    }
-
-    return lineMedicine;
+    return medicine;
   };
-  state = {
-    lineItems: this.mapServicesToLineItems(),
-    lineMedicine: this.mapMedicine(),
-  }
 
-  handleInvoiceChange = (event) => {
-    this.setState({[event.target.name]: event.target.value})
-  }
+  const [lineItems, setLineItems] = useState(mapServicesToLineItems());
+  const [lineMedicine, setLineMedicine] = useState(mapMedicine());
+  const [taxRate, setTaxRate] = useState(10);
 
-  handleLineItemChange = (elementIndex) => (event) => {
-    let lineItems = this.state.lineItems.map((item, i) => {
-      if (elementIndex !== i) return item
-      return {...item, [event.target.name]: event.target.value}
-    })
-    this.setState({lineItems})
-  }
+  const handleInvoiceChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "taxRate") {
+      setTaxRate(value);
+    }
+  };
 
+  const handleLineItemChange = (elementIndex) => (event) => {
+    setLineItems((prevLineItems) =>
+      prevLineItems.map((item, i) =>
+        elementIndex !== i ? item : { ...item, [event.target.name]: event.target.value }
+      )
+    );
+  };
 
-  handleFocusSelect = (event) => {
-    event.target.select()
-  }
+  const handleFocusSelect = (event) => {
+    event.target.select();
+  };
 
-  formatCurrency = (amount) => {
-    return (new Intl.NumberFormat(this.locale, {
-      style: 'currency',
-      currency: this.currency,
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: currency,
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(amount))
-  }
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
 
-  calcTaxAmount = (c) => {
-    return c * (this.state.taxRate / 100)
-  }
+  const calcTaxAmount = (c) => {
+    return c * (taxRate / 100);
+  };
 
-  calcLineItemsTotal = () => {
-    return this.state.lineItems.reduce((prev, cur) => (prev + (cur.quantity * cur.price)), 0) + this.state.lineMedicine.reduce((prev, cur) => (prev + (cur.quantity * cur.price)), 0)
-  }
-
-  calcTaxTotal = () => {
-    return this.calcLineItemsTotal() * (10 / 100)
-  }
-
-  calcGrandTotal = () => {
-    return this.calcLineItemsTotal() + this.calcTaxTotal()
-  }
-
-  render = () => {
+  const calcLineItemsTotal = () => {
     return (
+      lineItems.reduce((prev, cur) => prev + cur.quantity * cur.price, 0) +
+      lineMedicine.reduce((prev, cur) => prev + cur.quantity * cur.price, 0)
+    );
+  };
 
-      <div className="max-w-[maxWidth] mx-auto border p-[2*20px] rounded-[4px] bg-[#ffffff]">
-        <div className="mb-[2*20px]">
-          <div className="inline-block rounded-[4px]">
-            <img src="https://via.placeholder.com/150x50.png?text=logo" alt="Logo" className="logo" />
-          </div>
-        </div>
-        <div className="flex flex-wrap  text-left  w-[750px]">
-          <div className={`block font-normal mr-[10px] bg-[#efefef] border-1 border-[#ccc] p-[20px] rounded-[4px] w-1/3 max-w-[266px] from`}>
-            <strong>Dencare</strong><br />
-            227 Đ. Nguyễn Văn Cừ<br />
-            Thành phố Hồ Chí Minh<br />
-            0988000000
-          </div>
-          <div className={`block w-[350px]  p-0`}>
-            <div className={`value text-right block ml-[10px] p-0 p-[20px] rounded-[4px] w-2/3  `}>
-              <div className="grid grid-cols-2 border-b border-[#ccc]">
-                <div className="flex items-center justify-start font-bold">Customer #</div>
-                <div className="text-right">123456</div>
-              </div>
-              <div className="grid grid-cols-2 border-b border-[#ccc]">
-                <div className="flex items-center justify-start font-bold">Invoice #</div>
-                <div className="text-right">123456</div>
-              </div>
-              <div className="grid grid-cols-2 border-b border-[#ccc]">
-                <div className="flex items-center justify-start font-bold">Date</div>
-                <div className="text-right">2019-01-01</div>
-              </div>
-            </div>
-          </div>
-        </div>
+  const calcTaxTotal = () => {
+    return calcLineItemsTotal() * (taxRate / 100);
+  };
 
-        <h2>Service</h2>
+  const calcGrandTotal = () => {
+    return calcLineItemsTotal() + calcTaxTotal();
+  };
 
-          <LineItems
-            items={this.state.lineItems}
-            currencyFormatter={this.formatCurrency}
-            changeHandler={this.handleLineItemChange}
-            focusHandler={this.handleFocusSelect}
+  return (
+    <div className="max-w-[maxWidth] mx-auto border p-[2*20px] rounded-[4px] bg-[#ffffff]">
+      <div className="mb-[2*20px]">
+        <div className="inline-block rounded-[4px]">
+          <img
+            src="https://via.placeholder.com/150x50.png?text=logo"
+            alt="Logo"
+            className="logo"
           />
-        <h2>Medicine</h2>
-
-          <LineItems
-            items={this.state.lineMedicine}
-            currencyFormatter={this.formatCurrency}
-            changeHandler={this.handleLineItemChange}
-            focusHandler={this.handleFocusSelect}
-          />
-        <div className="totalContainer mt-5">
-            <div className ="w-[200px]">
-              <div className="grid grid-cols-[1fr_0.5fr] border border-[#ccc] p-1">
-                <div className="flex items-center justify-start font-bold">Tax Rate (%)</div>
-                <div className="text-right"><input className ="input" name="taxRate" value={10} onChange={this.handleInvoiceChange} onFocus={this.handleFocusSelect} /></div>
-              </div>
-            </div>
-            <div className="valueTable">
-              <div className="grid grid-cols-2 border-b border-[#ccc] p-1">
-                <div className="flex items-center justify-start font-bold ">Subtotal</div>
-                <div className={`text-right text-right break-words`}>{this.formatCurrency(this.calcLineItemsTotal())}</div>
-              </div>
-              <div className="grid grid-cols-2 border-b border-[#ccc] p-1">
-                <div className="flex items-center justify-start font-bold">Tax ({10}%)</div>
-                <div className={`text-right text-right break-words`}>{this.formatCurrency(this.calcTaxTotal())}</div>
-              </div>
-              <div className="grid grid-cols-2 border-b border-[#ccc] p-1">
-                <div className="flex items-center justify-start font-bold">Total Due</div>
-                <div className={`text-right text-right break-words`}>{this.formatCurrency(this.calcGrandTotal())}</div>
-              </div>
-            </div>
         </div>
-
+      </div>
+      <div className="flex flex-wrap  text-left  w-[750px]">
+        <div
+          className={`block font-normal mr-[10px] bg-[#efefef] border-1 border-[#ccc] p-[20px] rounded-[4px] w-1/3 max-w-[266px] from`}
+        >
+          <strong>Dencare</strong>
+          <br />
+          227 Đ. Nguyễn Văn Cừ
+          <br />
+          Thành phố Hồ Chí Minh
+          <br />
+          0988000000
+        </div>
+        <div className={`block w-[350px]  p-0`}>
+          <div
+            className={`value text-right block ml-[10px] p-0 p-[20px] rounded-[4px] w-2/3  `}
+          >
+            <div className="grid grid-cols-2 border-b border-[#ccc]">
+              <div className="flex items-center justify-start font-bold">
+                Customer #
+              </div>
+              <div className="text-right">123456</div>
+            </div>
+            <div className="grid grid-cols-2 border-b border-[#ccc]">
+              <div className="flex items-center justify-start font-bold">
+                Invoice #
+              </div>
+              <div className="text-right">123456</div>
+            </div>
+            <div className="grid grid-cols-2 border-b border-[#ccc]">
+              <div className="flex items-center justify-start font-bold">
+                Date
+              </div>
+              <div className="text-right">2019-01-01</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-    )
-  }
+      <h2>Service</h2>
 
-}
+      <LineItems
+        items={lineItems}
+        currencyFormatter={formatCurrency}
+        changeHandler={handleLineItemChange}
+        focusHandler={handleFocusSelect}
+      />
+      <h2>Medicine</h2>
 
-export default InvoiceCom
+      <LineItems
+        items={lineMedicine}
+        currencyFormatter={formatCurrency}
+        changeHandler={handleLineItemChange}
+        focusHandler={handleFocusSelect}
+      />
+      <div className="totalContainer mt-5">
+        <div className="w-[200px]">
+          <div className="grid grid-cols-[1fr_0.5fr] border border-[#ccc] p-1">
+            <div className="flex items-center justify-start font-bold">
+              Tax Rate (%)
+            </div>
+            <div className="text-right">
+              <input
+                className="input"
+                name="taxRate"
+                value={10}
+                onChange={handleInvoiceChange}
+                onFocus={handleFocusSelect}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="valueTable">
+          <div className="grid grid-cols-2 border-b border-[#ccc] p-1">
+            <div className="flex items-center justify-start font-bold ">
+              Subtotal
+            </div>
+            <div className={`text-right text-right break-words`}>
+              {formatCurrency(calcLineItemsTotal())}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 border-b border-[#ccc] p-1">
+            <div className="flex items-center justify-start font-bold">
+              Tax ({10}%)
+            </div>
+            <div className={`text-right text-right break-words`}>
+              {formatCurrency(calcTaxTotal())}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 border-b border-[#ccc] p-1">
+            <div className="flex items-center justify-start font-bold">
+              Total Due
+            </div>
+            <div className={`text-right text-right break-words`}>
+              {formatCurrency(calcGrandTotal())}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default InvoiceCom;

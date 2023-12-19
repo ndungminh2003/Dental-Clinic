@@ -3,6 +3,7 @@ const { getRole } = require("../middlewares/authMiddleware");
 
 const createService = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     console.log(role);
@@ -24,6 +25,7 @@ const createService = async (req, res) => {
 
 const updateService = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))

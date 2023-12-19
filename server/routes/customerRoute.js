@@ -6,8 +6,8 @@ const router = express.Router();
 router.get("/get-one-customer", customerCtrl.getOneCustomer);
 router.get(
   "/get-all-customer",
-  authM.authMiddleware,
-  authM.isAdmin,
+  // authM.authMiddleware,
+  // authM.isAdmin,
   customerCtrl.getAllCustomer
 );
 

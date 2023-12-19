@@ -8,8 +8,8 @@ router.post("/logout", authCtrl.logout);
 router.post("/login", authCtrl.login);
 router.put(
   "/block-user",
-  authM.authMiddleware,
-  authM.isAdmin,
+  // authM.authMiddleware,
+  // authM.isAdmin,
   authCtrl.blockUser
 );
 

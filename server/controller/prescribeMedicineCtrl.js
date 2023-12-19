@@ -62,7 +62,7 @@ const deletePrescribeMedicine = async (req, res) => {
 };
 
 const getPrescribeMedicineByRecordId = async (req, res) => {
-  const { recordId } = req.body;
+  const { recordId } = req.query;
   try {
     const role = getRole(req);
     const db = await (await getDb(role))

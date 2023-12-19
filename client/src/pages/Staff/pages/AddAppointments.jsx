@@ -54,7 +54,7 @@ function getDateforinput() {
 function SimpleDialog(props) {
   const { onClose, open, dentist } = props;
   console.log("dentist", dentist);
-  
+
   const dispatch = useDispatch();
   const message = useSelector((state) => state.appointment.message);
 
@@ -115,7 +115,7 @@ function SimpleDialog(props) {
     };
     console.log("pushData", pushData);
     console.log("field", field);
-    if(field){
+    if (field) {
       dispatch(makeAppointment(pushData));
       console.log("message", message);
     }
@@ -378,7 +378,8 @@ function AddAppointments() {
     const selectedMember = event.target.value;
     console.log("Selected Member:", selectedMember);
 
-    const selectedOwner = dentist && dentist.find((owner) => owner.id === selectedMember);
+    const selectedOwner =
+      dentist && dentist.find((owner) => owner.id === selectedMember);
 
     const membersResource = {
       fieldName: "dentistId",
@@ -397,12 +398,13 @@ function AddAppointments() {
       ],
       selectedOwner,
       data: selectedMember
-        ? AppointmentsData.filter((appointment) =>
-            appointment.dentistId && appointment.dentistId.includes(selectedMember)
+        ? AppointmentsData.filter(
+            (appointment) =>
+              appointment.dentistId &&
+              appointment.dentistId.includes(selectedMember)
           )
         : AppointmentsData,
     }));
-    
   };
 
   return (

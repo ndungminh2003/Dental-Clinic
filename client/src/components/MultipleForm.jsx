@@ -27,7 +27,7 @@ const YourFormComponent = () => {
       .getScheduleAvailableOnDay(e.target.value)
       .then((res) => {
         let times = [];
-        res.forEach((element) => {
+        res?.forEach((element) => {
           if (!times.includes(element.startTime)) {
             times.push(element.startTime);
           }
@@ -40,7 +40,7 @@ const YourFormComponent = () => {
   const handleDateChange2 = (e) => {
     setFieldValue("date", e.target.value);
     let times = [];
-    schedules.forEach((element) => {
+    schedules?.forEach((element) => {
       const date = formatDate(element.startTime);
       if (date === e.target.value) {
         times.push(element.startTime);
@@ -53,7 +53,7 @@ const YourFormComponent = () => {
     setFieldValue("dentistId", e.target.value);
     scheduleService.getDentistSchedule(e.target.value).then((res) => {
       let dates = [];
-      res.forEach((element) => {
+      res?.forEach((element) => {
         const date = formatDate(element.startTime);
         if (!dates.includes(date)) {
           dates.push(date);
@@ -68,7 +68,7 @@ const YourFormComponent = () => {
   const handleTimeChange = (e) => {
     setFieldValue("startTime", e.target.value);
     let dt = [];
-    schedules.forEach((element) => {
+    schedules?.forEach((element) => {
       const time = formatTime(element.startTime);
       if (time === formatTime(e.target.value)) {
         dt.push({ id: element.dentistId, name: element.name });
@@ -106,7 +106,6 @@ const YourFormComponent = () => {
     const oneMonthLater = new Date();
     oneMonthLater.setMonth(currentDate.getMonth() + 1);
 
-    // Format the date as YYYY-MM-DD
     const formattedCurrentDate = formatDate(currentDate);
     const formattedOneMonthLater = formatDate(oneMonthLater);
 

@@ -227,7 +227,7 @@ BEGIN
 END
 
 GO
-CREATE OR ALTER PROC sp_blockUser1
+CREATE PROC sp_blockUser1
 	@userId INT,
 	@role VARCHAR(16) 
 AS
@@ -904,6 +904,8 @@ BEGIN
 				ROLLBACK TRAN
 			END
 			INSERT INTO PATIENT_RECORD(symptom, advice, diagnostic, date_time, dentistId, customerId) VALUES (@symptom, @advice, @diagnostic, @date_time, @dentistId, @customerId)
+			SELECT * FROM PATIENT_RECORD 
+ 			WHERE date_time = @date_time and dentistId = @dentistId and customerId = @customerId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -911,6 +913,12 @@ BEGIN
         ;THROW
 	END CATCH
 END
+
+exec sp_createPatientRecord 20, 1, '2023-12-27 10:30:00.000', 'ajsdh', 'asdjaskd', 'sajdashd'
+select * from CUSTOMER
+select * from DENTIST
+select * from APPOINTMENT
+select * from PATIENT_RECORD
 
 -- update patient record - lost update
 GO

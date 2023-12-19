@@ -36,7 +36,7 @@ const getOneAppointment = async (id) => {
 const getCustomerAppointment = async (customerId) => {
   try {
     const response = await Axios.get("appointment/get-customer-appointment", {
-      customerId,
+      params: customerId,
     });
     return response.data;
   } catch (error) {
@@ -54,9 +54,9 @@ const getCustomerAppointment = async (customerId) => {
 
 const getDentistAppointment = async (dentistId) => {
   try {
-    const response = await Axios.get("appointment/get-dentist-appointment", {
-      dentistId,
-    });
+    const response = await Axios.get(
+      `appointment/get-dentist-appointment/${dentistId}`
+    );
     return response.data;
   } catch (error) {
     if (error.response) {

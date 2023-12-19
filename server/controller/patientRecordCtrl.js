@@ -13,7 +13,9 @@ const createPatientRecord = async (req, res) => {
       .input("symptom", input.symptom)
       .input("advice", input.advice)
       .execute("sp_createPatientRecord");
-    res.status(200).json(db.recordset);
+      console.log(db.recordset);
+      console.log(db);
+    res.status(200).json(db.recordset[0]);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);

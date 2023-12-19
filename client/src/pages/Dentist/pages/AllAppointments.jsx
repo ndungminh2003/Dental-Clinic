@@ -3,86 +3,29 @@ import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import Dialog from "@mui/material/Dialog";
+import appointmentService from "../../../features/appointment/appointmentServices";
+import customerService from "../../../features/customer/customerServices";
+import serviceService from "../../../features/service/serviceServices";
+import medicineService from "../../../features/medicine/medicineServices";
+import { createPatientRecord } from "../../../features/patientRecord/patientRecordSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 import { TextField, Autocomplete } from "@mui/material";
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
-const service = [
-  {
-    id: 1,
-    price: 50,
-    name: "Service1",
-    description: "Basic dental checkup",
-  },
-  {
-    id: 2,
-    price: 60,
-    name: "Service2",
-    description: "dental filling service",
-  },
-  {
-    id: 3,
-    price: 160,
-    name: "Service3",
-    description: "dental filling service",
-  },
-];
-
-const data = [
-  {
-    index: 0,
-    values: [
-      "05-10-2023",
-      "09:15 -> 15h50",
-      "Yonkers",
-      "4 Nguyễn Văn Cừ Q:5 P:10",
-      "0000000000",
-      "Male",
-      "cancelled",
-    ],
-  },
-  {
-    index: 1,
-    values: [
-      "06-10-2023",
-      "09:00 -> 15h50",
-      "Jack",
-      "5 Nguyễn Văn Cừ Q:5 P:10",
-      "0000000000",
-      "Male",
-      "cancelled",
-    ],
-  },
-  {
-    index: 2,
-    values: [
-      "07-10-2023",
-      "09:30 -> 15h50",
-      "Alice",
-      "6 Nguyễn Văn Cừ Q:5 P:10",
-      "0000000000",
-      "Female",
-      "cancelled",
-    ],
-  },
-  {
-    index: 3,
-    values: [
-      "08-10-2023",
-      "09:40 -> 15h50",
-      "Blanc",
-      "7 Nguyễn Văn Cừ Q:5 P:10",
-      "0000000000",
-      "Male",
-      "cancelled",
-    ],
-  },
-];
-
 function SimpleDialog(props) {
-  const { onClose, selectedValue, open, values } = props;
+  const { onClose, selectedValue, open, values, services, medicines, newPatientRecord } = props;
   const [medicineRows, setMedicineRows] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [symptom, setSymptom] = useState("");
+  const [advice, setAdvice] = useState("");
+  const [diagnostic, setDiagnostic] = useState("");
+
+  console.log(newPatientRecord);
+
+  const dispatch = useDispatch();
+
   const addMedicineRow = () => {
     setMedicineRows([...medicineRows, { medicine: "", quantity: 1 }]);
   };
@@ -92,6 +35,31 @@ function SimpleDialog(props) {
 
   const handleListItemClick = (value) => {
     onClose(value);
+
+    const currentDate = new Date();
+    const sqlDateTime = currentDate
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+
+    console.log(sqlDateTime);
+
+    const patientRecord = {
+      symptom: symptom,
+      advice: advice,
+      diagnostic: diagnostic,
+      dentistId: 1,
+      data_time: sqlDateTime,
+      customerId: values.customerId,
+    };
+
+    dispatch(createPatientRecord(patientRecord));
+    console.log(newPatientRecord);
+  
+  };
+
+  const handleOptionChange = (event, newValues) => {
+    setSelectedOptions(newValues);
   };
 
   return (
@@ -106,7 +74,7 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
-            value={values[2]}
+            value={values.patientName}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md  border border-gray-300	`}
           ></input>
@@ -118,7 +86,7 @@ function SimpleDialog(props) {
             </div>
             <input
               type="text"
-              value={values[4]}
+              value={values.phoneNumber}
               disabled="true"
               className={` w-3/4 ml-[50px] px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
@@ -129,7 +97,7 @@ function SimpleDialog(props) {
             </div>
             <input
               type="text"
-              value={values[5]}
+              value={values.gender}
               disabled="true"
               className={` w-1/2  px-3 py-2 rounded-md  border border-gray-300	`}
             ></input>
@@ -137,11 +105,11 @@ function SimpleDialog(props) {
         </div>
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
-            <label className="font-mono rounded-md text-center	">Adress</label>
+            <label className="font-mono rounded-md text-center	">Address</label>
           </div>
           <input
             type="text"
-            value={values[3]}
+            value={values.address}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
@@ -164,9 +132,11 @@ function SimpleDialog(props) {
           <Autocomplete
             sx={{ marginLeft: "26px", width: "100%" }}
             multiple
-            options={service.map((data) => data.name)}
+            options={services.map((data) => data.name)}
             getOptionLabel={(option) => option}
             disableCloseOnSelect
+            value={selectedOptions}
+            onChange={handleOptionChange}
             renderInput={(params) => (
               <TextField {...params} variant="outlined" placeholder="Add" />
             )}
@@ -178,6 +148,8 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
+            value={symptom}
+            onChange={(e) => setSymptom(e.target.value)}
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>
@@ -187,6 +159,8 @@ function SimpleDialog(props) {
           </div>
           <input
             type="text"
+            value={advice}
+            onChange={(e) => setAdvice(e.target.value)}
             className={` w-3/4  px-3 py-2 rounded-md  border border-gray-300	`}
           ></input>
         </div>
@@ -197,6 +171,8 @@ function SimpleDialog(props) {
             </label>
           </div>
           <input
+            value={diagnostic}
+            onChange={(e) => setDiagnostic(e.target.value)}
             type="text"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
@@ -219,9 +195,9 @@ function SimpleDialog(props) {
                     }}
                     className="block w-2/3 mt-1 mr-2 p-2  border border-gray-300	 rounded-md shadow-sm"
                   >
-                    <option value="amoxicillin">Amoxicillin</option>
-                    <option value="ibuprofen">Ibuprofen</option>
-                    {/* Add other medicine options here */}
+                    {medicines.map((medicine) => (
+                      <option value={medicine.name}>{medicine.name}</option>
+                    ))}
                   </select>
                   <input
                     type="number"
@@ -267,29 +243,141 @@ SimpleDialog.propTypes = {
   values: PropTypes.array.isRequired,
 };
 
+const processAppointments = (responseDentistAppointment, responseCustomer) => {
+  const appointmentsWithCustomer = responseDentistAppointment.map(
+    (appointment) => {
+      const correspondingCustomer = responseCustomer.find(
+        (customer) => customer.id === appointment.customerId
+      );
+
+      return {
+        ...appointment,
+        patientName: correspondingCustomer.name,
+        phoneNumber: correspondingCustomer.phoneNumber,
+        gender: correspondingCustomer.gender,
+        address: correspondingCustomer.address,
+      };
+    }
+  );
+
+  return appointmentsWithCustomer;
+};
+
 const AllAppointments = () => {
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState([""]);
+
+  const { error, loading, success, newPatientRecord } = useSelector((state) => state.patientRecord);
+  console.log(error);
+  console.log(newPatientRecord);
+
+  const fetchData = async () => {
+    try {
+      const [
+        responseDentistAppointment,
+        responseCustomer,
+        responseService,
+        responseMedicine,
+      ] = await Promise.all([
+        appointmentService.getDentistAppointment(1),
+        customerService.getAllCustomer(),
+        serviceService.getAllService(),
+        medicineService.getAllMedicine(),
+      ]);
+
+      const data1 = processAppointments(
+        responseDentistAppointment,
+        responseCustomer
+      );
+
+      setServices(responseService);
+      setDataAppointment(data1);
+      setMedicines(responseMedicine);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [dataAppointment, setDataAppointment] = React.useState([]);
+  const [services, setServices] = React.useState([]);
+  const [medicines, setMedicines] = React.useState([]);
+ 
+  React.useEffect(() => {
+    fetchData();
+  }, [error, loading, success]);
 
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const handleClose = (value) => {
     setOpen(false);
     setSelectedValue(value);
   };
+
   const columns = [
-    "Appointment date",
-    "Appointment time",
-    "Patient name",
+    {
+      name: "startTime",
+      label: "Start Time",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+
+    {
+      name: "endTime",
+      label: "End Time",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+
+    {
+      name: "patientName",
+      label: "Patient Name",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+
     {
       name: "Adress",
       options: { display: false },
     },
-    "Number",
+
+    {
+      name: "customerId",
+      options: { display: false },
+    },
+
+    {
+      name: "recordId",
+      options: { display: false },
+    },
+
+    {
+      name: "phoneNumber",
+      label: "phone number",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+
     {
       name: "Gender",
       options: { display: false },
     },
-    "Status",
+
+    {
+      name: "status",
+      label: "status",
+      options: {
+        filter: true,
+        sort: true,
+      },
+    },
+
     {
       name: "Action",
       options: {
@@ -307,10 +395,9 @@ const AllAppointments = () => {
   ];
 
   const handleActionClick = (row) => {
-    // Do something when the button in the 'Action' column is clicked
     setOpen(true);
-    console.log("1:", data[row.dataIndex].values);
-    setValues(data[row.dataIndex].values);
+    console.log("1:", dataAppointment[row.dataIndex]);
+    setValues(dataAppointment[row.dataIndex]);
   };
 
   const options = {
@@ -341,7 +428,7 @@ const AllAppointments = () => {
         <ThemeProvider theme={getMuiTheme()}>
           <MUIDataTable
             title={"All appoinment"}
-            data={data.map((entry) => entry.values)}
+            data={dataAppointment}
             columns={columns}
             options={options}
           />
@@ -352,6 +439,10 @@ const AllAppointments = () => {
         open={open}
         onClose={handleClose}
         values={values}
+        services={services}
+        medicines={medicines}
+        data={dataAppointment}
+        newPatientRecord = {newPatientRecord}
       />
     </div>
   );

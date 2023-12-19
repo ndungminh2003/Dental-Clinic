@@ -17,8 +17,14 @@ const getAllPatientRecord = async (user) => {
   }
 };
 
+const createPatientRecord = async (patientRecord) => {
+  const response = await Axios.post("patient-record/create-patient-record", patientRecord);
+  return response.data;
+};
+
 const patientRecordService = {
   getAllPatientRecord,
+  createPatientRecord
 };
 
 export default patientRecordService;

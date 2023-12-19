@@ -61,11 +61,12 @@ const getCustomerAppointment = async (req, res) => {
 };
 
 const getDentistAppointment = async (req, res) => {
-  const { dentistId } = req.body;
+  const input = req.params;
+  console.log(input.dentistId);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
-      .input("dentistId", dentistId)
+      .input("dentistId", input.dentistId)
       .execute("sp_viewDentistAppointment");
     res.status(200).json(db.recordset);
   } catch (error) {

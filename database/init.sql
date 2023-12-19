@@ -467,9 +467,12 @@ BEGIN
 	GRANT EXEC ON dbo.sp_viewAllDentist TO guestRole
 	GRANT EXEC ON dbo.sp_viewAllStaff TO guestRole
 
+	GRANT EXEC ON dbo.sp_createPatientRecord TO guestRole
 	GRANT EXEC ON dbo.sp_createDentist TO guestRole
 	GRANT EXEC ON dbo.sp_createStaff TO guestRole
 	GRANT EXEC ON dbo.sp_blockUser1 to guestRole
+	GRANT EXEC ON dbo.sp_viewDentistAppointment to guestRole
+	GRANT EXEC ON dbo.sp_viewAllService to guestRole
 
   END TRY
   BEGIN CATCH
@@ -480,3 +483,12 @@ END
 EXEC sp_createDatabaseUser
 
 select * from CUSTOMER
+select * from DENTIST
+select * from appointment
+
+-- Insert data into the SERVICE table to define available services
+INSERT INTO SERVICE (name, price, description)
+VALUES (N'Service100', 50.00, N'Basic dental checkup');
+
+select * from SERVICE_USE
+select * from PRESCRIBE_MEDICINE

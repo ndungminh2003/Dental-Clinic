@@ -20,7 +20,7 @@ router.get(
   appointmentCtrl.getCustomerAppointment
 );
 router.get(
-  "/get-dentist-appointment",
+  "/get-dentist-appointment/:dentistId",
   // authM.authMiddleware,
   appointmentCtrl.getDentistAppointment
 );

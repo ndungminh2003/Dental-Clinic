@@ -90,7 +90,6 @@ const getAllScheduleAvailable = async (req, res) => {
   }
 };
 
-
 module.exports = {
   createDentistSchedule,
   deleteDentistSchedule,

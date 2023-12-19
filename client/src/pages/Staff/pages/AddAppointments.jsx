@@ -374,7 +374,7 @@ function AddAppointments() {
 
   const [state, setState] = useState({
     open: false,
-    data: schedule && schedule,
+    data: schedule ,
     currentDate: getDate(),
     resources: [
       {
@@ -390,6 +390,19 @@ function AddAppointments() {
     ],
     selectedMember: null,
   });
+  useEffect(()=>{
+    if(dentist && dentist.length != 0){
+      setState((prevState) => ({
+        ...prevState,
+        resources: [
+          {
+            ...prevState.resources[0],
+            instances: dentist ,
+          },
+        ],
+      }));
+    }
+  },[dentist]);
 
   const handleMemberChange = (event) => {
     console.log("Event:", event);
@@ -405,9 +418,7 @@ function AddAppointments() {
       title: "Dentist",
       instances: selectedOwner
         ? [selectedOwner]
-        : dentist
-        ? dentist
-        : dentistnull,
+        : dentist,
     };
 
     setState((prevState) => ({

@@ -53,6 +53,7 @@ function getDateforinput() {
 function SimpleDialog(props) {
   const { onClose, open, dentist } = props;
   console.log("dentist", dentist);
+
   const dispatch = useDispatch();
   const error = useSelector((state) => state.appointment.error);
 
@@ -427,6 +428,7 @@ function AddAppointments() {
           )
         : AppointmentsData,
     }));
+    
   };
 
   return (

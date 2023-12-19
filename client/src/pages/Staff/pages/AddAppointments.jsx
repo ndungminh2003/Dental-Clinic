@@ -239,12 +239,12 @@ function SimpleDialog(props) {
               onChange={(e) => handleInputChange("dentistId", e.target.value)}
               className="w-3/4 px-3 py-2 rounded-md border border-gray-300 "
             >
-              {dentist.length != 0 &&
+              {/* {dentist && dentist.length != 0 &&
                 dentist.map((dentist) => (
                   <option key={dentist.id} value={dentist.id}>
                     {dentist.text}
                   </option>
-                ))}
+                ))} */}
             </select>
           </div>
           <div className="flex items-center grow mt-3">
@@ -325,14 +325,25 @@ SimpleDialog.propTypes = {
 
 function AddAppointments() {
   let { error, loading, success } = useSelector((state) => state.auth);
-  const [scheduleData,setScheduleData] = useState();
-  const [dentistData,setDentistData] = useState();
-
+  const [scheduleData, setScheduleData] = useState();
+  const [dentistData, setDentistData] = useState();
+  const [state, setState] = useState({});
+  const [schedule, setSchedule] = useState([{
+    id:1,
+    dentistId: 1,
+    title: 'free schedule',
+    endDate: new Date(2017, 4, 28, 12, 0),
+    startDate: new Date(2017, 4, 28, 11, 0),
+  }]);
+  const [dentist, setDentist] = useState([{
+    id: 2,
+    text: "dentist",
+  }]);
   const fetchata = async () => {
     try {
       const [dentistResponse, scheduleResponse] = await Promise.all([
         dentistService.getAllDentist(),
-        scheduleService.getAllScheduleAvailable()
+        scheduleService.getAllScheduleAvailable(),
       ]);
       setScheduleData(scheduleResponse);
       setDentistData(dentistResponse);
@@ -343,27 +354,53 @@ function AddAppointments() {
   useEffect(() => {
     fetchata();
   }, [error, loading, success]);
-  let currentId = 1;
-  const schedule =
-    scheduleData &&
-    scheduleData.map((item) => ({
-      id: currentId++,
-      dentistId: item.dentistId,
-      title: "free schedule",
-      endDate: new Date(item.endTime).toLocaleString("en-US", {
-        timeZone: "UTC",
-      }),
-      startDate: new Date(item.startTime).toLocaleString("en-US", {
-        timeZone: "UTC",
-      }),
-    }));
 
-  const dentist =
-    dentistData &&
-    dentistData.map((item) => ({
-      id: item.id,
-      text: item.name,
-    }));
+  let currentId = 1;
+  useEffect(() => {
+    if (scheduleData && scheduleData.length !== 0) {
+      console.log("schedule", scheduleData);
+      const updatedSchedule = scheduleData.map((item) => ({
+          id: currentId++,
+          dentistId: item.dentistId,
+          title: 'free schedule',
+          endDate: new Date(item.endTime).toLocaleString('en-US', {
+              timeZone: 'UTC',
+        }),
+        startDate: new Date(item.startTime).toLocaleString('en-US', {
+          timeZone: 'UTC',
+        }),
+      }));
+      
+      setSchedule(updatedSchedule);
+    }
+    if (dentistData && dentistData.length !== 0) {
+      console.log("dentist", dentistData);
+      const updatedDentist = dentistData.map((item) => ({
+        id: item.id,
+        text: item.name,
+      }));
+      setDentist(updatedDentist);
+    }
+    const data = {
+      open: false,
+      data: schedule,
+      currentDate: getDate(),
+      resources: [
+        {
+          fieldName: "dentistId",
+          title: "Dentist",
+          instances: dentist,
+        },
+      ],
+      grouping: [
+        {
+          resourceName: "dentistId",
+        },
+      ],
+      selectedMember: null,
+    }
+    setState(data);
+  }, [scheduleData, dentistData]);
 
   const dentistnull = [
     {
@@ -372,24 +409,6 @@ function AddAppointments() {
     },
   ];
 
-  const [state, setState] = useState({
-    open: false,
-    data: schedule && schedule,
-    currentDate: getDate(),
-    resources: [
-      {
-        fieldName: "dentistId",
-        title: "Dentist",
-        instances: dentist ? dentist : dentistnull,
-      },
-    ],
-    grouping: [
-      {
-        resourceName: "dentistId",
-      },
-    ],
-    selectedMember: null,
-  });
 
   const handleMemberChange = (event) => {
     console.log("Event:", event);
@@ -414,7 +433,7 @@ function AddAppointments() {
       ...prevState,
       selectedMember,
       resources: [
-        ...prevState.resources.filter(
+        ...prevState.resources?.filter(
           (resource) => resource.fieldName !== "dentistId"
         ),
         membersResource,
@@ -428,12 +447,11 @@ function AddAppointments() {
           )
         : AppointmentsData,
     }));
-    
   };
 
   return (
     <div>
-      {dentist && dentist.length !== 0 && (
+      {(dentist && dentist.length !== 0) && (schedule && schedule.length !== 0) && (
         <>
           <div className="w-full flex">
             <div className="flex w-1/3">
@@ -450,7 +468,7 @@ function AddAppointments() {
                 }}
               >
                 <MenuItem value={0}>All Members</MenuItem>
-                {dentist &&
+                {dentist && dentist.length !== 0 &&
                   dentist.map((member) => (
                     <MenuItem key={member.id} value={member.id}>
                       {member?.text}
@@ -470,7 +488,7 @@ function AddAppointments() {
             </div>
             <SimpleDialog
               open={state.open}
-              dentist={dentist ? dentist : dentistnull}
+              dentist={dentist }
               onClose={() =>
                 setState((prevState) => ({ ...prevState, open: false }))
               }

@@ -1,5 +1,7 @@
 import * as React from "react";
 import Paper from "@mui/material/Paper";
+import { useState, useEffect } from "react";
+
 import { ViewState, EditingState } from "@devexpress/dx-react-scheduler";
 import {
   Scheduler,
@@ -17,12 +19,25 @@ import {
   MonthView,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { appointments } from "../components/CalendarData/data";
+import scheduleService from "../../../features/schedule/scheduleServices";
+
+const fetchData = async () => {
+  try {
+    const responseData = await scheduleService.getAllSchedule();
+    console.log(responseData);
+
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
 export default class Demo extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       data: appointments,
-      currentDate: "2018-06-27",
+      currentDate: new Date(),
 
       addedAppointment: {},
       appointmentChanges: {},
@@ -36,7 +51,7 @@ export default class Demo extends React.PureComponent {
   }
 
   changeAddedAppointment(addedAppointment) {
-    // Ensure the default title is set to "appointment" for new appointments
+
     const defaultTitle = addedAppointment.title || "Schedule";
     const updatedAppointment = {
       ...addedAppointment,
@@ -76,6 +91,7 @@ export default class Demo extends React.PureComponent {
   }
 
   render() {
+
     const {
       currentDate,
       data,

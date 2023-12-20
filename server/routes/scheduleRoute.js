@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post(
   "/create-dentist-schedule",
-  authM.isDentist,
+  // authM.isDentist,
   scheduleCtrl.createDentistSchedule
 );
 
@@ -22,7 +22,7 @@ router.get(
 
 router.get(
   "/get-all-dentist-schedule",
-  authM.isNotCustomer,
+  // authM.isNotCustomer,
   scheduleCtrl.getAllSchedule
 );
 

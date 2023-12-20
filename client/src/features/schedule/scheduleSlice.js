@@ -19,6 +19,20 @@ export const getAllScheduleAvailable = createAsyncThunk(
     }
 );
 
+export const createDentistSchedule = createAsyncThunk(
+  "schedule/create",
+  async (data, thunkAPI) => {
+    try {
+      console.log("in here");
+      return await scheduleService.createDentistSchedule(data);
+    } catch (error) {
+      console.log("reject here");
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+
 export const scheduleSlice = createSlice({
     name: "schedule",
     initialState: initialState,

@@ -1,6 +1,7 @@
 const { getDb } = require("../config/dbconfig");
 const { getRole } = require("../middlewares/authMiddleware");
 
+
 const createDentistSchedule = async (req, res) => {
   const input = req.body;
   try {

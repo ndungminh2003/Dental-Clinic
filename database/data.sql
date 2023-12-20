@@ -7,7 +7,10 @@ VALUES ('AdminUser', 'AdminPassword123', '123456789');
 
 -- Insert data into the CUSTOMER table
 INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
-VALUES ('Minh7', 'CustomerPassword123', '218295423369', 'Customer', N'Nam', '123 Main St', '1990-05-15', 0);
+VALUES ('Customer1', 'CustomerPassword123', '987654321', 'Customer', N'Nam', '123 Main St', '1990-05-15', 0);
+
+INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
+VALUES ('Customer2', 'CustomerPassword123', '987654322', 'Customer', N'Nam', '123 Main St', '1990-05-15', 0);
 
 -- Insert data into the DENTIST table
 INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
@@ -52,10 +55,10 @@ VALUES (N'Viên', 'Medicine3', 'Painkiller', '2023-12-11 10:30:00', 'Pain relief
 
 -- Insert data into the APPOINTMENT table to book an appointment
 INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status)
-VALUES (1, 22, '2023-12-28 10:00:00', '2023-12-28 11:00:00', N'Đang tạo hồ sơ bệnh án');
+VALUES (1, 1, '2023-11-10 09:00:00', '2023-11-10 10:00:00', N'Đang tạo hồ sơ bệnh án');
 
-select * from CUSTOMER
-select * from APPOINTMENT
+INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status)
+VALUES (1, 2, '2023-12-28 10:00:00', '2023-12-28 11:00:00', N'Đang tạo hồ sơ bệnh án');
 -- Insert data into the SERVICE table to define available services
 INSERT INTO SERVICE (name, price, description)
 VALUES (N'Service1', 50.00, N'Basic dental checkup');
@@ -81,10 +84,7 @@ VALUES (1, 2, 'Hello2', 10.99, 20);
 
 -- Insert data into the INVOICE table to create an invoice
 INSERT INTO INVOICE (total, date_time, status, recordId, staffId)
-VALUES (100.00, '2023-11-10 12:00:00', N'Chưa thanh toán', 1, 1);
-
-INSERT INTO INVOICE (total, date_time, status, recordId, staffId)
-VALUES (269.80, '2023-12-12 16:00:00', N'Chưa thanh toán', 2, 1);
+VALUES (489.60, '2023-11-10 12:00:00', N'Chưa thanh toán', 1, 1);
 
 -- Insert data into the SCHEDULE table to define the schedule for a dentist
 INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
@@ -177,9 +177,3 @@ VALUES (4, '2023-12-29 07:00:00', '2023-12-29 08:00:00', 0);
 
 INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
 VALUES (5, '2023-12-29 07:00:00', '2023-12-29 08:00:00', 0);
-
-SELECT * FROM DENTIST
-SELECT * FROM SCHEDULE
-SELECT * FROM APPOINTMENT
-
-select * from CUSTOMER	

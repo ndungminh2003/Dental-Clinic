@@ -77,7 +77,7 @@ const blockUser = async (req, res) => {
     const db = await (await getDb("guest"))
       .input("userId", input.id)
       .input("role", input.role)
-      .execute("sp_blockUser1");
+      .execute("sp_blockUser");
     res
       .status(200)
       .send(`Successfully block ${input.role} with id: ${input.id}`);

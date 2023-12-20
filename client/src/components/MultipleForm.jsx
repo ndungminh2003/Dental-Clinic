@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useFormikContext } from "formik";
 import scheduleService from "../features/schedule/scheduleServices";
+import formatDate from "../utils/formatDate";
+import formatTime from "../utils/formatTime";
 
 const YourFormComponent = () => {
   const [dentists, setDentists] = useState([]);
@@ -112,32 +114,6 @@ const YourFormComponent = () => {
     setMinDate(formattedCurrentDate);
     setMaxDate(formattedOneMonthLater);
   }, []);
-  const formatDate = (date) => {
-    if (typeof date != "string") return "";
-    if (date.includes("T")) {
-      const dateParts = date.split("-");
-      const jsDate = new Date(
-        dateParts[0],
-        dateParts[1] - 1,
-        dateParts[2].substr(0, 2)
-      );
-      const year = jsDate.getFullYear();
-      const month = (jsDate.getMonth() + 1).toString().padStart(2, "0");
-      const day = jsDate.getDate().toString().padStart(2, "0");
-
-      return `${year}-${month}-${day}`;
-    } else return date;
-  };
-
-  const formatTime = (time) => {
-    if (typeof time != "string") return "";
-    if (time.includes("T")) {
-      const timeParts = time.split(":");
-      const hour = timeParts[0].substr(-2);
-      const minute = timeParts[1];
-      return `${hour}:${minute}`;
-    } else return time;
-  };
 
   return (
     <div className="flex flex-col justify-start items-start pl-20 pt-5">

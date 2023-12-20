@@ -44,7 +44,7 @@ const getAllAppointment = async (req, res) => {
 };
 
 const getCustomerAppointment = async (req, res) => {
-  const { customerId } = req.body;
+  const { customerId } = req.params;
   try {
     const role = getRole(req);
     const db = await (await getDb(role))

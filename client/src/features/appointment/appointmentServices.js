@@ -35,9 +35,9 @@ const getOneAppointment = async (id) => {
 
 const getCustomerAppointment = async (customerId) => {
   try {
-    const response = await Axios.get("appointment/get-customer-appointment", {
-      params: customerId,
-    });
+    const response = await Axios.get(
+      `appointment/get-customer-appointment/${customerId}`
+    );
     return response.data;
   } catch (error) {
     if (error.response) {

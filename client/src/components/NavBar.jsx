@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import DropdownProfile from "../components/DropdownProfile";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function NavBar() {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -44,10 +46,15 @@ export default function NavBar() {
           <div className="relative">
             {user && (
               <button
-                className="text-xl font-semibold text-black bg-gray-200 hover:bg-gray-300 cursor-pointer p-1 rounded-[8px] w-40 h-12"
+                className="text-xl  text-black  hover:bg-gray-200 bg-gray-100  cursor-pointer p-1 rounded-[8px] w-40 h-12"
                 onClick={toggleDropdown}
               >
-                Profile
+                <FontAwesomeIcon
+                  className="px-1"
+                  icon={faCircleUser}
+                  size="lg"
+                />{" "}
+                {user.name}
               </button>
             )}
             {!user && (

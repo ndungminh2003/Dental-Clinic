@@ -52,7 +52,6 @@ function getDateforinput() {
 }
 function SimpleDialog(props) {
   const { onClose, open, dentist } = props;
-  console.log("dentist", dentist);
 
   const dispatch = useDispatch();
   const error = useSelector((state) => state.appointment.error);
@@ -70,26 +69,26 @@ function SimpleDialog(props) {
     start: "",
     value: [],
   });
-  useEffect(() => {
-    setField(
-      data.name.length > 0 &&
-        data.name.length < 51 &&
-        data.birthday.length != 0 &&
-        data.phone.length > 0 &&
-        data.phone.length < 12 &&
-        data.address.length > 0 &&
-        data.address.length < 51 &&
-        data.date.length != 0 &&
-        data.start.length != 0
-    );
-  }, [
-    data.name,
-    data.birthday,
-    data.address,
-    data.phone,
-    data.date,
-    data.start,
-  ]);
+  // useEffect(() => {
+  //   setField(
+  //     data.name.length > 0 &&
+  //       data.name.length < 51 &&
+  //       data.birthday.length != 0 &&
+  //       data.phone.length > 0 &&
+  //       data.phone.length < 12 &&
+  //       data.address.length > 0 &&
+  //       data.address.length < 51 &&
+  //       data.date.length != 0 &&
+  //       data.start.length != 0
+  //   );
+  // }, [
+  //   data.name,
+  //   data.birthday,
+  //   data.address,
+  //   data.phone,
+  //   data.date,
+  //   data.start,
+  // ]);
   const handleClose = () => {
     onClose();
   };
@@ -324,7 +323,7 @@ SimpleDialog.propTypes = {
 };
 
 function AddAppointments() {
-  let { error, loading, success } = useSelector((state) => state.auth);
+  let { error, loading, success } = useSelector((state) => state.dentist);
   const [scheduleData,setScheduleData] = useState();
   const [dentistData,setDentistData] = useState();
 
@@ -332,7 +331,7 @@ function AddAppointments() {
     try {
       const [dentistResponse, scheduleResponse] = await Promise.all([
         dentistService.getAllDentist(),
-        scheduleService.getAllScheduleAvailable()
+        scheduleService.getAllScheduleAvailable(),
       ]);
       setScheduleData(scheduleResponse);
       setDentistData(dentistResponse);
@@ -388,25 +387,37 @@ function AddAppointments() {
         resourceName: "dentistId",
       },
     ],
-    selectedMember: null,
+    selectedMember: dentist && dentist.length > 0 ? dentist[0].id : 0,
   });
-  useEffect(()=>{
-    if(dentist && dentist.length != 0){
-      setState((prevState) => ({
-        ...prevState,
-        resources: [
-          {
-            ...prevState.resources[0],
-            instances: dentist ,
-          },
-        ],
-      }));
+  useEffect(() => {
+    if (dentist && dentist.length !== 0) {
+      setState((prevState) => {
+        // Check if the instances array has changed
+        const instancesChanged =
+          prevState.resources[0]?.instances !== dentist;
+  
+        // Only update if the instances array has changed
+        if (instancesChanged) {
+          return {
+            ...prevState,
+            resources: [
+              {
+                ...prevState.resources[0],
+                instances: dentist,
+              },
+            ],
+          };
+        }
+  
+        return prevState;
+      });
     }
-  },[dentist]);
+  }, [dentist]);
+  
 
   const handleMemberChange = (event) => {
     console.log("Event:", event);
-    const selectedMember = event.target.value;
+    const selectedMember = event.target.value || 0;
     console.log("Selected Member:", selectedMember);
 
     const selectedOwner = dentist

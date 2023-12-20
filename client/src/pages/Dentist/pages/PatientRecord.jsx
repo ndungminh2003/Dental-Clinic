@@ -3,15 +3,12 @@ import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import PropTypes from "prop-types";
-import Invoice from "../components/Invoice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import serviceUseServices from "../../../features/service/serviceServices";
-import invoiceServices from "../../../features/invoice/invoiceServices";
 import prescribeMedicineServices from "../../../features/prescribeMedicine/prescribeMedicineServices";
 import patientRecordServices from "../../../features/patientRecord/patientRecordServices";
 
-import { addInvoice } from "../../../features/invoice/invoiceSlice";
 function SimpleDialog(props) {
   const {
     onClose,
@@ -19,52 +16,16 @@ function SimpleDialog(props) {
     customer,
     dentist,
     date,
-    invoice,
     service,
     prescribeMedicine,
     recordId,
   } = props;
-  const dispatch = useDispatch();
-  const [total, setTotal] = React.useState();
   const handleClose = () => {
     onClose();
   };
 
-  const getTotal = (e) => {
-    setTotal(e);
-  };
-  const getCurrentDateTime = () => {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const hours = String(currentDate.getHours()).padStart(2, "0");
-    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.000`;
-    return formattedDateTime;
-  };
-  useEffect(() => {
-    if (total && !invoice?.length) {
-      let data = {
-        recordId: recordId,
-        date_time: getCurrentDateTime(),
-        status: "Chưa thanh toán",
-        total: total,
-        staffId: 1,
-      };
-      dispatch(addInvoice(data));
-    }
-  }, [total, recordId]);
-  const [openInvoice, setOpenInvoice] = React.useState(false);
-  const handleCloseInvoice = () => {
-    setOpenInvoice(false);
-  };
   const handleListItemClick = (value) => {
     onClose(value);
-  };
-  const handleInvoiceClick = () => {
-    setOpenInvoice(true);
   };
   return (
     <Dialog onClose={handleClose} open={open}>
@@ -145,26 +106,12 @@ function SimpleDialog(props) {
 
         <div className="text-right mt-5">
           <button
-            onClick={handleInvoiceClick}
-            className="bg-sky-500 rounded-md px-3 py-2 mr-2"
-          >
-            {invoice && !invoice.length ? "Add Invoice" : "See Invoice"}
-          </button>
-          <button
             onClick={() => handleListItemClick("hi")}
             className="bg-neutral-300 rounded-md px-3 py-2"
           >
             Close
           </button>
         </div>
-        <Invoice
-          open={openInvoice}
-          onClose={handleCloseInvoice}
-          services={service}
-          medicine={prescribeMedicine}
-          getTotal={getTotal}
-          recordId={recordId}
-        />
       </div>
     </Dialog>
   );
@@ -188,14 +135,6 @@ SimpleDialog.propTypes = {
       price: PropTypes.float,
       quantity: PropTypes.number,
       medicineName: PropTypes.string,
-    })
-  ),
-  invoice: PropTypes.arrayOf(
-    PropTypes.shape({
-      date_time: PropTypes.string,
-      total: PropTypes.number,
-      status: PropTypes.string,
-      id: PropTypes.number,
     })
   ),
 };
@@ -284,7 +223,8 @@ export default function AllAppointments() {
   
   const fetchPatientRecordData = async () => {
     try {
-      const response = await patientRecordServices.getAllPatientRecord();
+      const response = await patientRecordServices.getPatientRecordDentistId(1);
+      console.log(response);
       setPatientRecordData(response);
     } catch (error) {
       console.log(error);
@@ -334,9 +274,8 @@ export default function AllAppointments() {
 
   const fetchData = async (recordId) => {
     try {
-      const [serviceResponse, invoiceResponse, prescribeMedicineResponse] = await Promise.all([
+      const [serviceResponse,  prescribeMedicineResponse] = await Promise.all([
         serviceUseServices.getServiceUseByRecordId(recordId),
-        invoiceServices.getInvoiceByRecordId(recordId),
         prescribeMedicineServices.getPrescribeMedicineByRecordId(recordId),
       ]);
       setAllData((prevData) => {
@@ -344,7 +283,6 @@ export default function AllAppointments() {
           if (item.recordId === recordId) {
             return {
               ...item,
-              invoice: invoiceResponse,
               service: serviceResponse,
               prescribeMedicine: prescribeMedicineResponse,
             };
@@ -407,7 +345,6 @@ export default function AllAppointments() {
         date={dataDialog.date}
         service={dataDialog.service}
         prescribeMedicine={dataDialog.prescribeMedicine}
-        invoice={dataDialog.invoice}
         recordId={dataDialog.recordId}
       />
     </div>

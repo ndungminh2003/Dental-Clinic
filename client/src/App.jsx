@@ -15,7 +15,7 @@ import DAddAppointments from "./pages/Dentist/pages/AddAppointments";
 import DAllAppointments from "./pages/Dentist/pages/AllAppointments";
 import DAppointment from "./pages/Dentist/pages/Appointment";
 import DProfile from "./pages/Dentist/pages/Profile";
-
+import DPatientRecord from "./pages/Dentist/pages/PatientRecord";
 
 import Staff from "./pages/Staff/Staff";
 import StaffLogin from "./pages/Login/StaffLogin";
@@ -67,6 +67,7 @@ const router = createBrowserRouter(
           <Route path="add" element ={<DAddAppointments/>}></Route>
           <Route path="all" element ={<DAllAppointments/>}></Route>
         </Route>
+        <Route path="record" element={<DPatientRecord/>}></Route>
       </Route> 
 
       <Route path="staff/login" element={<StaffLogin />}></Route>

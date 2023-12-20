@@ -64,6 +64,10 @@ VALUES (N'Service1', 50.00, N'Basic dental checkup');
 INSERT INTO SERVICE (name, price, description)
 VALUES (N'Service2', 75.00, N'Dental cleaning and scaling');
 
+-- Insert data into the SERVICE_USE table to associate services with a patient record
+INSERT INTO SERVICE_USE (recordId, serviceId, price)
+VALUES (2, 2, 70.00);
+
 -- Insert data into the PATIENT_RECORD table to create a patient record
 INSERT INTO PATIENT_RECORD (customerId, dentistId, symptom, advice, diagnostic, date_time)
 VALUES (1, 1, N'Toothache', N'Rest and use painkiller', N'Cavity detected', '2023-11-10 10:30:00');
@@ -180,6 +184,7 @@ VALUES (5, '2023-12-29 07:00:00', '2023-12-29 08:00:00', 0);
 
 SELECT * FROM DENTIST
 SELECT * FROM SCHEDULE
-SELECT * FROM APPOINTMENT
-
+SELECT * FROM PRESCRIBE_MEDICINE
+SELECT * FROM PATIENT_RECORD
+SELECT * FROM SERVICE_USE
 select * from CUSTOMER	

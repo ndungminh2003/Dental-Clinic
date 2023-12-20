@@ -61,8 +61,6 @@ export const patientRecordSlice = createSlice({
         state.error = false;
         state.loading = false;
         state.success = true;
-        console.log(action.payload);
-        console.log(action);
         state.newPatientRecord = action.payload;
         state.message = "success";
       })

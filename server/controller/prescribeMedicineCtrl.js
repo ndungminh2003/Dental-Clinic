@@ -3,12 +3,13 @@ const { getRole } = require("../middlewares/authMiddleware");
 
 const createPrescribeMedicine = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
-      .input("recordId", input.customerId)
-      .input("medicineId", input.medicineId)
-      .input("quantity", input.quantity)
+      .input("RECORD_ID", input.recordId)
+      .input("MEDICINE_ID", input.medicineId)
+      .input("QUANTITY", input.quantity)
       .execute("sp_addPrescribeMedicine");
     res.status(200).json(db.recordset);
   } catch (error) {

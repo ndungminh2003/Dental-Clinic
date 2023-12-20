@@ -1,12 +1,16 @@
 import Axios from "../../app/axiosConfig";
 
+const createServiceUse = async (serviceUse) => {
+  console.log(serviceUse);
+  const response = await Axios.post("service-use/create-service-use", serviceUse);
+  return response.data;
+};
 
 const getServiceUseByRecordId = async (recordId) => {
-
-  try{
-    const response = await Axios.get("service-use/get-service-use",
-    { params: { recordId } }
-    );
+  try {
+    const response = await Axios.get("service-use/get-service-use", {
+      params: { recordId },
+    });
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -22,7 +26,8 @@ const getServiceUseByRecordId = async (recordId) => {
 };
 
 const serviceUseService = {
-    getServiceUseByRecordId,
+  createServiceUse,
+  getServiceUseByRecordId,
 };
 
 export default serviceUseService;

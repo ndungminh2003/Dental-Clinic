@@ -1077,6 +1077,39 @@ BEGIN
 	END CATCH
 END
 
+-- view patient record by dentist id
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewDentistPatientRecord')
+BEGIN
+	DROP PROCEDURE sp_viewDentistPatientRecord
+END
+GO
+CREATE PROC sp_viewDentistPatientRecord
+	@dentistId INT
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS ( SELECT 1 FROM DENTIST WHERE id = @dentistId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã nha sĩ không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			-- IF NOT EXISTS ( SELECT 1 FROM PATIENT_RECORD WHERE id = @dentistId)
+			-- BEGIN
+			-- 	RAISERROR(N'Lỗi: không có hồ sơ bệnh án nào', 16, 1)
+			-- 	ROLLBACK TRAN
+			-- END
+			SELECT * FROM PATIENT_RECORD WHERE dentistId = @dentistId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
 
 -- create medicine
 GO

@@ -32,4 +32,11 @@ router.get(
   patientRecordCtrl.getOnePatientRecordByCustomerId
 );
 
+router.get(
+  "/get-patient-record-by-dentist-id/:dentistId",
+  // authM.isNotDentist,
+  // authM.isNotCustomer,
+  patientRecordCtrl.getPatientRecordDentistId
+);
+
 module.exports = router;

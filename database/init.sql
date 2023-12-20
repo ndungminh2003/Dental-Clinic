@@ -488,6 +488,10 @@ BEGIN
 	GRANT EXEC ON dbo.sp_viewDentistAppointment to guestRole
 	GRANT EXEC ON dbo.sp_viewAllService to guestRole
 
+	GRANT EXEC ON dbo.sp_viewDentistPatientRecord to guestRole
+	GRANT EXEC ON dbo.sp_viewServiceUse to guestRole
+	GRANT EXEC ON dbo.sp_viewPrescribeMedicine to guestRole
+	GRANT EXEC ON dbo.sp_viewAllPatientRecord to guestRole
   END TRY
   BEGIN CATCH
     ;THROW
@@ -497,3 +501,4 @@ END
 EXEC sp_createDatabaseUser
 
 select * from CUSTOMER
+select * from PATIENT_RECORD

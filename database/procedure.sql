@@ -1101,7 +1101,11 @@ BEGIN
 			-- 	RAISERROR(N'Lỗi: không có hồ sơ bệnh án nào', 16, 1)
 			-- 	ROLLBACK TRAN
 			-- END
-			SELECT * FROM PATIENT_RECORD WHERE dentistId = @dentistId
+			SELECT P_R.id, P_R.advice, P_R.date_time, P_R.diagnostic, P_R.symptom, D.name as dentistName, C.name as customerName
+			FROM PATIENT_RECORD P_R 
+			JOIN DENTIST D ON D.id = P_R.dentistId
+			JOIN CUSTOMER C ON C.id = P_R.customerId 
+			WHERE dentistId = @dentistId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1423,7 +1427,7 @@ BEGIN
 			RAISERROR(N'Lỗi: Không có đơn thuốc nào' ,16, 1)
 			ROLLBACK TRAN
 		END
-		SELECT P_M.medicineName , P_M.price, P_M.quantity FROM PRESCRIBE_MEDICINE P_M WHERE recordId = recordId
+		SELECT P_M.medicineName , P_M.price, P_M.quantity FROM PRESCRIBE_MEDICINE P_M WHERE recordId = @recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH

@@ -24,12 +24,12 @@ import scheduleService from "../../../features/schedule/scheduleServices";
 const fetchData = async () => {
   try {
     const responseData = await scheduleService.getAllSchedule();
-    console.log(responseData);
-
+    return responseData;
   } catch (error) {
     console.log(error);
   }
 };
+
 
 
 export default class Demo extends React.PureComponent {
@@ -99,6 +99,7 @@ export default class Demo extends React.PureComponent {
       appointmentChanges,
       editingAppointment,
     } = this.state;
+
 
     return (
       <div

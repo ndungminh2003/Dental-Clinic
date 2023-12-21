@@ -71,6 +71,7 @@ BEGIN
     GRANT EXEC ON dbo.sp_changeDentistPassword TO adminRole
 
     GRANT EXEC ON dbo.sp_viewAllAppointment TO customerRole
+	GRANT EXEC ON dbo.sp_viewAllAppointment TO staffRole
     GRANT EXEC ON dbo.sp_viewAllAppointment TO adminRole
 
     GRANT EXEC ON dbo.sp_createStaff TO adminRole

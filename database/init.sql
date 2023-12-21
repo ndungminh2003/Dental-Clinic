@@ -26,7 +26,7 @@ CREATE TABLE CUSTOMER (
   password VARCHAR(50),
   phoneNumber VARCHAR(15) NOT NULL CHECK(ISNUMERIC(phoneNumber) = 1) UNIQUE,
   role VARCHAR(10) NOT NULL CHECK(role in ('Customer', 'Guest')),
-  gender NVARCHAR(6) CHECK(gender in (N'Nam', N'Nữ')),
+  gender NVARCHAR(6) CHECK(gender in (N'Male', N'Female')),
   address NVARCHAR(120),
   birthday DATE,
   isBlocked BIT NOT NULL DEFAULT(0)
@@ -38,7 +38,7 @@ CREATE TABLE DENTIST (
   name NVARCHAR(50) NOT NULL CHECK(LEN(name) > 0),
   password VARCHAR(50) NOT NULL CHECK (LEN(password) > 0),
   phoneNumber VARCHAR(15) NOT NULL CHECK(ISNUMERIC(phoneNumber) = 1) UNIQUE,
-  gender NVARCHAR(6) CHECK(gender IN (N'Nam', N'Nữ')),
+  gender NVARCHAR(6) CHECK(gender IN (N'Male', N'Female')),
   birthday DATE,
   introduction NVARCHAR(500),
   isBlocked BIT NOT NULL DEFAULT(0)
@@ -50,7 +50,7 @@ CREATE TABLE STAFF (
   name NVARCHAR(50) NOT NULL CHECK(LEN(name) > 0),
   password VARCHAR(50) NOT NULL CHECK (LEN(password) > 0),
   phoneNumber VARCHAR(15) NOT NULL CHECK(ISNUMERIC(phoneNumber) = 1) UNIQUE,
-  gender NVARCHAR(6) CHECK(gender in (N'Nam', N'Nữ')),
+  gender NVARCHAR(6) CHECK(gender in (N'Male', N'Female')),
   isBlocked BIT NOT NULL DEFAULT(0),
   --startDate DATE
 );
@@ -62,7 +62,7 @@ CREATE TABLE APPOINTMENT (
   customerId INT NOT NULL,
   startTime DATETIME CHECK (CONVERT(char(10), startTime, 108) IN ('07:00:00', '08:00:00', '09:00:00', '10:00:00', '13:00:00','14:00:00', '15:00:00', '16:00:00')),
   endTime DATETIME CHECK (CONVERT(char(10), endTime, 108) IN ('08:00:00', '09:00:00', '10:00:00', '11:00:00', '14:00:00','15:00:00', '16:00:00', '17:00:00')),
-  status NVARCHAR(30) CHECK(status IN (N'Đang diễn ra', N'Đang chờ', N'Hoàn thành', N'Hủy', N'Không đến khám', N'Đang tạo hồ sơ bệnh án')),
+  status NVARCHAR(30) CHECK(status IN (N'In progress', N'Waiting', N'Completed', N'Cancelled', N'Creating patient records')),
   staffId INT,
   recordId INT,
   CONSTRAINT PK_APPOINTMENT PRIMARY KEY (dentistId, startTime)
@@ -84,7 +84,7 @@ CREATE TABLE INVOICE (
   id INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
   total FLOAT CHECK(total >= 0),
   date_time DATETIME,
-  status NVARCHAR(30) CHECK(status IN (N'Đã thanh toán', N'Chưa thanh toán')),
+  status NVARCHAR(30) CHECK(status IN (N'Paid', N'Unpaid')),
   recordId INT NOT NULL UNIQUE,
   staffId INT NOT NULL,
 );
@@ -112,7 +112,7 @@ CREATE TABLE MEDICINE (
 	
   id INT NOT NULL PRIMARY KEY IDENTITY(1, 1),
   name NVARCHAR(30) UNIQUE CHECK(LEN(name) > 0),
-  unit NVARCHAR(10) CHECK(unit IN (N'Viên', N'Vỉ', N'Hộp', N'Chai', N'Ống', N'Gói')),
+  unit NVARCHAR(10) CHECK(unit IN (N'Pill', N'Pack', N'Box', N'Bottle', N'Tube', N'Package')),
   description NVARCHAR(100),
   expirationDate DATE,
   indication NVARCHAR(50),

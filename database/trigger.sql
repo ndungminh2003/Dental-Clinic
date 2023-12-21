@@ -15,12 +15,12 @@ IF UPDATE(startTime) or UPDATE(endTime) or UPDATE(dentistId)
 BEGIN
 	IF EXISTS (SELECT 1 FROM inserted WHERE (SELECT count(dentistId) FROM SCHEDULE WHERE startTime = inserted.startTime GROUP BY startTime) > 5) 
 	BEGIN 
-		RAISERROR(N'Lỗi: Tối đa 5 bác sĩ có cùng thời gian làm việc trong lịch trình', 16, 1)
+		RAISERROR(N'Error: There is a maximum of 5 doctors with the same working hours in the schedule', 16, 1)
 		ROLLBACK TRAN
 	END
 	IF EXISTS (SELECT 1 FROM inserted WHERE datediff(second,startTime, endTime) != 3600) 
 	BEGIN 
-		RAISERROR(N'Lỗi: thời gian bắt đầu phải cách thời gian kết thúc 1 giờ', 16, 1)
+		RAISERROR(N'Error: The start time must be 1 hour from the end time', 16, 1)
 		ROLLBACK TRAN
 	END
 END
@@ -44,7 +44,7 @@ BEGIN
 	BEGIN
 		IF EXISTS (SELECT 1 FROM inserted WHERE datediff(second,startTime, endTime) <= 0) 
 		BEGIN 
-			RAISERROR(N'Lỗi: Thời gian bắt đầu phải trước thời gian kết thúc', 16, 1)
+			RAISERROR(N'Error: The start time must be before the end time.', 16, 1)
 			ROLLBACK TRAN
 		END
 	END
@@ -52,7 +52,7 @@ BEGIN
 	BEGIN
 		IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE (a.dentistId != @dentistId OR a.startTime != @startTime) AND a.recordId = @recordId)
 		BEGIN 
-			RAISERROR (N'Lỗi: Mỗi hồ sơ bệnh án thuộc về một cuộc hẹn duy nhất', 16, 1)
+			RAISERROR (N'Error: Each medical record belongs to a single appointment.', 16, 1)
 			ROLLBACK TRAN
 		END
 	END
@@ -60,20 +60,20 @@ BEGIN
 	BEGIN
 		IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId != @dentistId AND a.customerId = @customerId)
 		BEGIN 
-			RAISERROR (N'Lỗi: Khách hàng chỉ có thể có một cuộc hẹn trong một thời điểm', 16, 1)
+			RAISERROR (N'Error: Customers can only have one appointment at a time.', 16, 1)
 			ROLLBACK TRAN
 		END
-		-- IF EXISTS (SELECT * FROM inserted i WHERE i.status = N'Đang diễn ra' AND i.status = N'Hoàn thành' AND i.status = N'Đang tạo hồ sơ bệnh án' )
+		-- IF EXISTS (SELECT * FROM inserted i WHERE i.status = N'Đang diễn ra' AND i.status = N'Hoàn thành' AND i.status = N'Creating patient records' )
 		-- BEGIN
-		-- 	RAISERROR(N'Lỗi: Khách hàng chỉ có thể có một cuộc hẹn trong một thời điểm', 16, 1)
+		-- 	RAISERROR(N'Error: Khách hàng chỉ có thể có một cuộc hẹn trong một thời điểm', 16, 1)
 		-- 	ROLLBACK
 		-- END
 	END
 	IF UPDATE(status) or UPDATE(recordId)
 	BEGIN
-		IF EXISTS (SELECT 1 FROM inserted WHERE inserted.status = N'Hoàn thành' and inserted.recordId IS NULL) 
+		IF EXISTS (SELECT 1 FROM inserted WHERE inserted.status = N'Completed' and inserted.recordId IS NULL) 
 		BEGIN 
-			RAISERROR(N'Lỗi: Mỗi cuộc hẹn đã hoàn thành phải có một hồ sơ bệnh án ứng với cuộc hẹn đó', 16, 1)
+			RAISERROR(N'Error: Each completed appointment must have a medical record corresponding to that appointment.', 16, 1)
 			ROLLBACK TRAN
 		END
 	END
@@ -97,7 +97,7 @@ BEGIN
 	BEGIN
 		IF EXISTS (SELECT 1 FROM inserted JOIN PATIENT_RECORD ON PATIENT_RECORD.id = inserted.recordId  WHERE DATEDIFF(second,inserted.date_time, PATIENT_RECORD.date_time) >= 0 ) 
 		BEGIN 
-			RAISERROR (N'Lỗi: thời gian tạo hóa đơn phải sau thời gian tạo hồ sơ bệnh án', 16, 1)
+			RAISERROR (N'Error: The invoice creation time must be after the medical record creation time.', 16, 1)
 			ROLLBACK TRAN
 		END
 	END
@@ -109,7 +109,7 @@ BEGIN
 	BEGIN
 		IF EXISTS (SELECT 1 FROM inserted i WHERE i.total != @total)
 		BEGIN 
-			RAISERROR (N'Lỗi: Tổng tiền thanh toán phải bằng tổng tiền thuốc và dịch vụ đã dùng', 16, 1)
+			RAISERROR (N'Error: Total payment must equal the total cost of medicines and services used.', 16, 1)
 			ROLLBACK TRAN
 		END
 	END
@@ -133,7 +133,7 @@ BEGIN
 	BEGIN
 		IF EXISTS (SELECT 1 FROM APPOINTMENT WHERE APPOINTMENT.recordId = @recordId AND DATEDIFF(second,@dateTime, APPOINTMENT.startTime) >= 0 ) 
 		BEGIN 
-			RAISERROR (N'Lỗi: Thời gian tạo hồ sơ bệnh án phải sau thời gian bắt đầu của cuộc hẹn.', 16, 1)
+			RAISERROR (N'Error: The time to create the medical record must be after the appointment start time.', 16, 1)
 			ROLLBACK TRAN
 		END
 	END
@@ -141,15 +141,15 @@ BEGIN
 	BEGIN
 		IF EXISTS (SELECT 1 FROM PATIENT_RECORD p WHERE p.id != @recordId AND p.dentistId = @dentistId AND p.date_time = @dateTime)
 		BEGIN
-			RAISERROR (N'Lỗi: Hiện tại nha sĩ này chỉ có thể tạo một hồ sơ bệnh án', 16, 1)
+			RAISERROR (N'Error: Currently this dentist can only create one medical record.', 16, 1)
 			ROLLBACK TRAN
 		END
 	END
 	IF UPDATE(dentistId) or UPDATE (customerId)
 	BEGIN
-		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án')
+		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Creating patient records')
 		BEGIN
-			RAISERROR (N'Lỗi: Không có cuộc hẹn cần tạo hồ sơ bệnh án', 16, 1)
+			RAISERROR (N'Error: There are no appointments that require the creation of medical records.', 16, 1)
 			ROLLBACK TRAN
 		END
 	END
@@ -168,22 +168,22 @@ BEGIN
 	DECLARE @customerId INT = (SELECT customerId FROM inserted)
 	DECLARE @dentistId INT = (SELECT dentistId FROM inserted)
 	DECLARE @dateTime DATETIME = (SELECT date_time FROM inserted)
-	IF NOT EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án')
+	IF NOT EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Creating patient records')
 	BEGIN
-		RAISERROR (N'Lỗi: Không có cuộc hẹn cần tạo hồ sơ bệnh án', 16, 1)
+		RAISERROR (N'Error: There are no appointments that require the creation of medical records.', 16, 1)
 		ROLLBACK TRAN
 	END
 	IF EXISTS (SELECT 1 FROM PATIENT_RECORD p WHERE p.id != @recordId AND p.dentistId = @dentistId AND p.date_time = @dateTime)
 	BEGIN
-		RAISERROR (N'Lỗi: Hiện tại nha sĩ này chỉ có thể tạo một hồ sơ bệnh án', 16, 1)
+		RAISERROR (N'Error: Currently this dentist can only create one medical record.', 16, 1)
 		ROLLBACK TRAN
 	END
-	IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án' AND DATEDIFF(second,@dateTime, a.startTime) >= 0 ) 
+	IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Creating patient records' AND DATEDIFF(second,@dateTime, a.startTime) >= 0 ) 
 	BEGIN 
-		RAISERROR (N'Lỗi: Thời gian tạo hồ sơ bệnh án phải sau thời gian bắt đầu của cuộc hẹn.', 16, 1)
+		RAISERROR (N'Error: The time to create the medical record must be after the appointment start time.', 16, 1)
 		ROLLBACK TRAN
 	END
-	UPDATE a SET a.recordId = @recordId, a.status = N'Hoàn thành' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án'
+	UPDATE a SET a.recordId = @recordId, a.status = N'Completed' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Creating patient records'
 	INSERT INTO SERVICE_USE (recordId, serviceId) VALUES(@recordId, 1)
 END
 
@@ -225,7 +225,7 @@ BEGIN
 			WHERE m.quantity < i.quantity
 		)
 		BEGIN 
-			RAISERROR(N'Lỗi: Số lượng của một loại thuốc trong đơn thuốc phải bé hơn hoặc bằng số lượng của loại thuốc đó ở trong kho.', 16, 1)
+			RAISERROR(N'Error: The quantity of a medicine in the prescription must be less than or equal to the quantity of that medicine in stock.', 16, 1)
 			ROLLBACK TRANSACTION;
 		END;
 
@@ -244,7 +244,7 @@ BEGIN
 			WHERE m.price != i.price
 		)
 		BEGIN 
-			RAISERROR(N'Lỗi: Giá của 1 loại thuốc trong hóa đơn phải giống với giá của loại thuốc đó ở trong kho.', 16, 1)
+			RAISERROR(N'Error: The price of a medicine on the invoice must be the same as the price of that medicine in the warehouse.', 16, 1)
 			ROLLBACK TRANSACTION;
 		END;
 	END
@@ -253,7 +253,7 @@ BEGIN
 	BEGIN
 		IF EXISTS (SELECT 1 FROM inserted i JOIN MEDICINE m ON i.medicineId = m.id JOIN PATIENT_RECORD pr ON i.recordId = pr.id WHERE datediff(second, pr.date_time, m.expirationDate) <= 0) 
 		BEGIN 
-			RAISERROR(N'Lỗi: Hạn sử dụng của thuốc phải sau ngày khám', 16, 1)
+			RAISERROR(N'Error: The expiration date of the medicine must be after the date of examination.', 16, 1)
 			ROLLBACK TRAN
 		END
 		UPDATE p SET p.medicineName = m.name, p.price = m.price
@@ -289,12 +289,12 @@ END
 -- BEGIN
 --     IF EXISTS (SELECT 1 FROM inserted WHERE role = N'Guest' and password IS NOT NULL) 
 --     BEGIN 
---         RAISERROR(N'Lỗi: Không thể đặt mật khẩu cho Guest', 16, 1)
+--         RAISERROR(N'Error: Không thể đặt mật khẩu cho Guest', 16, 1)
 --         ROLLBACK TRAN
 --     END
 -- 	IF EXISTS (SELECT 1 FROM inserted WHERE LEN(password) <= 10) 
 --     BEGIN 
---         RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+--         RAISERROR(N'Error: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
 --         ROLLBACK TRAN
 --     END
 -- END
@@ -325,7 +325,7 @@ END
 --     END
 --     ELSE
 --     BEGIN
---       RAISERROR('Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+--       RAISERROR('Error: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
 --       ROLLBACK TRAN
 --     END
 --   END

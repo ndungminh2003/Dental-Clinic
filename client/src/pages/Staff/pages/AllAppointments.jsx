@@ -1,21 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllAppointment } from "../../../features/appointment/appointmentSlice";
+import appointmentService from "../../../features/appointment/appointmentServices";
 import { useEffect } from "react";
-
+import formatDate from "../../../utils/formatDate";
+import formatTime from "../../../utils/formatTime";
+import { useDispatch } from "react-redux";
+import { updateAppointmentStatus } from "../../../features/appointment/appointmentSlice";
 export default function AllAppointments() {
   const dispatch = useDispatch();
-  const { appointment, loading, success, error } = useSelector(
-    (state) => state.appointment
-  );
+  const [appointments, setAppointments] = useState([]);
   useEffect(() => {
-    dispatch(getAllAppointment());
+    appointmentService.getAllAppointment().then((res) => setAppointments(res));
   }, []);
-  useEffect(() => {
-    console.log(appointment);
-  }, [appointment]);
+  const handleStatusChange = (e, index) => {
+    // appointmentService.updateAppointmentStatus()
+    const updateData = {
+      dentistId: appointments[index].dentistId,
+      startTime: appointments[index].startTime,
+      status: e.target.value,
+    };
+    console.log(appointments[index]);
+    console.log(updateData);
+    dispatch(updateAppointmentStatus(updateData));
+  };
   const columns = [
     {
       name: "startTime",
@@ -23,6 +31,14 @@ export default function AllAppointments() {
       options: {
         filter: true,
         sort: true,
+        customBodyRenderLite: (index) => {
+          return (
+            <div>
+              {formatDate(appointments[index].startTime)}{" "}
+              {formatTime(appointments[index].startTime)}
+            </div>
+          );
+        },
       },
     },
     {
@@ -31,6 +47,14 @@ export default function AllAppointments() {
       options: {
         filter: true,
         sort: true,
+        customBodyRenderLite: (index) => {
+          return (
+            <div>
+              {formatDate(appointments[index].endTime)}{" "}
+              {formatTime(appointments[index].endTime)}
+            </div>
+          );
+        },
       },
     },
     {
@@ -61,8 +85,26 @@ export default function AllAppointments() {
       name: "status",
       label: "Status",
       options: {
-        filter: true,
-        sort: true,
+        customBodyRenderLite: (index) => {
+          if (
+            appointments[index].status === "Waiting" ||
+            appointments[index].status === "In progress"
+          ) {
+            return (
+              <div>
+                <select
+                  className="px-2 py-1  rounded border border-black"
+                  defaultValue={appointments[index].status}
+                  onChange={(e) => handleStatusChange(e, index)}
+                >
+                  <option value="Waiting">Waiting</option>
+                  <option value="In progress">In progress</option>
+                </select>
+              </div>
+            );
+          }
+          return <div>{appointments[index].status}</div>;
+        },
       },
     },
   ];
@@ -105,7 +147,7 @@ export default function AllAppointments() {
         <ThemeProvider theme={getMuiTheme()}>
           <MUIDataTable
             title={"All appoinment"}
-            data={appointment}
+            data={appointments}
             columns={columns}
             options={options}
           />

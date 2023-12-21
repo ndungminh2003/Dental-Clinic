@@ -97,6 +97,7 @@ const getOneAppointment = async (req, res) => {
 
 const updateAppointmentStatus = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))

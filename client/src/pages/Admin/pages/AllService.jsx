@@ -98,7 +98,7 @@ export default function AllService() {
       for (let i = 0; i < rowsDeleted.data.length; i++) {
         // dispatch(deleteService(services[rowsDeleted.data[i].dataIndex].id));
       }
-      toast.success("Xóa dịch vụ thành công");
+      toast.success("Successfully deleted service");
     },
   };
 

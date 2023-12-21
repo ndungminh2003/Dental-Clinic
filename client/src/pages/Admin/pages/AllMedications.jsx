@@ -123,7 +123,7 @@ export default function AllMedications() {
       for (let i = 0; i < rowsDeleted.data.length; i++) {
         dispatch(deleteMedicine(medicines[rowsDeleted.data[i].dataIndex].id));
       }
-      toast.success("Xóa thuốc thành công");
+      toast.success("Successfully deleted medicine");
     },
   };
 

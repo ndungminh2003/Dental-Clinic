@@ -21,11 +21,11 @@ BEGIN
         BEGIN TRAN
 		IF LEN(@password) < 10
 		BEGIN
-			RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+			RAISERROR(N'Error: Password must be more than 10 characters.', 16, 1)
 		END
         IF EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Customer')
         BEGIN
-            RAISERROR (N'Lỗi: Số điện thoại đã được đăng ký', 16, 1)
+            RAISERROR (N'Error: Phone number has been registered.', 16, 1)
         END
         ELSE IF EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone and role = 'Guest')
         BEGIN
@@ -136,7 +136,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã khách hàng không tồn tại', 16, 1)
+			RAISERROR(N'Error: Customer ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM CUSTOMER WHERE id = @customerId
@@ -149,7 +149,7 @@ BEGIN
 END
 
 -- view all customer (ADMIN STAFF)
--- DIRTY READ (Admin thêm người dùng hoặc xóa người dùng, hoặc cập nhật người dùng nhưng lỗi commit)
+-- DIRTY READ (Admin thêm người dùng hoặc xóa người dùng, hoặc cập nhật người dùng nhưng Error commit)
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_viewAllCustomer')
 BEGIN
@@ -196,12 +196,12 @@ BEGIN
 	 	BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã khách hàng không tồn tại',16, 1)
+			RAISERROR(N'Error: Customer ID does not exist.',16, 1)
 			ROLLBACK TRAN
 		END
 		IF EXISTS (SELECT 1 FROM CUSTOMER WHERE id != @customerId AND phoneNumber = @phoneNumber)
 		BEGIN
-			RAISERROR(N'Lỗi: Số điện thoại đã được đăng ký',16, 1)
+			RAISERROR(N'Error: Phone number has been registered.',16, 1)
 			ROLLBACK TRAN
 		END
 		UPDATE CUSTOMER 
@@ -239,7 +239,7 @@ BEGIN
 		@role = @role, @userId = @userId, @id = @id OUTPUT
 		IF @id IS NULL
 		BEGIN
-			RAISERROR(N'Lỗi: Mã người dùng không tồn tại', 16, 1)
+			RAISERROR(N'Error: User ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		DECLARE @isBlocked BIT
@@ -281,17 +281,17 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 			BEGIN
-				RAISERROR(N'Lỗi: Mã khách hàng không tồn tại', 16, 1)
+				RAISERROR(N'Error: Customer ID does not exist.', 16, 1)
 				ROLLBACK TRAN				
 			END
 			IF LEN(@newPassword) <= 10
 			BEGIN
-				RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+				RAISERROR(N'Error: Password must be more than 10 characters.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE id = @customerId AND password = @oldPassword)
 			BEGIN
-				RAISERROR(N'Lỗi: Mật khẩu cũ không đúng',16, 1)
+				RAISERROR(N'Error: The old password is incorrect.',16, 1)
 				ROLLBACK TRAN
 			END
 			UPDATE CUSTOMER SET password = @newPassword WHERE id = @customerId
@@ -326,12 +326,12 @@ BEGIN
 	 	BEGIN TRAN
 		IF EXISTS (SELECT 1 FROM DENTIST WHERE phoneNumber = @phoneNumber)
 		BEGIN
-			RAISERROR(N'Số điện thoại đã được đăng ký',16, 1)
+			RAISERROR(N'Phone number has been registered.',16, 1)
 			ROLLBACK TRAN
 		END
 		IF LEN(@password) <= 10
 		BEGIN
-			RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+			RAISERROR(N'Error: Password must be more than 10 characters.', 16, 1)
 			ROLLBACK TRAN
 		END
 		INSERT INTO DENTIST VALUES(@name, @password, @phoneNumber, @gender, @birthday, @introduction, 0)
@@ -361,7 +361,7 @@ BEGIN
 	 	BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
+			RAISERROR(N'Error: Dentist ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM DENTIST WHERE id = @dentistId
@@ -419,12 +419,12 @@ BEGIN
 	 	BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại',16, 1)
+			RAISERROR(N'Error: Dentist ID does not exist.',16, 1)
 			ROLLBACK TRAN
 		END
 		IF EXISTS (SELECT 1 FROM DENTIST WHERE id != @dentistId AND phoneNumber = @phoneNumber)
 		BEGIN
-			RAISERROR(N'Lỗi: Số điện thoại đã được đăng ký',16, 1)
+			RAISERROR(N'Error: Phone number has been registered.',16, 1)
 			ROLLBACK TRAN
 		END
 		UPDATE DENTIST SET name = @name, phoneNumber = @phoneNumber, gender = @gender, birthday = @birthday, introduction = @introduction WHERE id = @dentistId
@@ -457,17 +457,17 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId)
 			BEGIN
-				RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại',16, 1)
+				RAISERROR(N'Error: Dentist ID does not exist.',16, 1)
 				ROLLBACK TRAN
 			END
 			IF LEN(@newPassword) <= 10
 			BEGIN
-				RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+				RAISERROR(N'Error: Password must be more than 10 characters.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId AND password = @oldPassword)
 			BEGIN
-				RAISERROR(N'Lỗi: Mật khẩu cũ không đúng',16, 1)
+				RAISERROR(N'Error: The old password is incorrect.',16, 1)
 				ROLLBACK TRAN
 			END
 			UPDATE DENTIST SET password = @newPassword WHERE id = @dentistId
@@ -498,12 +498,12 @@ BEGIN
 	 	BEGIN TRAN
 		IF EXISTS (SELECT 1 FROM STAFF WHERE phoneNumber = @phoneNumber)
 		BEGIN
-			RAISERROR(N'Lỗi: Số điện thoại đã được đăng ký',16, 1)
+			RAISERROR(N'Error: Phone number has been registered.',16, 1)
 			ROLLBACK TRAN
 		END
 		IF LEN(@password) <= 10
 		BEGIN
-			RAISERROR(N'Lỗi: Mật khẩu phải nhiều hơn 10 ký tự', 16, 1)
+			RAISERROR(N'Error: Password must be more than 10 characters.', 16, 1)
 			ROLLBACK TRAN
 		END
 		INSERT INTO STAFF VALUES(@name, @password, @phoneNumber, @gender, 0)
@@ -531,7 +531,7 @@ BEGIN
 	 	BEGIN TRAN
 		IF EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã nhân viên không tồn tại',16, 1)
+			RAISERROR(N'Error: Staff ID does not exist.',16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM STAFF WHERE id = @staffId
@@ -590,20 +590,20 @@ BEGIN
 		BEGIN TRAN
 		IF datediff(second, @startTime, GETDATE()) > 0
 		BEGIN
-			RAISERROR (N'Lỗi: Cuộc hẹn được đặt phải có thời gian bắt đầu sau thời gian hiện tại', 16, 1)
+			RAISERROR (N'Error: The scheduled appointment must have a start time after the current time.', 16, 1)
 			ROLLBACK TRAN
 		END
 		IF @staffId IS NOT NULL
 		BEGIN
 			IF NOT EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
 			BEGIN
-				RAISERROR (N'Lỗi: Mã nhân viên không tồn tại', 16, 1)
+				RAISERROR (N'Error: Staff ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 		END
 		IF NOT EXISTS (SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId and startTime = @startTime and isBooked = 0)
 		BEGIN
-			RAISERROR (N'Lỗi: Lịch trình không tồn tại hoặc đã được đặt', 16, 1)
+			RAISERROR (N'Error: The schedule does not exist or has been booked.', 16, 1)
 			ROLLBACK TRAN
 		END
 		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone)
@@ -619,17 +619,17 @@ BEGIN
 		SELECT @customerId = id FROM CUSTOMER WHERE phoneNumber = @phone and isBlocked = 0
 		IF @customerId IS NULL
 		BEGIN
-			RAISERROR (N'Lỗi: Số điện thoại không đặt được cuộc hẹn vì đã bị khóa', 16, 1)
+			RAISERROR (N'Error: Phone number has been blocked.', 16, 1)
 			ROLLBACK TRAN
 		END
 		IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId != @dentistId AND a.customerId = @customerId)
 		BEGIN 
-			RAISERROR (N'Lỗi: Khách hàng chỉ có thể có một cuộc hẹn với một nha sĩ trong một thời điểm', 16, 1)
+			RAISERROR (N'Error: Customers can only have one appointment with one dentist at a time.', 16, 1)
 			ROLLBACK TRAN
 		END
 		DECLARE @endTime DATETIME
 		SET @endTime = DATEADD(HOUR, 1, @startTime)
-		INSERT INTO APPOINTMENT VALUES(@dentistId, @customerId, @startTime, @endTime, N'Đang chờ', @staffId, NULL)
+		INSERT INTO APPOINTMENT VALUES(@dentistId, @customerId, @startTime, @endTime, N'Waiting', @staffId, NULL)
 		UPDATE SCHEDULE SET isBooked = 1 WHERE dentistId = @dentistId and startTime = @startTime and endTime = @endTime
 		SELECT * FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId = @dentistId AND a.customerId = @customerId
 		COMMIT TRAN
@@ -659,12 +659,12 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId)
 		BEGIN
-			RAISERROR (N'Lỗi: Cuộc hẹn không tồn tại', 16, 1)
+			RAISERROR (N'Error: The appointment does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
-		IF EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId and status != N'Đang chờ')
+		IF EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId and status != N'Waiting')
 		BEGIN
-			RAISERROR (N'Lỗi: Không thể huỷ cuộc hẹn', 16, 1)
+			RAISERROR (N'Error: Appointments cannot be canceled.', 16, 1)
 			ROLLBACK TRAN
 		END
 		DELETE FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId
@@ -695,7 +695,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId)
 		BEGIN
-			RAISERROR (N'Lỗi: Cuộc hẹn không tồn tại', 16, 1)
+			RAISERROR (N'Error: The appointment does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		DECLARE @recordId INT = (SELECT recordId FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId)
@@ -728,7 +728,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId AND startTime = @startTime)
 		BEGIN
-			RAISERROR (N'Lỗi: Cuộc hẹn không tồn tại', 16, 1)
+			RAISERROR (N'Error: The appointment does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		UPDATE APPOINTMENT SET status = @status WHERE dentistId = @dentistId AND startTime = @startTime
@@ -759,7 +759,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime)
 		BEGIN
-			RAISERROR (N'Lỗi: Cuộc hẹn không tồn tại', 16, 1)
+			RAISERROR (N'Error: The appointment does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime
@@ -784,7 +784,7 @@ SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-			SELECT A.startTime,A.endTime,A.recordId,A.status,D.name AS dentistName, C.name AS customerName, S.name AS staffName
+			SELECT A.startTime,A.endTime,A.recordId, A.dentistId,A.status,D.name AS dentistName, C.name AS customerName, S.name AS staffName
 			FROM APPOINTMENT A
 			JOIN DENTIST D ON A.dentistId = D.id
 			JOIN CUSTOMER C ON A.customerId = C.id
@@ -813,12 +813,12 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 		BEGIN
-			RAISERROR (N'Lỗi: Mã khách hàng không tồn tại', 16, 1)
+			RAISERROR (N'Error: Customer ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE customerId = @customerId)
 		BEGIN
-			RAISERROR (N'Lỗi: Không có cuộc hẹn nào', 16, 1)
+			RAISERROR (N'Error: There are no appointments.', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT a.*, dt.name FROM APPOINTMENT a JOIN DENTIST dt ON a.dentistId = dt.id WHERE customerId = @customerId
@@ -848,12 +848,12 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR (N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
+			RAISERROR (N'Error: Dentist ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId)
 		BEGIN
-			RAISERROR (N'Lỗi: Không có cuộc hẹn nào', 16, 1)
+			RAISERROR (N'Error: There are no appointments.', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM APPOINTMENT WHERE dentistId = @dentistId
@@ -890,7 +890,7 @@ BEGIN
 				FROM CUSTOMER C WHERE C.id = @customerId	
 			)
 			BEGIN
-				RAISERROR (N'LỖI: KHÔNG TỒN TẠI ID KHÁCH HÀNG', 16, 1)
+				RAISERROR (N'Error: Customer ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF NOT EXISTS (
@@ -898,7 +898,7 @@ BEGIN
 				FROM DENTIST D WHERE D.id = @dentistId	
 			)
 			BEGIN
-				RAISERROR (N'LỖI: KHÔNG TỒN TẠI ID BÁC SĨ', 16, 1)
+				RAISERROR (N'Error: Dentist ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			INSERT INTO PATIENT_RECORD(symptom, advice, diagnostic, date_time, dentistId, customerId) VALUES (@symptom, @advice, @diagnostic, @date_time, @dentistId, @customerId)
@@ -935,7 +935,7 @@ BEGIN
 				FROM PATIENT_RECORD p WHERE p.id = @recordId	
 			)
 			BEGIN
-				RAISERROR (N'Lỗi: mã hồ sơ bệnh án không tồn tại', 16, 1)
+				RAISERROR (N'Error: Patient record ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			UPDATE PATIENT_RECORD 
@@ -968,7 +968,7 @@ BEGIN
 				FROM PATIENT_RECORD p WHERE p.id = @recordId	
 			)
 			BEGIN
-				PRINT N'Lỗi: mã hồ sơ bệnh án không tồn tại'
+				PRINT N'Error: Patient record ID does not exist.'
 				ROLLBACK TRAN
 			END
 			DELETE FROM PATIENT_RECORD WHERE id = @recordId
@@ -980,7 +980,7 @@ BEGIN
 	END CATCH
 END
 
--- view one patient record dirty read (khi xóa, cập nhật nhưng lỗi commit), phantom read, 
+-- view one patient record dirty read (khi xóa, cập nhật nhưng Error commit), phantom read, 
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewOnePatientRecord')
 BEGIN
@@ -999,7 +999,7 @@ BEGIN
 				FROM PATIENT_RECORD p WHERE p.id = @recordId	
 			)
 			BEGIN
-				PRINT N'Lỗi: mã hồ sơ bệnh án không tồn tại'
+				PRINT N'Error: Patient record ID does not exist.'
 				ROLLBACK TRAN
 			END
 			SELECT * FROM PATIENT_RECORD WHERE id = @recordId
@@ -1052,12 +1052,12 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS ( SELECT 1 FROM CUSTOMER WHERE id = @customerId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã khách hàng không tồn tại', 16, 1)
+				RAISERROR(N'Error: Customer ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			-- IF NOT EXISTS ( SELECT 1 FROM PATIENT_RECORD WHERE id = @customerId)
 			-- BEGIN
-			-- 	RAISERROR(N'Lỗi: không có hồ sơ bệnh án nào', 16, 1)
+			-- 	RAISERROR(N'Error: không có hồ sơ bệnh án nào', 16, 1)
 			-- 	ROLLBACK TRAN
 			-- END
 			SELECT * FROM PATIENT_RECORD WHERE customerId = @customerId
@@ -1085,12 +1085,12 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS ( SELECT 1 FROM DENTIST WHERE id = @dentistId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã nha sĩ không tồn tại', 16, 1)
+				RAISERROR(N'Error: Dentist ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			-- IF NOT EXISTS ( SELECT 1 FROM PATIENT_RECORD WHERE id = @dentistId)
 			-- BEGIN
-			-- 	RAISERROR(N'Lỗi: không có hồ sơ bệnh án nào', 16, 1)
+			-- 	RAISERROR(N'Error: không có hồ sơ bệnh án nào', 16, 1)
 			-- 	ROLLBACK TRAN
 			-- END
 			SELECT P_R.id, P_R.advice, P_R.date_time, P_R.diagnostic, P_R.symptom, D.name as dentistName, C.name as customerName
@@ -1129,7 +1129,7 @@ BEGIN
 		BEGIN TRAN
 		IF EXISTS (SELECT 1 FROM MEDICINE WHERE name = @name)
 		BEGIN
-			RAISERROR(N'Lỗi: Tên thuốc đã tồn tại', 16, 1)
+			RAISERROR(N'Error: The medicine name already exists.', 16, 1)
 			ROLLBACK TRAN
 		END
 		INSERT INTO MEDICINE VALUES(@name, @unit, @description, @expirationDate, @indication, @quantity, @price)
@@ -1164,12 +1164,12 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM MEDICINE WHERE id = @medicineId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã Thuốc không tồn tại', 16, 1)
+			RAISERROR(N'Error: Medicine ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		IF EXISTS (SELECT 1 FROM MEDICINE WHERE name = @name AND id != @medicineId)
 		BEGIN
-			RAISERROR(N'Lỗi: Tên thuốc đã tồn tại', 16, 1)
+			RAISERROR(N'Error: The medicine name already exists.', 16, 1)
 			ROLLBACK TRAN
 		END
 		UPDATE MEDICINE 
@@ -1199,7 +1199,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM MEDICINE WHERE id = @medicineId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã Thuốc không tồn tại', 16, 1)
+			RAISERROR(N'Error: Medicine ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		UPDATE PRESCRIBE_MEDICINE SET medicineId = NULL WHERE medicineId = @medicineId 
@@ -1228,7 +1228,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM MEDICINE WHERE id = @medicineId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã Thuốc không tồn tại', 16, 1)
+			RAISERROR(N'Error: Medicine ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM MEDICINE WHERE id = @medicineId
@@ -1293,7 +1293,7 @@ BEGIN
 				WHERE PR.ID = @RECORD_ID
 			)
 			BEGIN
-				RAISERROR(N'LỖI: KHÔNG TỒN TẠI RECORD ID', 16, 1);
+				RAISERROR(N'Error: Patient record ID does not exist.', 16, 1);
 				ROLLBACK TRAN;
 			END
 
@@ -1304,7 +1304,7 @@ BEGIN
 				WHERE M.ID = @MEDICINE_ID
 			)
 			BEGIN
-				RAISERROR(N'LỖI: KHÔNG TỒN TẠI MEDICINE ID', 16, 1);
+				RAISERROR(N'Error: Medicine ID does not exist.', 16, 1);
 				ROLLBACK TRAN;		
 			END
 
@@ -1344,7 +1344,7 @@ BEGIN
 		END
 		ELSE
 		BEGIN
-			RAISERROR(N'Đơn thuốc không tồn tại' ,16, 1)
+			RAISERROR(N'Error: This prescribe medicine does not exist.' ,16, 1)
 			ROLLBACK TRAN
 		END
 		COMMIT TRAN
@@ -1378,7 +1378,7 @@ BEGIN
 				WHERE pm.medicineId = @MEDICINE_ID AND pm.recordId = @RECORD_ID
 			)
 			BEGIN
-				PRINT N'LỖI: KHÔNG TỒN TẠI PRESCRIBE MEDICINE';
+				PRINT N'Error: This prescribe medicine does not exist.';
 				ROLLBACK TRAN;		
 			END
 			DECLARE @OLD_QUANTITY INT = (SELECT quantity FROM PRESCRIBE_MEDICINE pm WHERE pm.medicineId = @MEDICINE_ID AND pm.recordId = @RECORD_ID);
@@ -1411,12 +1411,12 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã hồ sơ bệnh án không tồn tại' ,16, 1)
+			RAISERROR(N'Error: Patient record ID does not exist.' ,16, 1)
 			ROLLBACK TRAN
 		END
 		IF NOT EXISTS (SELECT 1 FROM PRESCRIBE_MEDICINE WHERE recordId = @recordId)
 		BEGIN
-			RAISERROR(N'Lỗi: Không có đơn thuốc nào' ,16, 1)
+			RAISERROR(N'Error: There is no prescribe medicine.' ,16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT P_M.medicineName , P_M.price, P_M.quantity FROM PRESCRIBE_MEDICINE P_M WHERE recordId = @recordId
@@ -1447,7 +1447,7 @@ BEGIN
 		BEGIN TRAN
 			IF EXISTS (SELECT 1 FROM SERVICE WHERE name = @name)
 			BEGIN
-				RAISERROR(N'Lỗi: tên dịch vụ đã tồn tại', 16, 1)
+				RAISERROR(N'Error: Service name already exists.', 16, 1)
 				ROLLBACK TRAN
 			END
 			INSERT INTO SERVICE VALUES(@name, @price, @description)
@@ -1478,12 +1478,12 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã dịch vụ không tồn tại', 16, 1)
+				RAISERROR(N'Error: Service ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF EXISTS (SELECT 1 FROM SERVICE WHERE id != @serviceId AND name = @name)
 			BEGIN
-				RAISERROR(N'Lỗi: tên dịch vụ đã tồn tại', 16, 1)
+				RAISERROR(N'Error: Service name already exists.', 16, 1)
 				ROLLBACK TRAN
 			END
 			UPDATE SERVICE 
@@ -1513,7 +1513,7 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã dịch vụ không tồn tại', 16, 1)
+				RAISERROR(N'Error: Service ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			SELECT * FROM SERVICE WHERE id = @serviceId
@@ -1565,22 +1565,22 @@ BEGIN
 		BEGIN TRAN
 			IF @quantity <= 0
 			BEGIN
-				RAISERROR(N'Lỗi: số lượng dịch vụ không hợp lệ', 16, 1)
+				RAISERROR(N'Error: Quantity is not valid.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã dịch vụ không tồn tại', 16, 1)
+				RAISERROR(N'Error: Service ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã hồ sơ bệnh án không tồn tại', 16, 1)
+				RAISERROR(N'Error: Patient record ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF EXISTS (SELECT 1 FROM SERVICE_USE WHERE recordId = @recordId AND serviceId = @serviceId)
 			BEGIN
-				RAISERROR(N'Lỗi: dịch vụ sử dụng đã tồn tại', 16, 1)
+				RAISERROR(N'Error: Service used already exists', 16, 1)
 				ROLLBACK TRAN
 			END
 			INSERT INTO SERVICE_USE (recordId, serviceId, quantity) VALUES(@recordId, @serviceId, @quantity)
@@ -1609,17 +1609,17 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã dịch vụ không tồn tại', 16, 1)
+				RAISERROR(N'Error: Service ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã hồ sơ bệnh án không tồn tại', 16, 1)
+				RAISERROR(N'Error: Patient record ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF NOT EXISTS (SELECT 1 FROM SERVICE_USE WHERE recordId = @recordId AND serviceId = @serviceId)
 			BEGIN
-				RAISERROR(N'Lỗi: dịch vụ sử dụng không tồn tại', 16, 1)
+				RAISERROR(N'Error: Sevice used does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			DELETE FROM SERVICE_USE WHERE serviceId = @serviceId AND recordId = @recordId
@@ -1647,12 +1647,12 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã hồ sơ bệnh án không tồn tại', 16, 1)
+				RAISERROR(N'Error: Patient record ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF NOT EXISTS (SELECT 1 FROM SERVICE_USE WHERE recordId = @recordId)
 			BEGIN
-				RAISERROR(N'Lỗi: không có dịch vụ nào được sử dụng', 16, 1)
+				RAISERROR(N'Error: There is no service used.', 16, 1)
 				ROLLBACK TRAN
 			END
 			SELECT S_U.price AS price, S.name as serviceName
@@ -1692,7 +1692,7 @@ BEGIN
 				FROM PATIENT_RECORD PR WHERE PR.id = @recordId	
 			)
 			BEGIN
-				RAISERROR(N'LỖI: KHÔNG TỒN TẠI HỒ SƠ BỆNH NHÂN', 16, 1)
+				RAISERROR(N'Error: Patient record ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			IF EXISTS (
@@ -1700,7 +1700,7 @@ BEGIN
 				FROM INVOICE I WHERE I.recordId = @recordId	
 			)
 			BEGIN
-				RAISERROR(N'LỖI: HỒ SƠ BỆNH NHÂN ĐÃ CÓ HÓA ĐƠN', 16, 1)
+				RAISERROR(N'Error: Patient record already have invoice.', 16, 1)
 				ROLLBACK TRAN
 			END
 			INSERT INTO INVOICE(recordId, date_time, status, total, staffId) VALUES (@recordId, @date_time, @status, @total, @staffId)
@@ -1730,7 +1730,7 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM INVOICE WHERE id = @invoiceId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã hóa đơn không tồn tại', 16, 1)
+				RAISERROR(N'Error: Invoice ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			UPDATE INVOICE SET status = @status WHERE id = @invoiceId
@@ -1758,7 +1758,7 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM INVOICE WHERE id = @invoiceId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã hóa đơn không tồn tại', 16, 1)
+				RAISERROR(N'Error: Invoice ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			SELECT * FROM INVOICE WHERE id = @invoiceId
@@ -1786,7 +1786,7 @@ BEGIN
 		BEGIN TRAN
 			IF NOT EXISTS (SELECT 1 FROM PATIENT_RECORD WHERE id = @recordId)
 			BEGIN
-				RAISERROR(N'Lỗi: mã hồ sơ bệnh nhân không tồn tại', 16, 1)
+				RAISERROR(N'Error: Patient record ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
 			SELECT I.id, I.status, I.total, I.date_time FROM INVOICE I WHERE recordId = @recordId
@@ -1836,7 +1836,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
 		BEGIN
-			RAISERROR(N'Lỗi: mã nhân viên không tồn tại', 16, 1)
+			RAISERROR(N'Error: Staff ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		SELECT * FROM INVOICE WHERE staffId = @staffId
@@ -1865,12 +1865,12 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Mã nha sĩ không tồn tại', 16, 1)
+			RAISERROR(N'Error: Dentist ID does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
 		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime)
 		BEGIN
-			RAISERROR(N'Lịch rảnh đã tồn tại', 16, 1)
+			RAISERROR(N'Error: The schedule already exists.', 16, 1)
 			ROLLBACK TRAN
 		END
 		DECLARE @endTime DATETIME
@@ -1901,15 +1901,15 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
+			RAISERROR(N'Error: Dentist ID does not exist.', 16, 1)
 		END
 		IF NOT EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime)
 		BEGIN
-			RAISERROR(N'Lỗi: Lịch rảnh không tồn tại', 16, 1)
+			RAISERROR(N'Error: Schedule does not exist.', 16, 1)
 		END
 		IF EXISTS(SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime AND isBooked = 1)
 		BEGIN
-			RAISERROR(N'Lỗi: Không thể xóa lịch đã được đặt', 16, 1)
+			RAISERROR(N'Error: It is not possible to delete a scheduled schedule.', 16, 1)
 		END
 		DELETE FROM SCHEDULE WHERE dentistId = @dentistId AND startTime = @startTime AND isBooked = 0
 		COMMIT TRAN
@@ -1936,7 +1936,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
+			RAISERROR(N'Error: Dentist ID does not exist.', 16, 1)
 		END
 		SELECT * FROM SCHEDULE WHERE dentistId = @dentistId
 		COMMIT TRAN
@@ -1962,7 +1962,7 @@ BEGIN
 		BEGIN TRAN
 		IF NOT EXISTS(SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
-			RAISERROR(N'Lỗi: Mã nha sĩ không tồn tại', 16, 1)
+			RAISERROR(N'Error: Dentist ID does not exist.', 16, 1)
 		END
 		SELECT * FROM SCHEDULE WHERE dentistId = @dentistId AND isBooked = 0 AND datediff(second, startTime, GETDATE()) < 0
 		COMMIT TRAN
@@ -2092,7 +2092,6 @@ EXEC sp_getDentistHaveSchedule
 
 EXEC sp_viewScheduleAvailableOnDay '2023-12-28'
 
-EXEC sp_signUp '01234567892', '123123123123', 'Customer2', 'Nam', '2008-11-11', N'Hà Nội'
 -- EXEC sp_customerLoginWithoutHash '01234567891', '123123123123'
 -- EXEC sp_viewOneCustomer 1
 -- EXEC sp_viewAllCustomer

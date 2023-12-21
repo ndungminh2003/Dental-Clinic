@@ -116,6 +116,24 @@ const getOnePatientRecordByCustomerId = async (req, res) => {
   }
 };
 
+const getPatientRecordDentistId = async (req, res) => {
+  const input = req.params
+  try {
+    const role = getRole(req);
+    const db = await (await getDb(role))
+      .input("dentistId", input.dentistId)
+      .execute("sp_viewDentistPatientRecord");
+    res.status(200).json(db.recordset);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+      const statuscode = res.statusCode == 200 ? 500 : res.statusCode;
+      return res.status(statuscode).send(error.message);
+    }
+    return res.status(500).send("Action Failed");
+  }
+};
+
 module.exports = {
   createPatientRecord,
   updatePatientRecord,
@@ -123,4 +141,5 @@ module.exports = {
   getOnePatientRecord,
   getAllPatientRecord,
   getOnePatientRecordByCustomerId,
+  getPatientRecordDentistId
 };

@@ -26,6 +26,7 @@ const signUp = async (req, res) => {
 
 const login = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const db = await (await getDb(input.role))
       .input("phone", input.phone)
@@ -43,6 +44,7 @@ const login = async (req, res) => {
       maxAge: 72 * 60 * 60 * 1000,
     });
     db.recordset[0].accessToken = accessToken;
+    db.recordset[0].role = input.role == "guest" ? "customer" : input.role;
     res.status(200).json(db.recordset[0]);
   } catch (error) {
     if (error instanceof Error) {
@@ -74,7 +76,7 @@ const logout = async (req, res) => {
 const blockUser = async (req, res) => {
   const input = req.body;
   try {
-    const db = await (await getDb("guest"))
+    const db = await (await getDb("admin"))
       .input("userId", input.id)
       .input("role", input.role)
       .execute("sp_blockUser");
@@ -94,8 +96,8 @@ const blockUser = async (req, res) => {
 const roleAuthentication = async (req, res, next) => {
   try {
     let accessToken;
-    if (req?.cookies?.accessToken) {
-      accessToken = req.cookies.accessToken;
+    if (req?.headers?.authorization?.startsWith("Bearer")) {
+      accessToken = req.headers.authorization.split(" ")[1];
       if (accessToken) {
         const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
         const sql = `SELECT * FROM ${decoded.role} WHERE phoneNumber = '${decoded.phone}'`;

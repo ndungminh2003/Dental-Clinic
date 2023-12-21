@@ -214,7 +214,7 @@ export default function AddMedication() {
             </div>
           </div>
           <div className="flex items-center grow mt-10">
-            <div className="w-1/4">
+            <div className="w-[182px]">
               <label className="font-mono rounded-md text-center	">
                 Description
               </label>
@@ -226,11 +226,11 @@ export default function AddMedication() {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.description}
-              className={`w-3/4 px-3 py-2 rounded-md border border-gray-300 resize-none`}
+              className={`w-full px-3 py-2 rounded-md border border-gray-300 resize-none`}
             ></textarea>
           </div>
           <div className="flex items-center grow mt-10">
-            <div className="w-1/4">
+            <div className="w-[182px]">
               <label className="font-mono rounded-md text-center	">
                 Indication
               </label>
@@ -242,7 +242,7 @@ export default function AddMedication() {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.indication}
-              className={`w-3/4 px-3 py-2 rounded-md border border-gray-300 resize-none`}
+              className={`w-full px-3 py-2 rounded-md border border-gray-300 resize-none`}
             ></textarea>
           </div>
           <div className="text-right mt-5">

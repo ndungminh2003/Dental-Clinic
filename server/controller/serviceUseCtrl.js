@@ -3,12 +3,14 @@ const { getRole } = require("../middlewares/authMiddleware");
 
 const createServiceUse = async (req, res) => {
   const input = req.body;
+  console.log(input);
   try {
     const role = getRole(req);
     console.log(role);
     const db = await (await getDb(role))
       .input("serviceId", input.serviceId)
       .input("recordId", input.recordId)
+      .input("quantity", input.quantity)
       .execute("sp_addServiceUse");
     res.status(200).json(db.recordset);
   } catch (error) {
@@ -61,6 +63,5 @@ const getServiceUseByRecordId = async (req, res) => {
 module.exports = {
   createServiceUse,
   deleteServiceUse,
-  getServiceUseByRecordId
+  getServiceUseByRecordId,
 };
-

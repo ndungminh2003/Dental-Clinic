@@ -1,16 +1,29 @@
-import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
-import VaccinesIcon from '@mui/icons-material/Vaccines';
-import PersonIcon from '@mui/icons-material/Person';
+import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
+import VaccinesIcon from "@mui/icons-material/Vaccines";
+import PersonIcon from "@mui/icons-material/Person";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../../features/auth/authSlice";
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const location = useLocation();
   const { pathname } = location;
-
+  const { user } = useSelector((state) => state.auth);
+  useEffect(() => {
+    if (!user || user?.role != "admin") {
+      navigate("/admin/login");
+    }
+  }, []);
+  const handleLogoutClick = () => {
+    dispatch(logout());
+    navigate("login");
+  };
   return (
     <div className=" w-full h-screen z-10 bg-ebony-clay p-3	">
       <div className="mx-2 mb-10 mt-5">
@@ -30,9 +43,7 @@ const Sidebar = () => {
               } side`}
             >
               <MedicalServicesIcon style={{ color: "white" }} />
-              <span className="ml-2 mr-3 text-white	">
-                Service management
-              </span>
+              <span className="ml-2 mr-3 text-white	">Service management</span>
               {pathname.includes("service") ? (
                 <ExpandLessIcon style={{ color: "white" }} />
               ) : (
@@ -174,12 +185,10 @@ const Sidebar = () => {
               </li>
             </div>
           )}
-          <li>
-            <NavLink to="record/all" className="mt-2 side">
-              <LogoutIcon style={{ color: "white" }} />
-              <span className="ml-2 mr-14 text-white">Log out</span>
-            </NavLink>
-          </li>
+          <button className="mt-2 side" onClick={handleLogoutClick}>
+            <LogoutIcon style={{ color: "white" }} />
+            <span className="ml-2 mr-14 text-white">Log out</span>
+          </button>
         </ul>
       </div>
     </div>

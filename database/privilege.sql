@@ -207,42 +207,43 @@ BEGIN
     GRANT EXEC ON dbo.sp_viewAllScheduleAvailable TO customerRole
     GRANT EXEC ON dbo.sp_viewAllScheduleAvailable TO staffRole
 
-	GRANT EXEC ON dbo.sp_viewScheduleAvailableOnDay TO guestRole
-	GRANT EXEC ON dbo.sp_viewScheduleAvailableOnDay TO customerRole
-	GRANT EXEC ON dbo.sp_viewScheduleAvailableOnDay TO staffRole
+    GRANT EXEC ON dbo.sp_viewScheduleAvailableOnDay TO guestRole
+    GRANT EXEC ON dbo.sp_viewScheduleAvailableOnDay TO customerRole
+    GRANT EXEC ON dbo.sp_viewScheduleAvailableOnDay TO staffRole
 
-	GRANT EXEC ON dbo.sp_getDentistHaveSchedule TO guestRole
-	GRANT EXEC ON dbo.sp_getDentistHaveSchedule TO customerRole
-	GRANT EXEC ON dbo.sp_getDentistHaveSchedule TO staffRole
+    GRANT EXEC ON dbo.sp_getDentistHaveSchedule TO guestRole
+    GRANT EXEC ON dbo.sp_getDentistHaveSchedule TO customerRole
+    GRANT EXEC ON dbo.sp_getDentistHaveSchedule TO staffRole
 
-	GRANT SELECT ON CUSTOMER TO guestRole
-	GRANT SELECT ON CUSTOMER TO customerRole
+    GRANT SELECT ON CUSTOMER TO guestRole
+    GRANT SELECT ON CUSTOMER TO customerRole
     GRANT SELECT ON STAFF TO staffRole
     GRANT SELECT ON DENTIST TO dentistRole
     GRANT SELECT ON ADMIN TO adminRole  
-	GRANT EXEC ON dbo.sp_viewAllDentist TO guestRole
-	GRANT EXEC ON dbo.sp_viewAllSchedule TO guestRole
-	GRANT EXEC ON dbo.sp_viewAllMedicine TO guestRole
-	GRANT EXEC ON dbo.sp_updateMedicine TO guestRole
-	GRANT EXEC ON dbo.sp_createMedicine TO guestRole
-	GRANT EXEC ON dbo.sp_deleteMedicine TO guestRole
+    GRANT EXEC ON dbo.sp_viewAllDentist TO guestRole
+    GRANT EXEC ON dbo.sp_viewAllSchedule TO guestRole
+    GRANT EXEC ON dbo.sp_viewAllMedicine TO guestRole
+    GRANT EXEC ON dbo.sp_updateMedicine TO guestRole
+    GRANT EXEC ON dbo.sp_createMedicine TO guestRole
+    GRANT EXEC ON dbo.sp_deleteMedicine TO guestRole
 
-	GRANT EXEC ON dbo.sp_viewAllCustomer TO guestRole
-	GRANT EXEC ON dbo.sp_viewAllDentist TO guestRole
-	GRANT EXEC ON dbo.sp_viewAllStaff TO guestRole
+    GRANT EXEC ON dbo.sp_viewAllCustomer TO guestRole
+    GRANT EXEC ON dbo.sp_viewAllDentist TO guestRole
+    GRANT EXEC ON dbo.sp_viewAllStaff TO guestRole
 
-	GRANT EXEC ON dbo.sp_viewInvoiceByRecordId TO guestRole
-	GRANT EXEC ON dbo.sp_updateInvoiceStatus TO guestRole
-	GRANT EXEC ON dbo.sp_makeAppointment to guestRole
-	GRANT EXEC ON dbo.sp_updateService to guestRole
+    GRANT EXEC ON dbo.sp_viewInvoiceByRecordId TO guestRole
+    GRANT EXEC ON dbo.sp_updateInvoiceStatus TO guestRole
+    GRANT EXEC ON dbo.sp_makeAppointment to guestRole
+    GRANT EXEC ON dbo.sp_updateService to guestRole
 
-	GRANT EXEC ON dbo.sp_createPatientRecord TO guestRole
-	GRANT EXEC ON dbo.sp_createDentist TO guestRole
-	GRANT EXEC ON dbo.sp_createStaff TO guestRole
-	GRANT EXEC ON dbo.sp_blockUser to guestRole
-	
-	GRANT EXEC ON dbo.sp_viewDentistAppointment to guestRole
-	GRANT EXEC ON dbo.sp_viewAllService to guestRole
+    GRANT EXEC ON dbo.sp_createPatientRecord TO guestRole
+    GRANT EXEC ON dbo.sp_createDentist TO guestRole
+    GRANT EXEC ON dbo.sp_createStaff TO guestRole
+    GRANT EXEC ON dbo.sp_blockUser to guestRole
+    GRANT EXEC ON dbo.sp_viewDentistAppointment to guestRole
+    GRANT EXEC ON dbo.sp_viewAllService to guestRole
+
+    GRANT EXEC ON dbo.sp_viewFullslotSchedule to dentistRole
 
   END TRY
   BEGIN CATCH

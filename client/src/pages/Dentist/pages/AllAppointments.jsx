@@ -9,12 +9,14 @@ import serviceService from "../../../features/service/serviceServices";
 import medicineService from "../../../features/medicine/medicineServices";
 import { createPatientRecord } from "../../../features/patientRecord/patientRecordSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { createServiceUse } from "../../../features/serviceUse/serviceUseSlice";
+import { createPrescribeMedicine } from "../../../features/prescribeMedicine/prescribeMedicineSlice";
 
 import { TextField, Autocomplete } from "@mui/material";
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
 
-function SimpleDialog(props) {
+const SimpleDialog = (props) => {
   const {
     onClose,
     selectedValue,
@@ -30,61 +32,75 @@ function SimpleDialog(props) {
   const [advice, setAdvice] = useState("");
   const [diagnostic, setDiagnostic] = useState("");
 
-  console.log(newPatientRecord);
+  console.log(medicineRows);
+
+  React.useEffect(() => {
+    console.log(medicineRows);
+    console.log(selectedOptions);
+    console.log(newPatientRecord);
+    selectedOptions.map((selected) => {
+      services.map((service) => {
+        if (selected === service.name) {
+          dispatch(
+            createServiceUse({
+              serviceId: service.id,
+              recordId: newPatientRecord[0].id,
+            })
+          );
+        }
+      });
+    });
+    medicineRows.map((row) => {
+      medicines.map((medicine) => {
+        if (medicine.name === row.medicine) {
+          dispatch(
+            createPrescribeMedicine({
+              medicineId: medicine.id,
+              recordId: newPatientRecord[0].id,
+              quantity: row.quantity,
+            })
+          );
+          
+        }
+      });
+    });
+  }, [newPatientRecord]);
 
   const dispatch = useDispatch();
 
   const addMedicineRow = () => {
-    setMedicineRows([...medicineRows, { medicine: "", quantity: 1 }]);
+    setMedicineRows([...medicineRows, { medicine: medicines[0].name, quantity: 1 }]);
   };
   const handleClose = () => {
     onClose(selectedValue);
   };
 
-  const handleListItemClick = (value) => {
-    onClose(value);
+  const handleListItemClick = (values) => {
+    onClose(values);
 
-    const currentDate = new Date();
-    const sqlDateTime = currentDate
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " ");
-
-    console.log(sqlDateTime);
-
-    // Get the current date and time in the local timezone
-    const currentDate1 = new Date();
-
-    // Define the options for formatting the date and time
-    const options = {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-      timeZone: "Asia/Ho_Chi_Minh", // Set the timezone to Vietnam's timezone
-    };
-
-    // Format the date and time for Vietnam timezone
-    const vietnamDateTime = currentDate1
-      .toLocaleString("en-US", options)
-      .replace(/\//g, "-");
-
-    console.log(vietnamDateTime);
+    let date = new Date();
+    date.setUTCHours(date.getUTCHours() + 7);
+    let year = date.getUTCFullYear();
+    let month = ("0" + (date.getUTCMonth() + 1)).slice(-2);
+    let day = ("0" + date.getUTCDate()).slice(-2);
+    let hours = ("0" + date.getUTCHours()).slice(-2);
+    let minutes = ("0" + date.getUTCMinutes()).slice(-2);
+    let seconds = ("0" + date.getUTCSeconds()).slice(-2);
+    let date_time = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     const patientRecord = {
       symptom: symptom,
       advice: advice,
       diagnostic: diagnostic,
+      date_time: date_time,
       dentistId: 1,
-      date_time: '2023-12-19 16:30:00',
       customerId: values.customerId,
     };
 
     dispatch(createPatientRecord(patientRecord));
-    console.log(newPatientRecord);
+    setSymptom("");
+    setAdvice("");
+    setDiagnostic("");
   };
 
   const handleOptionChange = (event, newValues) => {
@@ -254,7 +270,7 @@ function SimpleDialog(props) {
         </div>
         <div className="text-right mt-5">
           <button
-            onClick={() => handleListItemClick("hi")}
+            onClick={() => handleListItemClick(values)}
             className="bg-sky-500 rounded-md px-3 py-2"
           >
             Save
@@ -263,7 +279,7 @@ function SimpleDialog(props) {
       </div>
     </Dialog>
   );
-}
+};
 
 SimpleDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
@@ -295,12 +311,11 @@ const processAppointments = (responseDentistAppointment, responseCustomer) => {
 const AllAppointments = () => {
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState([""]);
+  const [newPatientRecord1, setNewPatientRecord1] = React.useState([]);
 
   const { error, loading, success, newPatientRecord } = useSelector(
     (state) => state.patientRecord
   );
-  console.log(error);
-  console.log(newPatientRecord);
 
   const fetchData = async () => {
     try {
@@ -324,6 +339,7 @@ const AllAppointments = () => {
       setServices(responseService);
       setDataAppointment(data1);
       setMedicines(responseMedicine);
+      setNewPatientRecord1(newPatientRecord);
     } catch (error) {
       console.log(error);
     }
@@ -473,7 +489,7 @@ const AllAppointments = () => {
         services={services}
         medicines={medicines}
         data={dataAppointment}
-        newPatientRecord={newPatientRecord}
+        newPatientRecord={newPatientRecord1}
       />
     </div>
   );

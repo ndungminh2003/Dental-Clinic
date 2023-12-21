@@ -5,7 +5,8 @@ const router = express.Router();
 
 router.post(
   "/create-patient-record",
-  // authM.isDentist,
+  authM.authMiddleware,
+  authM.isDentist,
   patientRecordCtrl.createPatientRecord
 );
 router.put(
@@ -21,8 +22,8 @@ router.delete(
 router.get("/get-patient-record", patientRecordCtrl.getOnePatientRecord);
 router.get(
   "/get-all-patient-record",
-  // authM.isNotDentist,
-  // authM.isNotCustomer,
+  authM.isNotDentist,
+  authM.isNotCustomer,
   patientRecordCtrl.getAllPatientRecord
 );
 router.get(
@@ -30,6 +31,13 @@ router.get(
   authM.isNotDentist,
   authM.isNotCustomer,
   patientRecordCtrl.getOnePatientRecordByCustomerId
+);
+
+router.get(
+  "/get-patient-record-by-dentist-id/:dentistId",
+  // authM.isNotDentist,
+  // authM.isNotCustomer,
+  patientRecordCtrl.getPatientRecordDentistId
 );
 
 module.exports = router;

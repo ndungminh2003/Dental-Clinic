@@ -1069,6 +1069,43 @@ BEGIN
 	END CATCH
 END
 
+-- view patient record by dentist id
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewDentistPatientRecord')
+BEGIN
+	DROP PROCEDURE sp_viewDentistPatientRecord
+END
+GO
+CREATE PROC sp_viewDentistPatientRecord
+	@dentistId INT
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS ( SELECT 1 FROM DENTIST WHERE id = @dentistId)
+			BEGIN
+				RAISERROR(N'Lỗi: mã nha sĩ không tồn tại', 16, 1)
+				ROLLBACK TRAN
+			END
+			-- IF NOT EXISTS ( SELECT 1 FROM PATIENT_RECORD WHERE id = @dentistId)
+			-- BEGIN
+			-- 	RAISERROR(N'Lỗi: không có hồ sơ bệnh án nào', 16, 1)
+			-- 	ROLLBACK TRAN
+			-- END
+			SELECT P_R.id, P_R.advice, P_R.date_time, P_R.diagnostic, P_R.symptom, D.name as dentistName, C.name as customerName
+			FROM PATIENT_RECORD P_R 
+			JOIN DENTIST D ON D.id = P_R.dentistId
+			JOIN CUSTOMER C ON C.id = P_R.customerId 
+			WHERE dentistId = @dentistId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
 
 -- create medicine
 GO
@@ -1382,7 +1419,7 @@ BEGIN
 			RAISERROR(N'Lỗi: Không có đơn thuốc nào' ,16, 1)
 			ROLLBACK TRAN
 		END
-		SELECT P_M.medicineName , P_M.price, P_M.quantity FROM PRESCRIBE_MEDICINE P_M WHERE recordId = recordId
+		SELECT P_M.medicineName , P_M.price, P_M.quantity FROM PRESCRIBE_MEDICINE P_M WHERE recordId = @recordId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1519,12 +1556,18 @@ END
 GO
 CREATE PROC sp_addServiceUse
 	@serviceId INT,
-	@recordId INT
+	@recordId INT,
+	@quantity INT
 AS
 SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
+			IF @quantity <= 0
+			BEGIN
+				RAISERROR(N'Lỗi: số lượng dịch vụ không hợp lệ', 16, 1)
+				ROLLBACK TRAN
+			END
 			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
 			BEGIN
 				RAISERROR(N'Lỗi: mã dịch vụ không tồn tại', 16, 1)
@@ -1540,7 +1583,7 @@ BEGIN
 				RAISERROR(N'Lỗi: dịch vụ sử dụng đã tồn tại', 16, 1)
 				ROLLBACK TRAN
 			END
-			INSERT INTO SERVICE_USE (recordId, serviceId) VALUES(@recordId, @serviceId)
+			INSERT INTO SERVICE_USE (recordId, serviceId, quantity) VALUES(@recordId, @serviceId, @quantity)
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -2019,6 +2062,30 @@ BEGIN
 	END CATCH
 END
 GO
+
+
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_viewFullslotSchedule')
+BEGIN
+	DROP PROCEDURE sp_viewFullslotSchedule
+END
+GO
+CREATE PROC sp_viewFullslotSchedule
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+		SELECT startTime, endTime FROM SCHEDULE GROUP BY startTime, endTime HAVING COUNT(*) >= 5
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+GO
+
 SELECT * FROM SCHEDULE
 
 EXEC sp_getDentistHaveSchedule

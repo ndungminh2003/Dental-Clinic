@@ -17,12 +17,14 @@ import {
   MonthView,
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { appointments } from "../components/CalendarData/data";
+const date = new Date();
+const currentDate = date.toLocaleDateString();
 export default class Demo extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       data: appointments,
-      currentDate: "2018-06-27",
+      currentDate: currentDate,
 
       addedAppointment: {},
       appointmentChanges: {},

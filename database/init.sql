@@ -114,7 +114,7 @@ CREATE TABLE MEDICINE (
   name NVARCHAR(30) UNIQUE CHECK(LEN(name) > 0),
   unit NVARCHAR(10) CHECK(unit IN (N'Viên', N'Vỉ', N'Hộp', N'Chai', N'Ống', N'Gói')),
   description NVARCHAR(100),
-  expirationDate DATETIME,
+  expirationDate DATE,
   indication NVARCHAR(50),
   quantity INT CHECK(quantity >= 0),
   price FLOAT CHECK(price > 0)
@@ -131,7 +131,8 @@ CREATE TABLE SERVICE (
 CREATE TABLE SERVICE_USE (
   recordId INT NOT NULL,
   serviceId INT NOT NULL,
-  price FLOAT CHECK(price > 0)
+  price FLOAT CHECK(price > 0),
+  quantity INT CHECK(quantity >= 0),
   CONSTRAINT PK_SERVICE_USE PRIMARY KEY (recordId, serviceId)
 );
 

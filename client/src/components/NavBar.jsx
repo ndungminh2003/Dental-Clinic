@@ -1,14 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DropdownProfile from "../components/DropdownProfile";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { logout } from "../features/auth/authSlice";
 export default function NavBar() {
+  const dispatch = useDispatch();
   const [showDropdown, setShowDropdown] = useState(false);
   const { user } = useSelector((state) => state.auth);
-
+  useEffect(() => {
+    if (user) {
+      if (user?.role !== "customer") {
+        dispatch(logout());
+      }
+    }
+  });
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };

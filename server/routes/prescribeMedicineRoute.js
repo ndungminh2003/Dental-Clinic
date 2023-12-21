@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post(
   "/create-prescribe-medicine",
-  authM.isDentist,
+  // authM.isDentist,
   prescribeMedicineCtrl.createPrescribeMedicine
 );
 router.put(

@@ -31,6 +31,17 @@ export const createPatientRecord = createAsyncThunk(
   }
 );
 
+export const getPatientRecordDentistId = createAsyncThunk(
+  "patient-record/get-patient-record-dentist-id",
+  async (dentistId, thunkAPI) => {
+    try {
+      return await patientRecordService.getPatientRecordDentistId(dentistId);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const patientRecordSlice = createSlice({
   name: "patient-record",
   initialState: initialState,
@@ -61,12 +72,26 @@ export const patientRecordSlice = createSlice({
         state.error = false;
         state.loading = false;
         state.success = true;
-        console.log(action.payload);
-        console.log(action);
         state.newPatientRecord = action.payload;
         state.message = "success";
       })
       .addCase(createPatientRecord.rejected, (state, action) => {
+        state.error = true;
+        state.success = false;
+        state.message = action.error;
+        state.loading = false;
+      })
+      .addCase(getPatientRecordDentistId.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getPatientRecordDentistId.fulfilled, (state, action) => {
+        state.error = false;
+        state.loading = false;
+        state.success = true;
+        state.newPatientRecord = action.payload;
+        state.message = "success";
+      })
+      .addCase(getPatientRecordDentistId.rejected, (state, action) => {
         state.error = true;
         state.success = false;
         state.message = action.error;

@@ -90,7 +90,7 @@ CREATE TRIGGER TRIGGER_INVOICE ON INVOICE
 FOR INSERT, UPDATE
 AS
 BEGIN
-	DECLARE @totalService FLOAT = (SELECT SUM(price) FROM SERVICE_USE s JOIN inserted i ON s.recordId = i.recordId)
+	DECLARE @totalService FLOAT = (SELECT SUM(price * quantity) FROM SERVICE_USE s JOIN inserted i ON s.recordId = i.recordId)
 	DECLARE @totalMedicine FLOAT = (SELECT SUM(price * quantity) FROM PRESCRIBE_MEDICINE p JOIN inserted i ON p.recordId = i.recordId)
 	DECLARE @total FLOAT = @totalService + @totalMedicine
 	IF UPDATE(date_time) 
@@ -184,8 +184,6 @@ BEGIN
 		ROLLBACK TRAN
 	END
 	UPDATE a SET a.recordId = @recordId, a.status = N'Hoàn thành' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Đang tạo hồ sơ bệnh án'
-	PRINT @recordId
-	PRINT 'Hi'
 	INSERT INTO SERVICE_USE (recordId, serviceId) VALUES(@recordId, 1)
 END
 

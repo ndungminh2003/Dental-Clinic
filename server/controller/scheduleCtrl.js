@@ -120,6 +120,20 @@ const getDentistHaveSchedule = async (req, res) => {
   }
 };
 
+const getFullslotSchedule = async (req, res) => {
+  try {
+    const role = getRole(req);
+    const db = await (await getDb(role)).execute("sp_viewFullslotSchedule");
+    res.status(200).json(db.recordset);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+      const statuscode = res.statusCode == 200 ? 500 : res.statusCode;
+      return res.status(statuscode).send(error.message);
+    }
+    return res.status(500).send("Action Failed");
+  }
+};
 module.exports = {
   createDentistSchedule,
   deleteDentistSchedule,
@@ -128,4 +142,5 @@ module.exports = {
   getAllScheduleAvailable,
   getScheduleAvailableOnDay,
   getDentistHaveSchedule,
+  getFullslotSchedule,
 };

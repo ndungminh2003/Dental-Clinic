@@ -201,7 +201,7 @@ SimpleDialog.propTypes = {
 };
 
 export default function AllAppointments() {
-  let { error, loading, success } = useSelector((state) => state.auth);
+  let { error, loading, success } = useSelector((state) => state.patientRecord);
   const handleClose = (value) => {
     setOpen(false);
   };

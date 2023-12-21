@@ -335,64 +335,11 @@ const DENTIST_NULL = [
 
 function AddAppointments() {
   let { error, loading, success } = useSelector((state) => state.dentist);
-<<<<<<< HEAD
-  const [scheduleData, setScheduleData] = useState();
-  const [dentistData, setDentistData] = useState();
-
-  const fetchata = async () => {
-    try {
-      const [dentistResponse, scheduleResponse] = await Promise.all([
-        dentistService.getAllDentist(),
-        scheduleService.getAllScheduleAvailable(),
-      ]);
-      setScheduleData(scheduleResponse);
-      setDentistData(dentistResponse);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    fetchata();
-  }, [error, loading, success]);
-  let currentId = 1;
-  const schedule =
-    scheduleData &&
-    scheduleData.map((item) => ({
-      id: currentId++,
-      dentistId: item.dentistId,
-      title: "free schedule",
-      endDate: new Date(item.endTime).toLocaleString("en-US", {
-        timeZone: "UTC",
-      }),
-      startDate: new Date(item.startTime).toLocaleString("en-US", {
-        timeZone: "UTC",
-      }),
-    }));
-
-  const dentist =
-    dentistData &&
-    dentistData.map((item) => ({
-      id: item.id,
-      text: item.name,
-    }));
-
-  const dentistnull = [
-    {
-      id: 2,
-      text: "dentist",
-    },
-  ];
-
-  const [state, setState] = useState({
-    open: false,
-    data: schedule,
-=======
   const [scheduleData, setScheduleData] = useState([]);
   const [dentistData, setDentistData] = useState([]);
   const [state, setState] = useState({
     open: false,
     data: scheduleData,
->>>>>>> 164ecb6ab77c1e022df47ff287d2741a9b72a080
     currentDate: getDate(),
     resources: [
       {
@@ -446,12 +393,8 @@ function AddAppointments() {
     if (dentistData && dentistData.length != 0) {
       setState((prevState) => {
         // Check if the instances array has changed
-<<<<<<< HEAD
-        const instancesChanged = prevState.resources[0]?.instances !== dentist;
-=======
         const instancesChanged =
           prevState.resources[0]?.instances != dentistData;
->>>>>>> 164ecb6ab77c1e022df47ff287d2741a9b72a080
 
         // Only update if the instances array has changed
         if (instancesChanged) {
@@ -469,9 +412,6 @@ function AddAppointments() {
         return prevState;
       });
     }
-<<<<<<< HEAD
-  }, [dentist]);
-=======
   }, [dentistData]);
 
   useEffect(() => {
@@ -481,7 +421,6 @@ function AddAppointments() {
       });
     }
   }, [scheduleData]);
->>>>>>> 164ecb6ab77c1e022df47ff287d2741a9b72a080
 
   const handleMemberChange = (event) => {
     const selectedMember = event.target.value || 0;
@@ -493,11 +432,7 @@ function AddAppointments() {
     const membersResource = {
       fieldName: "dentistId",
       title: "Dentist",
-<<<<<<< HEAD
-      instances: selectedOwner ? [selectedOwner] : dentist,
-=======
       instances: selectedOwner ? [selectedOwner] : dentistData,
->>>>>>> 164ecb6ab77c1e022df47ff287d2741a9b72a080
     };
 
     setState((prevState) => ({

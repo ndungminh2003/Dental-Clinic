@@ -59,3 +59,5 @@ SELECT * FROM CUSTOMER
 
 INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
 VALUES ('Customer2', NULL, '0327116251', 'Guest', N'Nam', '123 Main St', '1990-05-15', 0);
+
+SELECT * FROM APPOINTMENT

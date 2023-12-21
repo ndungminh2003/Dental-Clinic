@@ -4,7 +4,6 @@ const expressAsyncHandler = require("express-async-handler");
 
 const authMiddleware = expressAsyncHandler(async (req, res, next) => {
   let accessToken;
-  console.log("headers:", req?.headers?.authorization);
   if (req?.headers?.authorization?.startsWith("Bearer")) {
     accessToken = req.headers.authorization.split(" ")[1];
     try {

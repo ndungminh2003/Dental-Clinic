@@ -28,7 +28,7 @@ export default function Invoice(props) {
   const handlePayClick = () => {
     let data = {
       invoiceId: invoiceData[0].id,
-      status: "Đã thanh toán",
+      status: "Paid",
     };
     dispatch(updateInvoiceStatus(data));
   };
@@ -46,7 +46,7 @@ export default function Invoice(props) {
           <div className="text-right mt-5">
             {invoiceData &&
             invoiceData.length > 0 &&
-            invoiceData[0].status === "Chưa thanh toán" ? (
+            invoiceData[0].status === "Unpaid" ? (
               <button
                 onClick={handlePayClick}
                 className="bg-yellow-300 rounded-md px-3 py-2 mr-2"

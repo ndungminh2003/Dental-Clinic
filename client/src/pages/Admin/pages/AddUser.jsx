@@ -19,14 +19,14 @@ export default function AddUser() {
       dateOfBirth: "",
       password: "",
       introduction: "",
-      gender: "Nam",
+      gender: "Male",
     },
 
     validationSchema: Yup.object({
       name: Yup.string().max(50, "Must be less than 50").required("Required"),
       phoneNumber: Yup.number().required("Required"),
       password: Yup.string()
-        .min(10, "Mật khẩu phải nhiều hơn 10 kí tự")
+        .min(10, "Must be greater than 10")
         .required("Required"),
       dateOfBirth: Yup.string().required("Required"),
     }),
@@ -217,11 +217,11 @@ export default function AddUser() {
                     className="mr-2"
                     type="radio"
                     name="gender"
-                    value="Nam"
-                    checked={formik.values.gender === "Nam"}
-                    onChange={() => formik.setFieldValue("gender", "Nam")}
+                    value="Male"
+                    checked={formik.values.gender === "Male"}
+                    onChange={() => formik.setFieldValue("gender", "Male")}
                   />
-                  Nam
+                  Male
                 </label>
               </div>
               <div className="ml-4">
@@ -230,11 +230,11 @@ export default function AddUser() {
                     className="mr-2"
                     type="radio"
                     name="gender"
-                    value="Nữ"
-                    checked={formik.values.gender === "Nữ"}
-                    onChange={() => formik.setFieldValue("gender", "Nữ")}
+                    value="Female"
+                    checked={formik.values.gender === "Female"}
+                    onChange={() => formik.setFieldValue("gender", "Female")}
                   />
-                  Nữ
+                  Female
                 </label>
               </div>
             </div>

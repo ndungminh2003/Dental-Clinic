@@ -35,9 +35,9 @@ const getOneAppointment = async (id) => {
 
 const getCustomerAppointment = async (customerId) => {
   try {
-    const response = await Axios.get("appointment/get-customer-appointment", {
-      params: customerId,
-    });
+    const response = await Axios.get(
+      `appointment/get-customer-appointment/${customerId}`
+    );
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -72,23 +72,11 @@ const getDentistAppointment = async (dentistId) => {
 };
 
 const updateAppointmentStatus = async (appointment) => {
-  try {
-    const response = await Axios.get(
-      "appointment/get-dentist-appointment",
-      appointment
-    );
-    return response.data;
-  } catch (error) {
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      console.log(error.request);
-    } else {
-      console.log("Error", error.message);
-    }
-  }
+  const response = await Axios.put(
+    "appointment/update-appointment-status",
+    appointment
+  );
+  return response.data;
 };
 
 const makeAppointment = async (appointment) => {

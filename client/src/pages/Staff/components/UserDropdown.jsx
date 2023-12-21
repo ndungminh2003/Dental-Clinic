@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../../features/auth/authSlice";
 
 import Grow from "@mui/material/Grow";
 import Paper from "@mui/material/Paper";
@@ -11,11 +13,25 @@ import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 export default function UserDropdown() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
+  };
+
+  useEffect(() => {
+    if (!user || user?.role != "staff") {
+      navigate("/staff/login");
+    }
+  }, []);
+
+  const handleLogoutClick = () => {
+    dispatch(logout());
+    navigate("login");
   };
 
   const handleClose = (event) => {
@@ -68,7 +84,7 @@ export default function UserDropdown() {
           >
             <div className=" flex border-[2px] border-dirty-blue rounded pl-5 pr-2 py-1 ">
               <div>
-                <h1 className="text-xs">Hello, Khanh</h1>
+                <h1 className="text-xs">Hello, {user?.name}</h1>
                 <h1 className="text-sm font-medium text-left	">Staff</h1>
               </div>
               <div className="ml-2">
@@ -104,7 +120,7 @@ export default function UserDropdown() {
                       <MenuItem onClick={handleProfile}>
                         <NavLink to="profile">Profile</NavLink>
                       </MenuItem>
-                      <MenuItem onClick={handleClose}>Logout</MenuItem>
+                      <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>

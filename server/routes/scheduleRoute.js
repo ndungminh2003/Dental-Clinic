@@ -38,4 +38,6 @@ router.get(
 
 router.get("/get-dentist-have-schedule", scheduleCtrl.getDentistHaveSchedule);
 
+router.get("/get-fullslot-schedule", scheduleCtrl.getFullslotSchedule);
+
 module.exports = router;

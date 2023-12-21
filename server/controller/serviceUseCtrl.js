@@ -10,6 +10,7 @@ const createServiceUse = async (req, res) => {
     const db = await (await getDb(role))
       .input("serviceId", input.serviceId)
       .input("recordId", input.recordId)
+      .input("quantity", input.quantity)
       .execute("sp_addServiceUse");
     res.status(200).json(db.recordset);
   } catch (error) {
@@ -62,6 +63,5 @@ const getServiceUseByRecordId = async (req, res) => {
 module.exports = {
   createServiceUse,
   deleteServiceUse,
-  getServiceUseByRecordId
+  getServiceUseByRecordId,
 };
-

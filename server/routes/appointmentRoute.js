@@ -15,7 +15,7 @@ router.get(
   appointmentCtrl.getAllAppointment
 );
 router.get(
-  "/get-customer-appointment",
+  "/get-customer-appointment/:customerId",
   authM.authMiddleware,
   appointmentCtrl.getCustomerAppointment
 );

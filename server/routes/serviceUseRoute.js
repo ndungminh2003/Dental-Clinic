@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post(
   "/create-service-use",
-  // authM.isDentist,
+  authM.isDentist,
   serviceUseCtrl.createServiceUse
 );
 router.delete(

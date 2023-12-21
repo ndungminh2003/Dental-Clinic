@@ -20,22 +20,28 @@ import {
 } from "@devexpress/dx-react-scheduler-material-ui";
 import { useState } from "react";
 import { appointments } from "../components/CalendarData/data";
+
+const date = new Date();
+const currentDate = date.toLocaleDateString();
 const Demo = () => {
   const [state, setState] = useState({
     data: appointments,
-    currentDate: '2018-06-27',
+    currentDate: "2018-06-27",
     addedAppointment: {},
     appointmentChanges: {},
     editingAppointment: undefined,
   });
 
   const changeAddedAppointment = (addedAppointment) => {
-    const defaultTitle = addedAppointment.title || 'Schedule';
+    const defaultTitle = addedAppointment.title || "Schedule";
     const updatedAppointment = {
       ...addedAppointment,
       title: defaultTitle,
     };
-    setState((prevState) => ({ ...prevState, addedAppointment: updatedAppointment }));
+    setState((prevState) => ({
+      ...prevState,
+      addedAppointment: updatedAppointment,
+    }));
   };
 
   const changeAppointmentChanges = (appointmentChanges) => {
@@ -50,12 +56,15 @@ const Demo = () => {
     setState((prevState) => {
       let { data } = prevState;
       if (added) {
-        const startingAddedId = data.length > 0 ? data[data.length - 1].id + 1 : 0;
+        const startingAddedId =
+          data.length > 0 ? data[data.length - 1].id + 1 : 0;
         data = [...data, { id: startingAddedId, ...added }];
       }
       if (changed) {
         data = data.map((appointment) =>
-          changed[appointment.id] ? { ...appointment, ...changed[appointment.id] } : appointment
+          changed[appointment.id]
+            ? { ...appointment, ...changed[appointment.id] }
+            : appointment
         );
       }
       if (deleted !== undefined) {
@@ -74,9 +83,14 @@ const Demo = () => {
   } = state;
 
   return (
-    <div style={{ height: 'calc(100vh - 80px)', width: '80vw', overflowX: 'auto' }}>
+    <div
+      style={{ height: "calc(100vh - 80px)", width: "80vw", overflowX: "auto" }}
+    >
       <Scheduler data={data} height="auto">
-        <ViewState defaultCurrentDate={currentDate} defaultCurrentViewName="Week" />
+        <ViewState
+          defaultCurrentDate={currentDate}
+          defaultCurrentViewName="Week"
+        />
         <DayView startDayHour={9} endDayHour={18} />
         <WeekView startDayHour={10} endDayHour={19} />
         <MonthView />
@@ -107,7 +121,9 @@ export default Demo;
 const TextEditor = (props) => {
   // eslint-disable-next-line react/destructuring-assignment
   if (props.type === "titleTextEditor") {
-    return <AppointmentForm.TextEditor {...props} disabled={true} value="Schedule" />;
+    return (
+      <AppointmentForm.TextEditor {...props} disabled={true} value="Schedule" />
+    );
   }
   return <AppointmentForm.TextEditor {...props} />;
 };

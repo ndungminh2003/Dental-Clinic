@@ -40,20 +40,20 @@ export default function AddMedication() {
       unit: Yup.string()
         .oneOf(
           [
-            "Viên",
-            "Vỉ",
-            "Hộp",
-            "Ống",
-            "Chai",
-            "Gói",
-            "viên",
-            "vỉ",
-            "hộp",
-            "ống",
-            "chai",
-            "gói",
+            "Pill",
+            "Pack",
+            "Box",
+            "Tube",
+            "Bottle",
+            "Package",
+            "pill",
+            "pack",
+            "box",
+            "tube",
+            "bottle",
+            "package",
           ],
-          "Invalid unit, The unit must be Viên, Vỉ, Hộp, Ống, Chai, Gói"
+          "Invalid unit, The unit must be Pill, Pack, Box, Tube, Bottle, Package"
         )
         .required("Required"),
     }),
@@ -79,9 +79,9 @@ export default function AddMedication() {
 
   useEffect(() => {
     if (isSubmited && !loading && success) {
-      toast.success("Thêm thuốc thành công");
+      toast.success("Successfully added medicine");
     } else if (isSubmited && !loading && error) {
-      toast.error("Thêm thuốc thất bại");
+      toast.error("Failed to add medicine");
       setIsSubmited(false);
     }
   }, [isSubmited, success, error, loading]);
@@ -205,7 +205,8 @@ export default function AddMedication() {
                   value={formik.values.expirationDate}
                   className={`ml-2 px-3 py-2 rounded-md border border-gray-300 `}
                 ></input>
-                {formik.touched.expirationDate && formik.errors.expirationDate ? (
+                {formik.touched.expirationDate &&
+                formik.errors.expirationDate ? (
                   <div className=" text-red-400 text-xs ml-4">
                     {formik.errors.expirationDate}
                   </div>

@@ -152,14 +152,14 @@ export default function Form() {
                     <select
                       id="gender"
                       name="gender"
-                      defaultValue={"Nam"}
+                      defaultValue={"Male"}
                       value={formik.values.gender}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
                     >
-                      <option value="Nam">Male</option>
-                      <option value="Nữ">Female</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
                     </select>
                     {formik.touched.gender && formik.errors.gender && (
                       <div>{formik.errors.gender}</div>

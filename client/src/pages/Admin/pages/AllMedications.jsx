@@ -17,7 +17,18 @@ export default function AllMedications() {
   const fetchData = async () => {
     try {
       const response = await medicineServices.getAllMedicine();
-      setMedicine(response);
+      function formatDate(date) {
+        const d = new Date(date);
+        const day = d.getDate().toString().padStart(2, "0");
+        const month = (d.getMonth() + 1).toString().padStart(2, "0"); // Month is zero-based
+        const year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+      const processedData = response.map((medicine) => ({
+        ...medicine,
+        expirationDate: formatDate(medicine.expirationDate),
+      }));
+      setMedicine(processedData);
     } catch (error) {
       console.log(error);
     }
@@ -31,8 +42,8 @@ export default function AllMedications() {
 
   const [openSee, setOpenSee] = React.useState(false);
   const [openChange, setOpenChange] = React.useState(false);
-
   const [values, setValues] = React.useState({});
+  const [isSubmited, setIsSubmited] = React.useState(false);
 
   const handleCloseSee = () => {
     setOpenSee(false);

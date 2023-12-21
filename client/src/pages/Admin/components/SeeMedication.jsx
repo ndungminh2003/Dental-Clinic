@@ -97,16 +97,14 @@ export default function SeeMedication(props) {
           </div>
           <input
             type="text"
-            value={new Date(values.expirationDate).toLocaleString()}
+            value={values.expirationDate}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
         </div>
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
-            <label className="font-mono rounded-md text-center	">
-              Price
-            </label>
+            <label className="font-mono rounded-md text-center	">Price</label>
           </div>
           <input
             type="text"

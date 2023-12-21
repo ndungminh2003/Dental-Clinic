@@ -288,6 +288,20 @@ SimpleDialog.propTypes = {
   values: PropTypes.array.isRequired,
 };
 
+function formatDate(dateString) {
+  const dateObj = new Date(dateString);
+
+  const day = String(dateObj.getUTCDate()).padStart(2, '0');
+  const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+  const year = String(dateObj.getUTCFullYear());
+  const hours = String(dateObj.getUTCHours()).padStart(2, '0');
+  const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
+
+  const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+  return formattedDate;
+}
+
 const processAppointments = (responseDentistAppointment, responseCustomer) => {
   const appointmentsWithCustomer = responseDentistAppointment.map(
     (appointment) => {
@@ -297,6 +311,8 @@ const processAppointments = (responseDentistAppointment, responseCustomer) => {
 
       return {
         ...appointment,
+        startTime: formatDate(appointment.startTime),
+        endTime: formatDate(appointment.endTime),
         patientName: correspondingCustomer.name,
         phoneNumber: correspondingCustomer.phoneNumber,
         gender: correspondingCustomer.gender,

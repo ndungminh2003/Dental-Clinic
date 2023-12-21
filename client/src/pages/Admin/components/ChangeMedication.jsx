@@ -4,14 +4,26 @@ import PropTypes from "prop-types";
 import { useFormik } from "formik";
 import { updateMedicine } from "../../../features/medicine/medicineSlice";
 import { useDispatch, useSelector } from "react-redux";
+
+import "react-toastify/dist/ReactToastify.css";
 import * as Yup from "yup";
 
 export default function ChangeMedication(props) {
   const dispatch = useDispatch();
   const { onClose, open, values } = props;
+
   const handleClose = () => {
     onClose();
   };
+
+  function reverseDateFormat(dateString) {
+    const parts = dateString.split("-");
+    if (parts.length === 3) {
+      const reversedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      return reversedDate;
+    }
+    return dateString;
+  }
 
   const initValue = {
     medicineId: values.id,
@@ -49,11 +61,13 @@ export default function ChangeMedication(props) {
             : values.indication,
         expirationDate:
           typeof values.expirationDate === "undefined"
-            ? initValue.expirationDate
+            ? reverseDateFormat(initValue.expirationDate)
             : values.expirationDate,
         price:
           typeof values.price === "undefined" ? initValue.price : values.price,
       };
+
+      console.log(updateData);
 
       dispatch(updateMedicine(updateData));
       formik.resetForm();
@@ -177,7 +191,7 @@ export default function ChangeMedication(props) {
             <input
               id="expirationDate"
               name="expirationDate"
-              type="text"
+              type="date"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.expirationDate}

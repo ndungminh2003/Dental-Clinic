@@ -1,4 +1,4 @@
-USE QLPhongKham
+	USE QLPhongKham
 GO
 -- customer sign up
 GO

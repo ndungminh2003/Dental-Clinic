@@ -140,7 +140,8 @@ SimpleDialog.propTypes = {
 };
 
 export default function AllAppointments() {
-  let { error, loading, success } = useSelector((state) => state.auth);
+  let { error, loading, success, user} = useSelector((state) => state.auth);
+
   const handleClose = (value) => {
     setOpen(false);
   };
@@ -223,7 +224,7 @@ export default function AllAppointments() {
   
   const fetchPatientRecordData = async () => {
     try {
-      const response = await patientRecordServices.getPatientRecordDentistId(1);
+      const response = await patientRecordServices.getPatientRecordDentistId(user.id);
       console.log(response);
       setPatientRecordData(response);
     } catch (error) {

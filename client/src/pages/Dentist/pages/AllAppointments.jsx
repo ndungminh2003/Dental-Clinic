@@ -25,6 +25,7 @@ const SimpleDialog = (props) => {
     services,
     medicines,
     newPatientRecord,
+    user
   } = props;
   const [medicineRows, setMedicineRows] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -32,12 +33,7 @@ const SimpleDialog = (props) => {
   const [advice, setAdvice] = useState("");
   const [diagnostic, setDiagnostic] = useState("");
 
-  console.log(medicineRows);
-
   React.useEffect(() => {
-    console.log(medicineRows);
-    console.log(selectedOptions);
-    console.log(newPatientRecord);
     selectedOptions.map((selected) => {
       services.map((service) => {
         if (selected === service.name) {
@@ -93,7 +89,7 @@ const SimpleDialog = (props) => {
       advice: advice,
       diagnostic: diagnostic,
       date_time: date_time,
-      dentistId: 1,
+      dentistId: user.id,
       customerId: values.customerId,
     };
 
@@ -165,11 +161,11 @@ const SimpleDialog = (props) => {
           </div>
           <input
             type="text"
-            value={"Nguyễn Văn A"}
+            value={user.name}
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
-        </div>
+        </div> 
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Service</label>
@@ -332,8 +328,13 @@ const AllAppointments = () => {
   const { error, loading, success, newPatientRecord } = useSelector(
     (state) => state.patientRecord
   );
+  
+  const { user } = useSelector(
+    (state) => state.auth
+  );
+  
 
-  const fetchData = async () => {
+  const fetchData = async (dentistId) => {
     try {
       const [
         responseDentistAppointment,
@@ -341,7 +342,7 @@ const AllAppointments = () => {
         responseService,
         responseMedicine,
       ] = await Promise.all([
-        appointmentService.getDentistAppointment(1),
+        appointmentService.getDentistAppointment(dentistId),
         customerService.getAllCustomer(),
         serviceService.getAllService(),
         medicineService.getAllMedicine(),
@@ -366,7 +367,7 @@ const AllAppointments = () => {
   const [medicines, setMedicines] = React.useState([]);
 
   React.useEffect(() => {
-    fetchData();
+    fetchData(user.id);
   }, [error, loading, success]);
 
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
@@ -506,6 +507,7 @@ const AllAppointments = () => {
         medicines={medicines}
         data={dataAppointment}
         newPatientRecord={newPatientRecord1}
+        user = {user}
       />
     </div>
   );

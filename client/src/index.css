@@ -315,6 +315,11 @@ button.payNow {
     @apply max-w-[var(--invoiceMaxWidth)] mx-auto border border-solid border-[var(--tableBorderColor)] py-[calc(2 * var(--rhythm))] rounded-[var(--borderRadius)] bg-[var(--bgColor)];
   }
 } */
+.MuiTypography-root.MuiTypography-body1.Label-label.Label-titleLabel.Layout-labelWithMargins.css-atr4zg-MuiTypography-root {
+  display: none;
+}
+
+
 .addColor {
   background-color: var(--addColor);
 }

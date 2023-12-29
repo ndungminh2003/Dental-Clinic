@@ -2741,6 +2741,7 @@ BEGIN
 	
 	GRANT EXEC ON dbo.sp_viewDentistAppointment to guestRole
 	GRANT EXEC ON dbo.sp_viewAllService to guestRole
+	GRANT EXEC ON dbo.sp_viewFullslotSchedule to dentistRole
 
   END TRY
   BEGIN CATCH

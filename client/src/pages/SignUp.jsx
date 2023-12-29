@@ -84,8 +84,11 @@ export default function SignUp() {
                     onBlur={formik.handleBlur}
                     className={`focus:ring-blue-hosta input focus:ring-opacity-25  `}
                   ></input>
-                  {formik.touched.name && formik.errors.name && (
-                    <div>{formik.errors.name}</div>
+                  {formik.touched.name && formik.errors.name ? (
+                    <div className="text-xs text-red-600">{formik.errors.name}</div>
+                  ):(
+                    <div className ="h-4">
+                    </div>
                   )}
                 </div>
                 <div className="mb-3 flex grow justify-between w-full">
@@ -101,8 +104,11 @@ export default function SignUp() {
                       onBlur={formik.handleBlur}
                       className={`focus:ring-blue-hosta px-2 py-1 input focus:ring-opacity-25  `}
                     ></input>
-                    {formik.touched.birthday && formik.errors.birthday && (
-                      <div>{formik.errors.birthday}</div>
+                    {formik.touched.birthday && formik.errors.birthday ? (
+                      <div className="text-xs text-red-600">{formik.errors.birthday}</div>
+                    ):(
+                      <div className ="h-4">
+                      </div>
                     )}
                   </div>
                   <div className="w-[45%]">
@@ -120,28 +126,31 @@ export default function SignUp() {
                       <option value="Nam">Nam</option>
                       <option value="Nữ">Nữ</option>
                     </select>
-                    {formik.touched.gender && formik.errors.gender && (
-                      <div>{formik.errors.gender}</div>
+                    {formik.touched.gender && formik.errors.gender ? (
+                      <div className="text-xs text-red-600">{formik.errors.gender}</div>
+                    ):(
+                      <div className ="h-4">
+                      </div>
                     )}
                   </div>
                 </div>
                 <div className="mb-3">
                   <label className="font-mono text-sm">Phone</label>
                   <hr />
-                  <input
-                    // inputClass="!w-full !h-[31px]"
-                    className={`focus:ring-blue-hosta w-full px-2 py-1 rounded-md focus:outline-none focus:ring-2 border focus:ring-opacity-25  `}
+                  <PhoneInput
+                    inputClass="!w-full !h-9 "
                     placeholder="Enter phone number"
-                    // country="vn"
-                    // regions={"asia"}
-                    id="phone"
-                    name="phone"
+                    country="vn"
+                    regions={"asia"}
                     value={formik.values.phone}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
-                  {formik.touched.phone && formik.errors.phone && (
-                    <div>{formik.errors.phone}</div>
+                  {formik.touched.phone && formik.errors.phone ? (
+                    <div className="text-xs text-red-600">{formik.errors.phone}</div>
+                  ):(
+                    <div className ="h-4">
+                    </div>
                   )}
                 </div>
                 <div className="mb-3">
@@ -156,8 +165,11 @@ export default function SignUp() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   ></input>
-                  {formik.touched.address && formik.errors.address && (
-                    <div>{formik.errors.address}</div>
+                  {formik.touched.address && formik.errors.address ? (
+                    <div className="text-xs text-red-600">{formik.errors.address}</div>
+                  ):(
+                    <div className ="h-4">
+                    </div>
                   )}
                 </div>
                 <div className="mb-3">
@@ -174,8 +186,11 @@ export default function SignUp() {
                     onBlur={formik.handleBlur}
                     className={`focus:ring-blue-hosta input focus:ring-opacity-25  `}
                   ></input>
-                  {formik.touched.password && formik.errors.password && (
-                    <div>{formik.errors.password}</div>
+                  {formik.touched.password && formik.errors.password ? (
+                    <div className="text-xs text-red-600">{formik.errors.password}</div>
+                  ):(
+                    <div className ="h-4">
+                    </div>
                   )}
                 </div>
                 <div className="flex justify-between mb-6">

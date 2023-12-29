@@ -11,7 +11,7 @@ import { createPatientRecord } from "../../../features/patientRecord/patientReco
 import { useDispatch, useSelector } from "react-redux";
 import { createServiceUse } from "../../../features/serviceUse/serviceUseSlice";
 import { createPrescribeMedicine } from "../../../features/prescribeMedicine/prescribeMedicineSlice";
-
+import CancelIcon from '@mui/icons-material/Cancel';
 import { TextField, Autocomplete } from "@mui/material";
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
@@ -69,6 +69,12 @@ const SimpleDialog = (props) => {
   };
   const handleClose = () => {
     onClose(selectedValue);
+  };
+
+  const deleteMedicineRow = (idx) => {
+    const newRows = [...medicineRows];
+    newRows.splice(idx, 1);
+    setMedicineRows(newRows);
   };
 
   const handleListItemClick = (values) => {
@@ -219,46 +225,55 @@ const SimpleDialog = (props) => {
           ></input>
         </div>
         <div className="flex items-center grow mt-3">
-          <div className="w-1/4">
-            <label className="font-mono rounded-md text-center	">Medicine</label>
-          </div>
-          <div>
-            <div id="medicineSection">
-              {medicineRows.map((row, idx) => (
-                <div key={idx} className="flex mb-3">
-                  <select
-                    name={`medicine-${idx}`}
-                    value={row.medicine}
-                    onChange={(e) => {
-                      const newRows = [...medicineRows];
-                      newRows[idx].medicine = e.target.value;
-                      setMedicineRows(newRows);
-                    }}
-                    className="block w-2/3 mt-1 mr-2 p-2  border border-gray-300	 rounded-md shadow-sm"
-                  >
-                    {medicines.map((medicine) => (
-                      <option value={medicine.name}>{medicine.name}</option>
-                    ))}
-                  </select>
-                  <input
-                    type="number"
-                    name={`quantity-${idx}`}
-                    value={row.quantity}
-                    onChange={(e) => {
-                      const newRows = [...medicineRows];
-                      newRows[idx].quantity = e.target.value;
-                      setMedicineRows(newRows);
-                    }}
-                    className="block w-1/3 mt-1 mr-2 p-2  border border-gray-300	 rounded-md shadow-sm"
-                    min="1"
-                  />
-                </div>
-              ))}
+      <div className="w-1/4">
+        <label className="font-mono rounded-md text-center">Medicine</label>
+      </div>
+      <div>
+        <div id="medicineSection">
+          {medicineRows.map((row, idx) => (
+            <div key={idx} className="flex mb-3">
+              <select
+                name={`medicine-${idx}`}
+                value={row.medicine}
+                onChange={(e) => {
+                  const newRows = [...medicineRows];
+                  newRows[idx].medicine = e.target.value;
+                  setMedicineRows(newRows);
+                }}
+                className="block w-4/5 mt-1 mr-2 ml-8 p-2 border border-gray-300 rounded-md shadow-sm"
+              >
+                {medicines.map((medicine) => (
+                  <option key={medicine.id} value={medicine.name}>
+                    {medicine.name}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                name={`quantity-${idx}`}
+                value={row.quantity}
+                onChange={(e) => {
+                  const newRows = [...medicineRows];
+                  newRows[idx].quantity = e.target.value;
+                  setMedicineRows(newRows);
+                }}
+                className="block w-1/5 mt-1 mr-2 p-2 border border-gray-300 rounded-md shadow-sm"
+                min="1"
+              />
+              <button
+                type="button"
+                onClick={() => deleteMedicineRow(idx)}
+                className="text-red-500 ml-2"
+              >
+                <CancelIcon/>
+              </button>
+            </div>
+          ))}
             </div>
             <button
               type="button"
               onClick={addMedicineRow}
-              className="text-sky-600	text-sm"
+              className="text-sky-600 text-sm"
             >
               + Add Medicine
             </button>

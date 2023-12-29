@@ -143,11 +143,17 @@ select * from SERVICE_USE
 select * from PRESCRIBE_MEDICINE
 select * from PATIENT_RECORD
 select * from MEDICINE	
-select * from SCHEDULE
+select * from SCHEDULEINSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
+VALUES 
+	(1, 1, '2023-12-22 10:00:00', '2023-12-22 11:00:00', N'Đang chờ', null, null);
 
 
 
 
 
 
+select * from schedule
+
+INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
+VALUES (6, '2023-12-30 07:00:00', '2023-12-30 08:00:00', 0);
 

@@ -92,10 +92,7 @@ function SimpleDialog(props) {
   const handleClose = () => {
     onClose();
   };
-  const [openInvoice, setOpenInvoice] = React.useState(false);
-  const handleCloseInvoice = () => {
-    setOpenInvoice(false);
-  };
+
   const handleListItemClick = (value) => {
     onClose(value);
   };
@@ -387,7 +384,21 @@ function AddAppointments() {
   };
   useEffect(() => {
     fetchata();
-  }, []);
+  }, [error, loading, success]);
+  console.log("schedule data", scheduleData);
+  const dentist =
+    dentistData &&
+    dentistData.map((item) => ({
+      id: item.id,
+      text: item.name,
+    }));
+
+  const dentistnull = [
+    {
+      id: 2,
+      text: "dentist",
+    },
+  ];
 
   useEffect(() => {
     if (dentistData && dentistData.length != 0) {

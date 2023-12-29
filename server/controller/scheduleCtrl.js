@@ -22,12 +22,14 @@ const createDentistSchedule = async (req, res) => {
 };
 
 const deleteDentistSchedule = async (req, res) => {
-  const input = req.body;
+  const input = req.query;
+  console.log("hello");
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
-      .input("dentistId", input.medicineId)
-      .input("startTime", input.recordId)
+      .input("dentistId", input.dentistId)
+      .input("startTime", input.startTime)
       .execute("sp_deleteDentistSchedule");
     res.status(200).json(db.recordset);
   } catch (error) {

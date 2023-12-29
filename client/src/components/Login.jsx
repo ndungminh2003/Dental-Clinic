@@ -66,21 +66,22 @@ export default function Login({ bgcolor, ringcolor, role }) {
             <div className="mb-4">
               <label className="font-mono ">Phone</label>
               <hr />
-              <input
-                className={` ${ringcolor} w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-25 border border-gray-300	`}
-                placeholder="Enter phone number"
-                // country="vn"
-                // regions={"asia"}
-                type="text"
-                id="phone"
-                name="phone"
-                value={formik.values.phone}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              {formik.touched.phone && formik.errors.phone && (
-                <div>{formik.errors.phone}</div>
-              )}
+              <PhoneInput
+                  inputClass="!w-full !h-11"
+                  placeholder="Enter phone number"
+                  country="vn"
+                  regions={"asia"}
+                  value={formik.values.phone}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              {formik.touched.phone && formik.errors.phone ? (
+                <div className="text-xs text-red-600">{formik.errors.phone}</div>
+              ):(
+                <div className ="h-4">
+                </div>
+              )
+              }
             </div>
             <div className="mb-4">
               <label className="font-mono rounded-md	">Password</label>
@@ -94,8 +95,11 @@ export default function Login({ bgcolor, ringcolor, role }) {
                 onBlur={formik.handleBlur}
                 className={` ${ringcolor} w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-25 border border-gray-300	`}
               ></input>
-              {formik.touched.password && formik.errors.password && (
-                <div>{formik.errors.password}</div>
+              {formik.touched.password && formik.errors.password ? (
+                <div className="text-xs text-red-600">{formik.errors.password}</div>
+              ):(
+                <div className ="h-4">
+                </div>
               )}
             </div>
             <div className="flex justify-between mb-6">

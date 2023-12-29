@@ -43,7 +43,7 @@ CREATE TABLE DENTIST (
   introduction NVARCHAR(500),
   isBlocked BIT NOT NULL DEFAULT(0)
 );
-
+select * from staff
 CREATE TABLE STAFF (
     
   id INT NOT NULL PRIMARY KEY IDENTITY(1, 1),

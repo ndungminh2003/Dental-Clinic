@@ -3,7 +3,7 @@ USE QLPhongKham
 GO
 -- Insert data into the ADMIN table
 INSERT INTO ADMIN (name, password, phoneNumber)
-VALUES ('AdminUser', 'AdminPassword123', '123456789');
+VALUES ('AdminUser', 'AdminPassword123', '84123456789');
 
 -- Insert data into the CUSTOMER table
 INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
@@ -27,21 +27,21 @@ VALUES
 -- Insert data into the DENTIST table
 INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
 VALUES 
-(N'Nguyễn Thị Ánh', '123123123123', '567890123', N'Female', '1985-08-20', N'Bác sĩ có kinh nghiệm', 0),
-(N'Trần Văn Quang', '123123123123', '098765432', N'Male', '1978-06-15', N'Nha sĩ chuyên nghiệp', 0),
-(N'Phạm Thị Hương', '123123123123', '012345678', N'Female', '1990-12-05', N'Bác sĩ tận tâm', 1),
-(N'Lê Văn Tuấn', '123123123123', '987654321', N'Male', '1983-04-25', N'Nha sỹ uy tín', 0),
-(N'Hồ Thị Mai', '123123123123', '654321098', N'Female', '1987-10-30', N'Bác sĩ có kinh nghiệm', 0);
+(N'Nguyễn Thị Ánh', '123123123123', '84567890123', N'Female', '1985-08-20', N'Bác sĩ có kinh nghiệm', 0),
+(N'Trần Văn Quang', '123123123123', '8498765432', N'Male', '1978-06-15', N'Nha sĩ chuyên nghiệp', 0),
+(N'Phạm Thị Hương', '123123123123', '8412345678', N'Female', '1990-12-05', N'Bác sĩ tận tâm', 1),
+(N'Lê Văn Tuấn', '123123123123', '84987654321', N'Male', '1983-04-25', N'Nha sỹ uy tín', 0),
+(N'Hồ Thị Mai', '123123123123', '84654321098', N'Female', '1987-10-30', N'Bác sĩ có kinh nghiệm', 0);
 
 
 -- Insert data into the STAFF table
 INSERT INTO STAFF (name, password, phoneNumber, gender, isBlocked)
 VALUES 
-(N'Nguyễn Văn Bình', '123123123123', '012345678', N'Male', 0),
-(N'Trần Thị Hoa', '123123123123', '098765432', N'Female', 0),
-(N'Phạm Minh Cường', '123123123123', '0123456789', N'Male', 1),
-(N'Lê Thị Diệu Hương', '123123123123', '0987654321', N'Female', 0),
-(N'Huỳnh Văn Dũng', '123123123123', '01234567891', N'Male', 0);
+(N'Nguyễn Văn Bình', '123123123123', '84123456784', N'Male', 0),
+(N'Trần Thị Hoa', '123123123123', '84987654322', N'Female', 0),
+(N'Phạm Minh Cường', '123123123123', '84123456789', N'Male', 1),
+(N'Lê Thị Diệu Hương', '123123123123', '84987654321', N'Female', 0),
+(N'Huỳnh Văn Dũng', '123123123123', '84123456781', N'Male', 0);
 
 
 -- Insert data into the MEDICINE table
@@ -143,7 +143,7 @@ select * from SERVICE_USE
 select * from PRESCRIBE_MEDICINE
 select * from PATIENT_RECORD
 select * from MEDICINE	
-select * from SCHEDULEINSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
+select * from SCHEDULE INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
 VALUES 
 	(1, 1, '2023-12-22 10:00:00', '2023-12-22 11:00:00', N'Đang chờ', null, null);
 
@@ -152,7 +152,7 @@ VALUES
 
 
 
-select * from schedule
+select * from admin
 
 INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
 VALUES (6, '2023-12-30 07:00:00', '2023-12-30 08:00:00', 0);

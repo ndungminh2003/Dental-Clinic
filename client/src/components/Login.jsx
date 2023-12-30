@@ -67,14 +67,17 @@ export default function Login({ bgcolor, ringcolor, role }) {
               <label className="font-mono ">Phone</label>
               <hr />
               <PhoneInput
-                  inputClass="!w-full !h-11"
-                  placeholder="Enter phone number"
-                  country="vn"
-                  regions={"asia"}
-                  value={formik.values.phone}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
+                inputClass="!w-full !h-11"
+                placeholder="Enter phone number"
+                country="vn"
+                regions={"asia"}
+                value={formik.values.phone}  
+                onChange={(formattedValue) => {
+                  formik.setFieldValue("phone", formattedValue);
+                  console.log(formattedValue);
+                }}
+                onBlur={formik.handleBlur}
+              />
               {formik.touched.phone && formik.errors.phone ? (
                 <div className="text-xs text-red-600">{formik.errors.phone}</div>
               ):(

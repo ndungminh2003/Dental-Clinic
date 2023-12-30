@@ -59,13 +59,13 @@ export default function AddUser() {
   return (
     <>
       <form onSubmit={formik.handleSubmit}>
-        <div className="px-24 py-14 w-full">
+        <div className="pl-20 pr-24 py-14 w-full">
           <h1 className=" text-2xl font-semibold pb-5">ADD USER</h1>
           <div className="flex lex-grow mt-5 w-full">
-            <div className="w-1/6">
+            <div className="w-[14%]">
               <h1 className="font-mono ">Type</h1>
             </div>
-            <div className="w-5/6 flex">
+            <div className="w-full flex">
               <div>
                 <label>
                   <input
@@ -93,14 +93,16 @@ export default function AddUser() {
               </div>
             </div>
           </div>
-          <div className="flex flex-grow mt-10 ">
-            <div className="w-1/6 flex mt-1">
-              <label className="font-mono rounded-md text-center">Phone</label>
-            </div>
-            <div className="flex flex-grow w-5/6 items-center">
+          <div className="flex mt-10 ">
+            <div className="flex w-1/2 items-center">
+              <div className="w-1/4 flex items-center">
+                <label className="font-mono rounded-md text-center mt-[-18px]">
+                  Phone
+                </label>
+              </div>
               <div className="w-3/4 flex flex-col h-16 justify-between">
                 <PhoneInput
-                  inputClass="!w-full"
+                  inputClass="!w-full !h-10"
                   placeholder="Enter phone number"
                   country="vn"
                   regions={"asia"}
@@ -116,84 +118,87 @@ export default function AddUser() {
                 ) : null}
               </div>
             </div>
-          </div>
-          <div className="flex  flex-grow mt-3">
-            <div className="w-1/6 mt-2">
-              <label className="font-mono rounded-md text-center ">
-                Birthday
-              </label>
-            </div>
-            <div className=" w-5/6 flex flex-col h-16 justify-between">
-              <input
-                id="dateOfBirth"
-                name="dateOfBirth"
-                type="date"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.dateOfBirth}
-                className={` w-3/4 px-3 py-2 rounded-md border border-gray-300	`}
-              ></input>
-              {formik.touched.dateOfBirth && formik.errors.dateOfBirth ? (
-                <div className=" text-red-400 text-xs ml-4">
-                  {formik.errors.dateOfBirth}
-                </div>
-              ) : null}
-            </div>
-          </div>
-          <div className="flex flex-grow mt-3">
-            <div className="w-1/6 mt-2">
-              <label className="font-mono rounded-md text-center	">
-                Fullname
-              </label>
-            </div>
-            <div className=" w-5/6 flex flex-col h-16 justify-between">
-              <input
-                id="name"
-                name="name"
-                type="text"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.name}
-                className={` w-3/4 px-3 py-2 rounded-md border border-gray-300	`}
-              ></input>
-              {formik.touched.name && formik.errors.name ? (
-                <div className=" text-red-400 text-xs ml-4">
-                  {formik.errors.name}
-                </div>
-              ) : null}
+            <div className="flex w-1/2 items-center ml-7">
+              <div className="w-1/4 flex items-center">
+                <label className="font-mono rounded-md text-center mt-[-18px]">
+                  Birthday
+                </label>
+              </div>
+              <div className=" w-5/6 flex flex-col h-16 justify-between">
+                <input
+                  id="dateOfBirth"
+                  name="dateOfBirth"
+                  type="date"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.dateOfBirth}
+                  className={` w-full px-3 py-2 rounded-md border border-gray-300	`}
+                ></input>
+                {formik.touched.dateOfBirth && formik.errors.dateOfBirth ? (
+                  <div className=" text-red-400 text-xs ml-4">
+                    {formik.errors.dateOfBirth}
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
           <div className="flex flex-grow mt-3">
-            <div className="w-1/6 mt-2">
-              <label className="font-mono rounded-md text-center	">
-                Password
-              </label>
+            <div className="flex w-1/2 items-center">
+              <div className="w-1/4 flex items-center">
+                <label className="font-mono rounded-md text-center mt-[-18px]">
+                  Fullname
+                </label>
+              </div>
+              <div className=" w-3/4 flex flex-col h-16 justify-between">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.name}
+                  className={` w-full px-3 py-2 rounded-md border border-gray-300	`}
+                ></input>
+                {formik.touched.name && formik.errors.name ? (
+                  <div className=" text-red-400 text-xs ml-4">
+                    {formik.errors.name}
+                  </div>
+                ) : null}
+              </div>
             </div>
-            <div className=" w-5/6 flex flex-col h-16 justify-between">
-              <input
-                id="password"
-                name="password"
-                type="password"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.password}
-                className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
-              ></input>
-              {formik.touched.password && formik.errors.password ? (
-                <div className=" text-red-400 text-xs ml-4">
-                  {formik.errors.password}
-                </div>
-              ) : null}
+            <div className="flex w-1/2 items-center ml-7">
+              <div className="w-1/4 flex items-center">
+                <label className="font-mono rounded-md text-center mt-[-18px]">
+                  Password
+                </label>
+              </div>
+              <div className=" w-3/4 flex flex-col h-16 justify-between">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.password}
+                  className={` w-full  px-3 py-2 rounded-md border border-gray-300	`}
+                ></input>
+                {formik.touched.password && formik.errors.password ? (
+                  <div className=" text-red-400 text-xs ml-4">
+                    {formik.errors.password}
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
+
           {selectedOption === "doctor" && (
             <div className="flex items-center flex-grow mt-3">
-              <div className="w-1/6">
+              <div className="w-[14%]">
                 <label className="font-mono rounded-md text-center	">
                   Introduction
                 </label>
               </div>
-              <div className=" w-5/6">
+              <div className=" w-full">
                 <textarea
                   id="introduction"
                   name="introduction"
@@ -201,16 +206,16 @@ export default function AddUser() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.introduction}
-                  className={` w-3/4 px-3 py-2 rounded-md border border-gray-300 resize-none`}
+                  className={` w-full px-3 py-2 rounded-md border border-gray-300 resize-none`}
                 ></textarea>
               </div>
             </div>
           )}
           <div className="flex lex-grow mt-5 w-full">
-            <div className="w-1/6">
+            <div className="w-[14%]">
               <h1 className="font-mono ">Gender</h1>
             </div>
-            <div className="w-5/6 flex">
+            <div className="w-full flex">
               <div>
                 <label>
                   <input
@@ -240,7 +245,7 @@ export default function AddUser() {
             </div>
           </div>
 
-          <div className="text-right text-white mt-5">
+          <div className="text-right text-white mt-5 ">
             <button
               className="bg-ebony-clay rounded-md px-3 py-2"
               type="submit"

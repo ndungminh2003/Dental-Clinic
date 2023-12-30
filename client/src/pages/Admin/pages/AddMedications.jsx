@@ -189,13 +189,12 @@ export default function AddMedication() {
             </div>
           </div>
           <div className="flex  grow mt-3">
-            <div className="flex w-1/2 items-center">
-              <div className="w-1/4 flex items-center">
-                <label className="font-mono rounded-md text-center mt-[-18px]">
+              <div className="w-1/5 flex items-center">
+                <label className="font-mono rounded-md text-left mt-[-18px]">
                   Expiration date
                 </label>
               </div>
-              <div className=" flex flex-col w-3/4 justify-between h-16">
+              <div className=" flex flex-col w-4/5 justify-between h-16">
                 <input
                   id="expirationDate"
                   name="expirationDate"
@@ -203,7 +202,7 @@ export default function AddMedication() {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.expirationDate}
-                  className={`ml-2 px-3 py-2 rounded-md border border-gray-300 `}
+                  className={`ml-1 px-3 py-2 rounded-md border border-gray-300 `}
                 ></input>
                 {formik.touched.expirationDate &&
                 formik.errors.expirationDate ? (
@@ -212,10 +211,10 @@ export default function AddMedication() {
                   </div>
                 ) : null}
               </div>
-            </div>
+
           </div>
           <div className="flex items-center grow mt-10">
-            <div className="w-[182px]">
+            <div className="w-1/5">
               <label className="font-mono rounded-md text-center	">
                 Description
               </label>
@@ -227,11 +226,11 @@ export default function AddMedication() {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.description}
-              className={`w-full px-3 py-2 rounded-md border border-gray-300 resize-none`}
+              className={`w-4/5 px-3 py-2 rounded-md border border-gray-300 resize-none`}
             ></textarea>
           </div>
           <div className="flex items-center grow mt-10">
-            <div className="w-[182px]">
+            <div className="w-1/5">
               <label className="font-mono rounded-md text-center	">
                 Indication
               </label>
@@ -243,7 +242,7 @@ export default function AddMedication() {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.indication}
-              className={`w-full px-3 py-2 rounded-md border border-gray-300 resize-none`}
+              className={`w-4/5 px-3 py-2 rounded-md border border-gray-300 resize-none`}
             ></textarea>
           </div>
           <div className="text-right mt-5">

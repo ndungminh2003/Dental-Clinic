@@ -78,6 +78,7 @@ const SimpleDialog = (props) => {
   };
 
   const handleListItemClick = (values) => {
+    
     onClose(values);
 
     let date = new Date();

@@ -79,6 +79,7 @@ const getAllScheduleAvailable = async (req, res) => {
   try {
     const role = getRole(req);
     const db = await (await getDb(role)).execute("sp_viewAllScheduleAvailable");
+    console.log("db",db.recordset)
     res.status(200).json(db.recordset);
   } catch (error) {
     if (error instanceof Error) {

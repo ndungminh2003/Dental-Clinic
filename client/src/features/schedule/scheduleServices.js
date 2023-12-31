@@ -20,7 +20,7 @@ const getScheduleAvailableOnDay = async (date) => {
 };
 
 const getFullslotSchedule = async (user) => {
-  try{
+  try {
     const response = await Axios.get(`schedule/get-fullslot-schedule`);
     return response.data;
   } catch (error) {
@@ -35,7 +35,6 @@ const getFullslotSchedule = async (user) => {
     }
   }
 };
-
 
 const getDentistHaveSchedule = async () => {
   try {
@@ -74,8 +73,10 @@ const getDentistSchedule = async (dentistId) => {
 };
 
 const getAllScheduleAvailable = async () => {
-  try{
-    const response = await Axios.get(`schedule/get-all-dentist-schedule-available`);
+  try {
+    const response = await Axios.get(
+      `schedule/get-all-dentist-schedule-available`
+    );
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -91,7 +92,7 @@ const getAllScheduleAvailable = async () => {
 };
 
 const getAllSchedule = async () => {
-  try{
+  try {
     const response = await Axios.get(`schedule/get-all-dentist-schedule`);
     return response.data;
   } catch (error) {
@@ -108,17 +109,18 @@ const getAllSchedule = async () => {
 };
 
 const createDentistSchedule = async (schedule) => {
-  const response = await Axios.post("schedule/create-dentist-schedule", schedule);
+  const response = await Axios.post(
+    "schedule/create-dentist-schedule",
+    schedule
+  );
   return response.data;
 };
 
 const deleteDentistSchedule = async (schedule) => {
-  
-    const response = await Axios.delete(
-      `schedule/delete-dentist-schedule?dentistId=${schedule.dentistId}&startTime=${schedule.startTime}`
-    );
-    return response.data;
-  
+  const response = await Axios.delete(
+    `schedule/delete-dentist-schedule?dentistId=${schedule.dentistId}&startTime=${schedule.startTime}`
+  );
+  return response.data;
 };
 
 const scheduleService = {

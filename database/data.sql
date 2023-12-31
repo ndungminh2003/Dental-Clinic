@@ -8,21 +8,21 @@ VALUES ('AdminUser', 'AdminPassword123', '84123456789');
 -- Insert data into the CUSTOMER table
 INSERT INTO CUSTOMER (name, password, phoneNumber, role, gender, address, birthday, isBlocked)
 VALUES 
-(N'Nguyễn Dũng Minh', '1231231312323', '218295423369', 'Customer', N'Male', N'Tạ Quang Bửu Quận 8', '1990-05-15', 0),
-(N'Trần Thị Hoa', 'pass45612312321312', '0987654321', 'Customer', N'Female', N'Số 5, Đường XYZ, TP. Hà Nội', '1985-12-10', 0),
-(N'Phạm Văn Tuấn', 'abc@12311231231233', '0365897412', 'Customer', N'Male', N'Số 10, Đường KLM, TP. Đà Nẵng', '1995-08-20', 1),
-(N'Lê Thị Mai', 'passwor213123123d', '0932145789', 'Customer', N'Female', N'Số 8, Đường HIJ, TP. Cần Thơ', '1988-04-25', 0),
-(N'Hoàng Văn Hải', 'secure45621312312312', '0654321897', 'Customer', N'Male', N'Số 12, Đường MNO, TP. Hải Phòng', '1992-10-05', 0),
-(N'Mai Thị Lan', 'qwerty123123123', '0789456123', 'Customer', N'Female', N'Số 3, Đường RST, TP. Vũng Tàu', '1997-03-30', 1),
-(N'Đặng Văn Nam', 'pass12312312312', '0541236987', 'Customer', N'Male', N'Số 18, Đường UVW, TP. Nha Trang', '1993-07-12', 0),
-(N'Nguyễn Thị Thanh', 'abc123123123', '0321654987', 'Customer', N'Female', N'Số 7, Đường EFG, TP. Đồng Nai', '1980-09-18', 1),
-(N'Trần Văn Đức', 'password123123123', '0968745123', 'Customer', N'Male', N'Số 21, Đường IJK, TP. Bình Dương', '1982-11-22', 0),
-(N'Lê Thị Kim Ngân', 'passpass123123123', '0897412586', 'Customer', N'Female', N'Số 25, Đường LMN, TP. Long An', '1998-01-08', 0),
-(N'Phạm Văn Hùng', '123456123123123', '0978523641', 'Customer', N'Male', N'Số 30, Đường OPQ, TP. An Giang', '1991-06-14', 1),
-(N'Trần Văn Minh', 'abcdef123123123', '0632147859', 'Customer', N'Male', N'Số 35, Đường RST, TP. Kiên Giang', '1987-02-28', 0),
-(N'Nguyễn Thị Ngọc', 'passpass123123123', '0764852139', 'Customer', N'Female', N'Số 40, Đường UVW, TP. Bạc Liêu', '1983-08-03', 0),
-(N'Lê Văn Phong', '654321123123123', '0987456321', 'Customer', N'Male', N'Số 45, Đường XYZ, TP. Cà Mau', '1994-04-17', 1),
-(N'Hoàng Thị Quỳnh', 'abcabc123123123', '0312456987', 'Customer', N'Female', N'Số 50, Đường EFG, TP. Đồng Tháp', '1986-12-05', 0);
+(N'Nguyễn Dũng Minh', '1231231312323', '84295423369', 'Customer', N'Male', N'Tạ Quang Bửu Quận 8', '1990-05-15', 0),
+(N'Trần Thị Hoa', 'pass45612312321312', '84987654321', 'Customer', N'Female', N'Số 5, Đường XYZ, TP. Hà Nội', '1985-12-10', 0),
+(N'Phạm Văn Tuấn', 'abc@12311231231233', '84365897412', 'Customer', N'Male', N'Số 10, Đường KLM, TP. Đà Nẵng', '1995-08-20', 1),
+(N'Lê Thị Mai', 'passwor213123123d', '84932145789', 'Customer', N'Female', N'Số 8, Đường HIJ, TP. Cần Thơ', '1988-04-25', 0),
+(N'Hoàng Văn Hải', 'secure45621312312312', '84654321897', 'Customer', N'Male', N'Số 12, Đường MNO, TP. Hải Phòng', '1992-10-05', 0),
+(N'Mai Thị Lan', 'qwerty123123123', '84789456123', 'Customer', N'Female', N'Số 3, Đường RST, TP. Vũng Tàu', '1997-03-30', 1),
+(N'Đặng Văn Nam', 'pass12312312312', '84541236987', 'Customer', N'Male', N'Số 18, Đường UVW, TP. Nha Trang', '1993-07-12', 0),
+(N'Nguyễn Thị Thanh', 'abc123123123', '84321654987', 'Customer', N'Female', N'Số 7, Đường EFG, TP. Đồng Nai', '1980-09-18', 1),
+(N'Trần Văn Đức', 'password123123123', '84968745123', 'Customer', N'Male', N'Số 21, Đường IJK, TP. Bình Dương', '1982-11-22', 0),
+(N'Lê Thị Kim Ngân', 'passpass123123123', '84897412586', 'Customer', N'Female', N'Số 25, Đường LMN, TP. Long An', '1998-01-08', 0),
+(N'Phạm Văn Hùng', '123456123123123', '84978523641', 'Customer', N'Male', N'Số 30, Đường OPQ, TP. An Giang', '1991-06-14', 1),
+(N'Trần Văn Minh', 'abcdef123123123', '84632147859', 'Customer', N'Male', N'Số 35, Đường RST, TP. Kiên Giang', '1987-02-28', 0),
+(N'Nguyễn Thị Ngọc', 'passpass123123123', '84764852139', 'Customer', N'Female', N'Số 40, Đường UVW, TP. Bạc Liêu', '1983-08-03', 0),
+(N'Lê Văn Phong', '654321123123123', '84987456321', 'Customer', N'Male', N'Số 45, Đường XYZ, TP. Cà Mau', '1994-04-17', 1),
+(N'Hoàng Thị Quỳnh', 'abcabc123123123', '84312456987', 'Customer', N'Female', N'Số 50, Đường EFG, TP. Đồng Tháp', '1986-12-05', 0);
 
 -- Insert data into the DENTIST table
 INSERT INTO DENTIST (name, password, phoneNumber, gender, birthday, introduction, isBlocked)
@@ -147,12 +147,6 @@ select * from SCHEDULE INSERT INTO APPOINTMENT (dentistId, customerId, startTime
 VALUES 
 	(1, 1, '2023-12-22 10:00:00', '2023-12-22 11:00:00', N'Đang chờ', null, null);
 
-
-
-
-
-
-select * from admin
 
 INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
 VALUES (6, '2023-12-30 07:00:00', '2023-12-30 08:00:00', 0);

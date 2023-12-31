@@ -143,7 +143,10 @@ export default function SignUp() {
                     country="vn"
                     regions={"asia"}
                     value={formik.values.phone}
-                    onChange={formik.handleChange}
+                    onChange={(formattedValue) => {
+                      formik.setFieldValue("phone", formattedValue);
+                      console.log(formattedValue);
+                    }}
                     onBlur={formik.handleBlur}
                   />
                   {formik.touched.phone && formik.errors.phone ? (

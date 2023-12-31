@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, } from "react";
 import {
   ViewState,
   GroupingState,
@@ -64,7 +64,7 @@ function SimpleDialog(props) {
     gender: "Male",
     birthday: "",
     address: "",
-    dentistId: "",
+    dentistId: 1,
     date: "",
     start: "",
     value: [],
@@ -257,7 +257,7 @@ function SimpleDialog(props) {
                 value={data.date}
                 onChange={(e) => handleInputChange("date", e.target.value)}
                 type="date"
-                className={` w-3/4 ml-[57px] px-3 py-2 rounded-md border border-gray-300	`}
+                className={` w-3/4 ml-[60px] px-3 py-2 rounded-md border border-gray-300	`}
               ></input>
             </div>
             <div className="flex w-2/5 items-center ml-3">
@@ -353,6 +353,11 @@ function AddAppointments() {
     selectedMember:
       dentistData && dentistData.length > 0 ? dentistData[0].id : 0,
   });
+
+  useEffect(()=>{
+    console.log("schdeule",scheduleData);
+  },[scheduleData])
+
   const fetchata = async () => {
     try {
       const [dentistResponse, scheduleResponse] = await Promise.all([
@@ -386,13 +391,6 @@ function AddAppointments() {
     fetchata();
   }, [error, loading, success]);
   console.log("schedule data", scheduleData);
-  const dentist =
-    dentistData &&
-    dentistData.map((item) => ({
-      id: item.id,
-      text: item.name,
-    }));
-
   const dentistnull = [
     {
       id: 2,

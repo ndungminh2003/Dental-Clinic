@@ -45,8 +45,13 @@ function formatDate(inputDateString) {
 const Demo = () => {
   const dispatch = useDispatch();
   let { error, loading, success, message } = useSelector((state) => state.schedule);
+
+  const { user } = useSelector(
+    (state) => state.auth
+  );
+  
   useEffect(() => {
-    fetchata();
+    fetchData(user.id);
   }, [error, loading, success]);
 
   const [schedule, setSchedule] = useState([]);
@@ -54,10 +59,10 @@ const Demo = () => {
   const [fail, setFail] = useState(false);
   const [mess, setMess] = useState(false);
 
-  const fetchata = async () => {
+  const fetchData = async (dentistId) => {
     try {
       const [dentistResponse, fullSlotResponse] = await Promise.all([
-        scheduleService.getDentistSchedule(1),
+        scheduleService.getDentistSchedule(dentistId),
         scheduleService.getFullslotSchedule(),
       ]);
       let i = 0;
@@ -149,6 +154,20 @@ const Demo = () => {
           dentistId: 1,
           startTime: rowData.startDate,
         };
+        
+
+        let date = new Date(inputData.startTime);
+        date.setUTCHours(date.getUTCHours() + 7);
+        let year = date.getUTCFullYear();
+        let month = ("0" + (date.getUTCMonth() + 1)).slice(-2);
+        let day = ("0" + date.getUTCDate()).slice(-2);
+        let hours = ("0" + date.getUTCHours()).slice(-2);
+        let minutes = ("0" + date.getUTCMinutes()).slice(-2);
+        let seconds = ("0" + date.getUTCSeconds()).slice(-2);
+        let date_time = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+        inputData.startTime = date_time;
+
         dispatch(deleteDentistSchedule(inputData));
         if(message ==='success'){
           setSucessD(true);

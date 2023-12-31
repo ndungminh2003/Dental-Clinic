@@ -42,7 +42,7 @@ export default function OurDentists() {
                   <div className="text-3xl text-ebony-clay font-bold pt-5 hover:underline capitalize">
                     {dt.name}
                   </div>
-                  <div className="text-gray-500">Phone: {dt.phoneNumber}</div>
+                  <div className="text-gray-500">Phone: {dt.introduction}</div>
                 </div>
               </a>
             ))}

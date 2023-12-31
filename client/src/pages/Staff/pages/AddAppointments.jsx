@@ -64,7 +64,7 @@ function SimpleDialog(props) {
     gender: "Male",
     birthday: "",
     address: "",
-    dentistId: "",
+    dentistId: 1,
     date: "",
     start: "",
     value: [],

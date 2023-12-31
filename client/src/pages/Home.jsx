@@ -9,11 +9,27 @@ import bg_home4 from "../images/home4.png";
 import bg_home5 from "../images/home5.png";
 import fb_pic from "../images/facebook.png";
 import { Link } from "react-router-dom";
+import serviceService from "../features/service/serviceServices";
 import "aos/dist/aos.css";
 import AOS from "aos";
 
+const homePageService = [
+  "Tẩy trắng răng",
+  "Chẩn đoán nha khoa",
+  "Tháo lắp răng",
+  "Làm răng sứ",
+];
+
+const serviceImgURLS = [
+  "https://nhakhoadalat.com/wp-content/uploads/2020/05/quy-trinh-kham-rang-mieng-tong-quat.png",
+  "https://nhakhoacheese.vn/wp-content/uploads/2022/08/tay-trang-rang_taimuihongsg.jpeg",
+  "https://nhakhoaquoctevietsing.com.vn/wp-content/uploads/2019/08/nhung-truong-hop-chi-dinh-va-chong-chi-dinh-nho-rang-trong-nha-khoa.jpg",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxQ9fB1qM46-u6BvMOwEO-_m6sgoGIyhkm-6l8Oop5tXzVfu-kJ58gYqYOd3Ln6oev1QA&usqp=CAU",
+];
+
 export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [services, setService] = useState([]);
   const [direction, setDirection] = useState(1); // 1 for right, -1 for left
   const images = [bg_home1, bg_home2, bg_home3, bg_home4, bg_home5];
   const totalImages = images.length;
@@ -23,8 +39,17 @@ export default function Home() {
       duration: 1000,
       once: true,
     });
+    serviceService.getAllService().then((res) => {
+      let rs = res.filter((sv) => {
+        if (homePageService.includes(sv.name)) return sv;
+      });
+      rs.forEach((element, index) => {
+        element.image = serviceImgURLS[index];
+      });
+      setService(rs);
+    });
   }, []);
-
+  console.log(services);
   useEffect(() => {
     const nextImage = () => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % totalImages);
@@ -179,7 +204,20 @@ export default function Home() {
         <div className="flex flex-col items-center justify-center gap-16">
           {/* 4 khung service*/}
           <div className="flex flex-row justify-center items-center gap-20">
-            <div className="flex flex-col justify-center items-center w-[260px] h-80 gap-4 border-2 border-solid border-black rounded-3xl pt-10">
+            {services.map((sv) => (
+              <div className="flex flex-col justify-center items-center w-[260px] h-80 gap-4 border-2 border-solid border-black rounded-3xl pt-10">
+                <div className="border-2 border-solid border-black rounded-3xl w-40 h-64 flex justify-center items-center">
+                  <img
+                    src={sv.image}
+                    alt="Facebook"
+                    className=" w-full h-full rounded-3xl"
+                  />
+                </div>
+                <h3 className="text-xl font-bold">{sv.name}</h3>
+                <p className="text-center text-gr">{sv.description}</p>
+              </div>
+            ))}
+            {/* <div className="flex flex-col justify-center items-center w-[260px] h-80 gap-4 border-2 border-solid border-black rounded-3xl pt-10">
               <div className="border-2 border-solid border-black rounded-3xl w-40 h-64 flex justify-center items-center">
                 <img src={fb_pic} alt="Facebook" className=" w-10 h-10" />
               </div>
@@ -214,7 +252,7 @@ export default function Home() {
               <p className="text-center text-gr">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit
               </p>
-            </div>
+            </div> */}
           </div>
           {/* 4 khung service*/}
           <Link

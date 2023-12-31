@@ -36,6 +36,7 @@ export default function Login({ bgcolor, ringcolor, role }) {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       values = { ...values, role: role };
+      console.log(values);
       dispatch(login(values));
       setIsSubmited(true);
       formik.resetForm();
@@ -67,21 +68,25 @@ export default function Login({ bgcolor, ringcolor, role }) {
               <label className="font-mono ">Phone</label>
               <hr />
               <PhoneInput
-                  inputClass="!w-full !h-11"
-                  placeholder="Enter phone number"
-                  country="vn"
-                  regions={"asia"}
-                  value={formik.values.phone}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
+                inputClass="!w-full !h-11"
+                placeholder="Enter phone number"
+                country="vn"
+                inputProps={{
+                  id: "phone",
+                  name: "phone",
+                  value: formik.values.phone,
+                  onChange: formik.handleChange,
+                  onBlur: formik.handleBlur,
+                }}
+                regions={"asia"}
+              />
               {formik.touched.phone && formik.errors.phone ? (
-                <div className="text-xs text-red-600">{formik.errors.phone}</div>
-              ):(
-                <div className ="h-4">
+                <div className="text-xs text-red-600">
+                  {formik.errors.phone}
                 </div>
-              )
-              }
+              ) : (
+                <div className="h-4"></div>
+              )}
             </div>
             <div className="mb-4">
               <label className="font-mono rounded-md	">Password</label>
@@ -96,10 +101,11 @@ export default function Login({ bgcolor, ringcolor, role }) {
                 className={` ${ringcolor} w-full px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-25 border border-gray-300	`}
               ></input>
               {formik.touched.password && formik.errors.password ? (
-                <div className="text-xs text-red-600">{formik.errors.password}</div>
-              ):(
-                <div className ="h-4">
+                <div className="text-xs text-red-600">
+                  {formik.errors.password}
                 </div>
+              ) : (
+                <div className="h-4"></div>
               )}
             </div>
             <div className="flex justify-between mb-6">

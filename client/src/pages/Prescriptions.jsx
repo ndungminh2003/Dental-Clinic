@@ -5,21 +5,28 @@ import { useLocation } from "react-router-dom";
 import patientRecordService from "../features/patientRecord/patientRecordServices";
 import prescribeMedicineService from "../features/prescribeMedicine/prescribeMedicineServices";
 import serviceUseService from "../features/serviceUse/serviceUseServices";
+import { useSelector } from "react-redux";
+import formatDate from "../utils/formatDate";
 
 export default function Prescriptions() {
   const location = useLocation();
   const recordId = location.pathname.split("/")[2];
-  const [patientRecord, setPatientRecord] = useState([]);
-  let [medicines, setMedicines] = useState([
-    { order: 1, medicine: "Toothpaste", quantity: 2, price: 4.0 },
-    { order: 2, medicine: "Mouthwash", quantity: 1, price: 2.0 },
+  const [patientRecord, setPatientRecord] = useState([
+    {
+      date_time: "",
+      diagnostic: "",
+      dentistId: "",
+      id: "",
+      patientId: "",
+      symptom: "",
+    },
   ]);
+  const { user } = useSelector((state) => state.auth);
+  console.log(patientRecord);
+  let [medicines, setMedicines] = useState([]);
 
-  let [services, setServices] = useState([
-    { order: 1, service: "Dental Cleaning", quantity: 1, price: 10.0 },
-    { order: 2, service: "X-Ray", quantity: 1, price: 5.0 },
-  ]);
-
+  let [services, setServices] = useState([]);
+  console.log(medicines, services);
   const totalMedicinePrice = medicines.reduce(
     (total, medicine) => total + medicine.price,
     0
@@ -53,32 +60,32 @@ export default function Prescriptions() {
         <div className="flex flex-col pl-20">
           <div className="flex flex-row gap-[77px] text-xl pb-2">
             <div className="font-bold">Patient's name: </div>
-            <div className="">Cristiano</div>
+            <div className="">{user.name}</div>
           </div>
           <div className="flex flex-row gap-[109px] text-xl pb-2">
             <div className="font-bold">Patient's ID: </div>
-            <div className="">01234ABC</div>
+            <div className="">{user.id}</div>
           </div>
 
           <div className="flex flex-row gap-24 text-xl pb-2">
             <div className="font-bold">Date of birth:</div>
-            <div className="">2/5/1987</div>
+            <div className="">{formatDate(user.birthday)}</div>
           </div>
           <div className="flex flex-row gap-[116px] text-xl pb-2">
             <div className="font-bold">Symptoms:</div>
-            <div className="">Tooth decay</div>
+            <div className="">{patientRecord[0].symptom}</div>
           </div>
           <div className="flex flex-row gap-[125px] text-xl pb-2">
             <div className="font-bold">Diagnosis:</div>
-            <div className="">Cavity detected</div>
+            <div className="">{patientRecord[0].diagnostic}</div>
           </div>
           <div className="flex flex-row gap-[109px] text-xl pb-2">
             <div className="font-bold">Dentist's ID: </div>
-            <div className="">05678CDE</div>
+            <div className="">{patientRecord[0].dentistId}</div>
           </div>
           <div className="flex flex-row gap-[104px] text-xl pb-8">
             <div className="font-bold">Date of visit:</div>
-            <div className="">25/8/2023</div>
+            <div className="">{formatDate(patientRecord[0].date_time)}</div>
           </div>
         </div>
 
@@ -90,13 +97,10 @@ export default function Prescriptions() {
             <div className="flex-1">Price</div>
           </div>
 
-          {medicines.map((medicine) => (
-            <div
-              key={medicine.order}
-              className="flex flex-row justify-between px-4 py-2"
-            >
-              <div className="flex-1">{medicine.order}</div>
-              <div className="flex-1">{medicine.medicine}</div>
+          {medicines.map((medicine, idx) => (
+            <div key={idx} className="flex flex-row justify-between px-4 py-2">
+              <div className="flex-1">{idx + 1}</div>
+              <div className="flex-1">{medicine.medicineName}</div>
               <div className="flex-1">{medicine.quantity}</div>
               <div className="flex-1">${medicine.price.toFixed(2)}</div>
             </div>
@@ -113,14 +117,11 @@ export default function Prescriptions() {
             <div className="flex-1">Price</div>
           </div>
 
-          {services.map((service) => (
-            <div
-              key={service.order}
-              className="flex flex-row justify-between px-4 py-2"
-            >
-              <div className="flex-1">{service.order}</div>
-              <div className="flex-1">{service.service}</div>
-              <div className="flex-1">{service.quantity}</div>
+          {services.map((service, idx) => (
+            <div key={idx} className="flex flex-row justify-between px-4 py-2">
+              <div className="flex-1">{idx + 1}</div>
+              <div className="flex-1">{service.serviceName}</div>
+              <div className="flex-1">1</div>
               <div className="flex-1">${service.price.toFixed(2)}</div>
             </div>
           ))}

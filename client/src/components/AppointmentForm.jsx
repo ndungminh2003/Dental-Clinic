@@ -31,6 +31,7 @@ export default function Form() {
   const { user } = useSelector((state) => state.auth);
   useEffect(() => {
     if (user) setDisabled(1);
+    else setDisabled(0);
   }, [user]);
   const { loading, error, success, message } = useSelector(
     (state) => state.appointment

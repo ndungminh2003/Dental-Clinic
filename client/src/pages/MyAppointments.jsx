@@ -33,11 +33,6 @@ export default function MyAppointment() {
   }, []);
   const date = new Date();
   const currentDate = date.toLocaleDateString();
-  const appointment1 = {
-    visitDate: "07/04/2023",
-    dentist: "Dr. Smith",
-    status: "Completed",
-  };
 
   const compareDates = (d1, d2) => {
     let date1 = new Date(d1).getTime();
@@ -60,7 +55,7 @@ export default function MyAppointment() {
             className="hover:underline pl-80 text-blue-hosta text-[17px]"
             onClick={() => handleViewDentalRecord(recordId)}
           >
-            Views record
+            Views record &#8250;
           </button>
         );
       case "Waiting":
@@ -144,109 +139,6 @@ export default function MyAppointment() {
                   );
                 } else return null;
               })}
-              <div className="border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div>{renderButtons(appointment1.status)}</div>
-              </div>
-
-              <div className="border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div>{renderButtons(appointment1.status)}</div>
-              </div>
-              <div className="border-2 border-solid border-black rounded-xl w-[500px]  pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div>{renderButtons(appointment1.status)}</div>
-              </div>
-              <div className="border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div>{renderButtons(appointment1.status)}</div>
-              </div>
-              <div className="border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div>{renderButtons(appointment1.status)}</div>
-              </div>
-              <div className="border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div>{renderButtons(appointment1.status)}</div>
-              </div>
             </div>
           </div>
 
@@ -291,76 +183,6 @@ export default function MyAppointment() {
                   );
                 } else return null;
               })}
-              <div className="border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div>{renderButtons(appointment1.status)}</div>
-              </div>
-              <div className="border-2 border-solid border-black rounded-xl w-[500px]  pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div>{renderButtons(appointment1.status)}</div>
-              </div>
-              <div className="border-2 border-solid border-black rounded-xl w-[500px]   pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl ">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div>{renderButtons(appointment1.status)}</div>
-              </div>
-              <div className="border-2 border-solid border-black rounded-xl w-[500px]   pl-10 pt-5  pb-2 flex flex-col gap-4 justify-center">
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Date of visit:</div>
-                  <div>{appointment1.visitDate}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Dentist:</div>
-                  <div>{appointment1.dentist}</div>
-                </div>
-                <div className="flex flex-row gap-2 text-xl">
-                  <div className="font-bold">Status:</div>
-                  <div className={`${getStatusStyle(appointment1.status)}`}>
-                    {appointment1.status}
-                  </div>
-                </div>
-                <div className="text-blue-hosta pl-[340px] text-[17px]">
-                  {renderButtons(appointment1.status)}
-                </div>
-              </div>
             </div>
           </div>
         </div>

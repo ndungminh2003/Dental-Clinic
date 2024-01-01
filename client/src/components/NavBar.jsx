@@ -49,11 +49,11 @@ export default function NavBar() {
           </div>
         </div>
 
-        <div className="flex gap-1">
-          <div className="relative">
+        <div className="flex">
+          <div className="relative m-2">
             {user && (
               <button
-                className="text-xl  text-black  hover:bg-gray-200 bg-gray-100  cursor-pointer p-1 rounded-[8px] w-40 h-12"
+                className="text-xl  text-black  hover:bg-gray-200 bg-gray-100  cursor-pointer px-4 rounded-[8px] w-fit h-12"
                 onClick={toggleDropdown}
               >
                 <FontAwesomeIcon

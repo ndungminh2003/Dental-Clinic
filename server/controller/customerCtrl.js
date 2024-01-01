@@ -55,11 +55,12 @@ const changeCustomerPassword = async (req, res) => {
 };
 
 const updateCustomerProfile = async (req, res) => {
+  const { customerId } = req.params;
   const input = req.body;
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
-      .input("customerId", input.customerId)
+      .input("customerId", customerId)
       .input("name", input.name)
       .input("phoneNumber", input.phoneNumber)
       .input("gender", input.gender)

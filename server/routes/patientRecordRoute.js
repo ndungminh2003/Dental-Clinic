@@ -30,9 +30,7 @@ router.get(
   patientRecordCtrl.getAllPatientRecord
 );
 router.get(
-  "/get-patient-record-by-id",
-  authM.isNotDentist,
-  authM.isNotCustomer,
+  "/get-patient-record-by-customer-id/:customerId",
   patientRecordCtrl.getOnePatientRecordByCustomerId
 );
 

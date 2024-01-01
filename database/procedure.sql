@@ -1060,7 +1060,7 @@ BEGIN
 			-- 	RAISERROR(N'Error: không có hồ sơ bệnh án nào', 16, 1)
 			-- 	ROLLBACK TRAN
 			-- END
-			SELECT * FROM PATIENT_RECORD WHERE customerId = @customerId
+			SELECT p.*, d.name FROM PATIENT_RECORD p JOIN DENTIST d ON p.dentistId = d.id WHERE customerId = @customerId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -1275,6 +1275,7 @@ CREATE PROC sp_addPrescribeMedicine
     @QUANTITY INT
 AS
 SET XACT_ABORT, NOCOUNT ON
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN

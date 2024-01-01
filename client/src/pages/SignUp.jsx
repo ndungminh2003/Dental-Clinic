@@ -85,10 +85,11 @@ export default function SignUp() {
                     className={`focus:ring-blue-hosta input focus:ring-opacity-25  `}
                   ></input>
                   {formik.touched.name && formik.errors.name ? (
-                    <div className="text-xs text-red-600">{formik.errors.name}</div>
-                  ):(
-                    <div className ="h-4">
+                    <div className="text-xs text-red-600">
+                      {formik.errors.name}
                     </div>
+                  ) : (
+                    <div className="h-4"></div>
                   )}
                 </div>
                 <div className="mb-3 flex grow justify-between w-full">
@@ -105,10 +106,11 @@ export default function SignUp() {
                       className={`focus:ring-blue-hosta px-2 py-1 input focus:ring-opacity-25  `}
                     ></input>
                     {formik.touched.birthday && formik.errors.birthday ? (
-                      <div className="text-xs text-red-600">{formik.errors.birthday}</div>
-                    ):(
-                      <div className ="h-4">
+                      <div className="text-xs text-red-600">
+                        {formik.errors.birthday}
                       </div>
+                    ) : (
+                      <div className="h-4"></div>
                     )}
                   </div>
                   <div className="w-[45%]">
@@ -117,20 +119,21 @@ export default function SignUp() {
                     <select
                       id="gender"
                       name="gender"
-                      defaultValue={"Nam"}
+                      defaultValue={"Male"}
                       value={formik.values.gender}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       className="w-full  px-2 py-1 border border-gray-300 rounded-md"
                     >
-                      <option value="Nam">Nam</option>
-                      <option value="Nữ">Nữ</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
                     </select>
                     {formik.touched.gender && formik.errors.gender ? (
-                      <div className="text-xs text-red-600">{formik.errors.gender}</div>
-                    ):(
-                      <div className ="h-4">
+                      <div className="text-xs text-red-600">
+                        {formik.errors.gender}
                       </div>
+                    ) : (
+                      <div className="h-4"></div>
                     )}
                   </div>
                 </div>
@@ -150,10 +153,11 @@ export default function SignUp() {
                     onBlur={formik.handleBlur}
                   />
                   {formik.touched.phone && formik.errors.phone ? (
-                    <div className="text-xs text-red-600">{formik.errors.phone}</div>
-                  ):(
-                    <div className ="h-4">
+                    <div className="text-xs text-red-600">
+                      {formik.errors.phone}
                     </div>
+                  ) : (
+                    <div className="h-4"></div>
                   )}
                 </div>
                 <div className="mb-3">
@@ -169,10 +173,11 @@ export default function SignUp() {
                     onBlur={formik.handleBlur}
                   ></input>
                   {formik.touched.address && formik.errors.address ? (
-                    <div className="text-xs text-red-600">{formik.errors.address}</div>
-                  ):(
-                    <div className ="h-4">
+                    <div className="text-xs text-red-600">
+                      {formik.errors.address}
                     </div>
+                  ) : (
+                    <div className="h-4"></div>
                   )}
                 </div>
                 <div className="mb-3">
@@ -190,10 +195,11 @@ export default function SignUp() {
                     className={`focus:ring-blue-hosta input focus:ring-opacity-25  `}
                   ></input>
                   {formik.touched.password && formik.errors.password ? (
-                    <div className="text-xs text-red-600">{formik.errors.password}</div>
-                  ):(
-                    <div className ="h-4">
+                    <div className="text-xs text-red-600">
+                      {formik.errors.password}
                     </div>
+                  ) : (
+                    <div className="h-4"></div>
                   )}
                 </div>
                 <div className="flex justify-between mb-6">

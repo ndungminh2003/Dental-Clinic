@@ -7,7 +7,13 @@ import bg_home2 from "../images/home2.png";
 import bg_home3 from "../images/home3.png";
 import bg_home4 from "../images/home4.png";
 import bg_home5 from "../images/home5.png";
-import fb_pic from "../images/facebook.png";
+import fb_pic from '../images/facebook.png';
+import dental_pic1 from '../images/dental-vector-free-icon-set-02.png'
+import dental_pic2 from '../images/dental-vector-free-icon-set-20.png'
+import dental_pic3 from '../images/dental-vector-free-icon-set-07.png'
+import dental_pic4 from '../images/dental-vector-free-icon-set-01.png'
+import dental_pic5 from '../images/dental-vector-free-icon-set-12.png'
+import dental_pic6 from '../images/dental-vector-free-icon-set-16.png'
 import { Link } from "react-router-dom";
 import serviceService from "../features/service/serviceServices";
 import "aos/dist/aos.css";

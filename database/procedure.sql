@@ -1459,6 +1459,34 @@ BEGIN
 	END CATCH
 END
 
+-- delete service
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_deleteService')
+BEGIN
+	DROP PROCEDURE sp_deleteService
+END
+GO
+CREATE PROC sp_deleteService
+	@serviceId INT
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM SERVICE WHERE id = @serviceId)
+			BEGIN
+				RAISERROR(N'Error: Service ID does not exist.', 16, 1)
+				ROLLBACK TRAN
+			END
+			DELETE FROM SERVICE WHERE serviceId = @serviceId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
 -- update service
 GO
 IF EXISTS (SELECT 1 FROM sys.objects WHERE type = 'P' AND name = 'sp_updateService')

@@ -23,6 +23,24 @@ const createService = async (req, res) => {
   }
 };
 
+const deleteService = async (req, res) => {
+  const input = req.params;
+  try {
+    const role = getRole(req);
+    const db = await (await getDb(role))
+      .input("serviceId", input.serviceId)
+      .execute("sp_deleteService");
+    res.status(200).json(db.recordset);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+      const statuscode = res.statusCode == 200 ? 500 : res.statusCode;
+      return res.status(statuscode).send(error.message);
+    }
+    return res.status(500).send("Action Failed");
+  }
+};
+
 const updateService = async (req, res) => {
   const input = req.body;
   console.log(input);
@@ -73,6 +91,7 @@ const getAllService = async (req, res) => {
 
 module.exports = {
   createService,
+  deleteService,
   updateService,
   getOneService,
   getAllService

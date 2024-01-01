@@ -12,7 +12,7 @@ export default function Profile() {
   return (
     <div className="flex flex-col justify-center items-center gap-10">
       <NavBar />
-      <div className="w-full flex items-center">
+      <div className="w-full flex items-center pb-20">
         <div className="w-full max-w-3xl mx-auto">
           <div className="bg-mercury p-10 rounded-3xl">
             <h2 className="text-center text-6xl font-extrabold pb-10">MY PROFILE</h2>

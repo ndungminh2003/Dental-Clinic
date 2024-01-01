@@ -45,40 +45,37 @@ export default function Prescriptions() {
   return (
     <>
       <NavBar />
-
       <div className="container mx-auto my-8 p-8 bg-white shadow-xl text-center">
-        <h2 className="text-4xl font-semibold mb-4 pb-7">
-          Dental Prescription
-        </h2>
-        <div className="flex flex-col pl-20">
-          <div className="flex flex-row gap-[77px] text-xl pb-2">
-            <div className="font-bold">Patient's name: </div>
-            <div className="">Cristiano</div>
+        <h2 className="text-4xl font-semibold mb-4 pb-7">Dental Prescription</h2>
+        <div className='flex flex-col pl-20'>
+          <div className='flex flex-row gap-[130px] text-xl pb-2'>
+              <div className='font-bold'>Patient's name: </div>
+              <div className=''>Cristiano</div>
           </div>
-          <div className="flex flex-row gap-[109px] text-xl pb-2">
-            <div className="font-bold">Patient's ID: </div>
-            <div className="">01234ABC</div>
+          <div className='flex flex-row gap-[162px] text-xl pb-2'>
+              <div className='font-bold'>Patient's ID: </div>
+              <div className=''>01234ABC</div>
           </div>
-
-          <div className="flex flex-row gap-24 text-xl pb-2">
-            <div className="font-bold">Date of birth:</div>
-            <div className="">2/5/1987</div>
+        
+          <div className='flex flex-row gap-[153px] text-xl pb-2'>
+              <div className='font-bold'>Date of birth:</div>
+              <div className=''>2/5/1987</div>
           </div>
-          <div className="flex flex-row gap-[116px] text-xl pb-2">
-            <div className="font-bold">Symptoms:</div>
-            <div className="">Tooth decay</div>
+          <div className='flex flex-row gap-[166px] text-xl pb-2'>
+              <div className='font-bold'>Symptoms:</div>
+              <div className=''>Tooth decay</div>
           </div>
-          <div className="flex flex-row gap-[125px] text-xl pb-2">
-            <div className="font-bold">Diagnosis:</div>
-            <div className="">Cavity detected</div>
+          <div className='flex flex-row gap-[173px] text-xl pb-2'>
+              <div className='font-bold'>Diagnosis:</div>
+              <div className=''>Cavity detected</div>
           </div>
-          <div className="flex flex-row gap-[109px] text-xl pb-2">
-            <div className="font-bold">Dentist's ID: </div>
-            <div className="">05678CDE</div>
+          <div className='flex flex-row gap-[160px] text-xl pb-2'>
+              <div className='font-bold'>Dentist's ID: </div>
+              <div className=''>05678CDE</div>
           </div>
-          <div className="flex flex-row gap-[104px] text-xl pb-8">
-            <div className="font-bold">Date of visit:</div>
-            <div className="">25/8/2023</div>
+          <div className='flex flex-row gap-[156px] text-xl pb-8'>
+              <div className='font-bold'>Date of visit:</div>
+              <div className=''>25/8/2023</div>
           </div>
         </div>
 

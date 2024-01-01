@@ -86,64 +86,64 @@ export default function BookSuccess() {
             </div>
           </div>
           <div className='flex flex-col gap-4 pt-10'>
-                <div className='flex flex-row gap-36'>
-                    <div className='text-xl font-bold pl-[280px]'>
+                <div className='flex flex-row gap-[228px]'>
+                    <div className='text-xl font-bold pl-[270px]'>
                         Name:
                     </div>
                     <div className='text-xl'>
                         Post Malone
                     </div>
                 </div>
-                <div className='flex flex-row gap-20'>
-                    <div className='text-xl font-bold pl-[280px]'>
+                <div className='flex flex-row gap-[164px]'>
+                    <div className='text-xl font-bold pl-[270px]'>
                         Date of birth:
                     </div>
                     <div className='text-xl'>
                         07/12/2000
                     </div>
                 </div>
-                <div className='flex flex-row gap-[126px]'>
-                    <div className='text-xl font-bold pl-[280px]'>
+                <div className='flex flex-row gap-[202px]'>
+                    <div className='text-xl font-bold pl-[270px]'>
                         Address:
                     </div>
                     <div className='text-xl'>
                         123 What Street, Ward 1,District 2, HCMC
                     </div>
                 </div>
-                <div className='flex flex-row gap-[62px] '>
-                    <div className='text-xl font-bold pl-[280px]'>
+                <div className='flex flex-row gap-[144px] '>
+                    <div className='text-xl font-bold pl-[270px]'>
                         Phone number:
                     </div>
                     <div className='text-xl'>
                         0989 012 345
                     </div>
                 </div>
-                <div className='flex flex-row gap-[133px] '>
-                    <div className='text-xl font-bold pl-[280px]'>
+                <div className='flex flex-row gap-[214px] '>
+                    <div className='text-xl font-bold pl-[270px]'>
                         Gender:
                     </div>
                     <div className='text-xl'>
                         Male
                     </div>
                 </div>
-                <div className='flex flex-row gap-[133px] '>
-                    <div className='text-xl font-bold pl-[280px]'>
+                <div className='flex flex-row gap-[216px] '>
+                    <div className='text-xl font-bold pl-[270px]'>
                         Dentist:
                     </div>
                     <div className='text-xl'>
                         Dr. Anh Nguyen
                     </div>
                 </div>
-                <div className='flex flex-row gap-[88px] '>
-                    <div className='text-xl font-bold pl-[280px]'>
+                <div className='flex flex-row gap-[172px] '>
+                    <div className='text-xl font-bold pl-[270px]'>
                         Date of visit:
                     </div>
                     <div className='text-xl'>
                         9/11/2023
                     </div>
                 </div>
-                <div className='flex flex-row gap-[156px] '>
-                    <div className='text-xl font-bold pl-[280px]'>
+                <div className='flex flex-row gap-[240px] '>
+                    <div className='text-xl font-bold pl-[270px]'>
                         Time:
                     </div>
                     <div className='text-xl'>

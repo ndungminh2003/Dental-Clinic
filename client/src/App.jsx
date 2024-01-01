@@ -104,7 +104,7 @@ const router = createBrowserRouter(
       <Route path="/book-successful" element={<BookSuccess />}></Route>
       <Route path="/book-failed" element={<BookFailed />}></Route>
       <Route path="/service" element={<Services />}></Route>
-      <Route path="/prescriptions" element={<Prescriptions />}></Route>
+      <Route path="/prescriptions/:id" element={<Prescriptions />}></Route>
     </>
   )
 );

@@ -5,7 +5,7 @@ import Dialog from "@mui/material/Dialog";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import serviceUseServices from "../../../features/service/serviceServices";
+import serviceUseServices from "../../../features/serviceUse/serviceUseServices";
 import prescribeMedicineServices from "../../../features/prescribeMedicine/prescribeMedicineServices";
 import patientRecordServices from "../../../features/patientRecord/patientRecordServices";
 
@@ -74,7 +74,9 @@ function SimpleDialog(props) {
             <input
               type="text"
               disabled="true"
-              value={service && service.map((item) => item.serviceName)}
+              value={
+                service.length > 0 && service.map((item) => item.serviceName)
+              }
               className={` w-full  px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
@@ -84,7 +86,7 @@ function SimpleDialog(props) {
             <label className="font-mono rounded-md text-center	">Medicine</label>
           </div>
           <div className="w-full">
-            {prescribeMedicine &&
+            {prescribeMedicine.length > 0 &&
               prescribeMedicine.map((medName, index) => (
                 <div className="m-1 flex grow" key={index}>
                   <input
@@ -140,7 +142,7 @@ SimpleDialog.propTypes = {
 };
 
 export default function AllAppointments() {
-  let { error, loading, success, user} = useSelector((state) => state.auth);
+  let { error, loading, success, user } = useSelector((state) => state.auth);
 
   const handleClose = (value) => {
     setOpen(false);
@@ -220,28 +222,19 @@ export default function AllAppointments() {
   ];
   useEffect(() => {
     fetchPatientRecordData();
-  },[error, loading, success]);
-  
+  }, [error, loading, success]);
+
   const fetchPatientRecordData = async () => {
     try {
-      const response = await patientRecordServices.getPatientRecordDentistId(user.id);
-      console.log(response);
+      const response = await patientRecordServices.getPatientRecordDentistId(
+        user.id
+      );
       setPatientRecordData(response);
     } catch (error) {
       console.log(error);
     }
   };
-  const [allData, setAllData] = useState([{
-    customer: "",
-    dentist: "",
-    date: "",
-    status: "",
-    service: ["null"],
-    prescribeMedicine: ["null"],
-    recordId: "",
-  }]);
-  const [open, setOpen] = useState(false);
-  const [dataDialog, setDataDialog] = useState(
+  const [allData, setAllData] = useState([
     {
       customer: "",
       dentist: "",
@@ -250,35 +243,46 @@ export default function AllAppointments() {
       service: ["null"],
       prescribeMedicine: ["null"],
       recordId: "",
-    }
-  );
-  const [patientRecordData,setPatientRecordData] = useState();
-  const [bool,setBool]= useState(false);
-  
-  useEffect(()=>{
-    if(patientRecordData && !bool){
+    },
+  ]);
+  const [open, setOpen] = useState(false);
+  const [dataDialog, setDataDialog] = useState({
+    customer: "",
+    dentist: "",
+    date: "",
+    status: "",
+    service: ["null"],
+    prescribeMedicine: ["null"],
+    recordId: "",
+  });
+  const [patientRecordData, setPatientRecordData] = useState();
+  const [bool, setBool] = useState(false);
+
+  useEffect(() => {
+    if (patientRecordData && !bool) {
       let dateObject; // Declare dateObject with let
       patientRecordData.map((item) => {
-        fetchData(item.id)
+        fetchData(item.id);
         dateObject = new Date(item.date_time);
         const newData = {
           customer: item.customerName,
           dentist: item.dentistName,
-          date: dateObject.toISOString().split('T')[0],
+          date: dateObject.toISOString().split("T")[0],
           recordId: item.id,
-        }
-        setAllData(prevData => [...prevData, newData]);
+        };
+        setAllData((prevData) => [...prevData, newData]);
         setBool(true);
       });
     }
-  },[patientRecordData])
+  }, [patientRecordData]);
 
   const fetchData = async (recordId) => {
     try {
-      const [serviceResponse,  prescribeMedicineResponse] = await Promise.all([
+      const [serviceResponse, prescribeMedicineResponse] = await Promise.all([
         serviceUseServices.getServiceUseByRecordId(recordId),
         prescribeMedicineServices.getPrescribeMedicineByRecordId(recordId),
       ]);
+      console.log(serviceResponse, prescribeMedicineResponse);
       setAllData((prevData) => {
         return prevData.map((item) => {
           if (item.recordId === recordId) {
@@ -296,12 +300,12 @@ export default function AllAppointments() {
     }
   };
   useEffect(() => {
-    console.log("Dia",dataDialog)
-  },[dataDialog])
+    console.log("Dia", dataDialog);
+  }, [dataDialog]);
 
   const handleActionClick = (row) => {
     let recordId = patientRecordData[row.dataIndex].id;
-    setDataDialog(allData.find(item => item.recordId === recordId))
+    setDataDialog(allData.find((item) => item.recordId === recordId));
     setOpen(true);
   };
 

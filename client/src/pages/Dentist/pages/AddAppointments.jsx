@@ -33,23 +33,23 @@ function getDate() {
 function formatDate(inputDateString) {
   const inputDate = new Date(inputDateString);
   const year = inputDate.getFullYear();
-  const month = String(inputDate.getMonth() + 1).padStart(2, '0');
-  const day = String(inputDate.getDate()).padStart(2, '0');
-  const hours = String(inputDate.getHours()).padStart(2, '0');
-  const minutes = String(inputDate.getMinutes()).padStart(2, '0');
-  const seconds = String(inputDate.getSeconds()).padStart(2, '0');
+  const month = String(inputDate.getMonth() + 1).padStart(2, "0");
+  const day = String(inputDate.getDate()).padStart(2, "0");
+  const hours = String(inputDate.getHours()).padStart(2, "0");
+  const minutes = String(inputDate.getMinutes()).padStart(2, "0");
+  const seconds = String(inputDate.getSeconds()).padStart(2, "0");
   const outputDateString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.000`;
 
   return outputDateString;
 }
 const Demo = () => {
   const dispatch = useDispatch();
-  let { error, loading, success, message } = useSelector((state) => state.schedule);
-
-  const { user } = useSelector(
-    (state) => state.auth
+  let { error, loading, success, message } = useSelector(
+    (state) => state.schedule
   );
-  
+
+  const { user } = useSelector((state) => state.auth);
+
   useEffect(() => {
     fetchData(user.id);
   }, [error, loading, success]);
@@ -77,6 +77,7 @@ const Demo = () => {
         }),
         color: "#80B3EE",
       }));
+      console.log("dentist", dentist);
       const fullSlot = fullSlotResponse.map((item, index) => ({
         id: i++,
         title: "full slot schedule",
@@ -98,7 +99,7 @@ const Demo = () => {
   const handleClose = () => {
     setSucessD(false);
     setFail(false);
-  }
+  };
   const [state, setState] = useState({
     data: schedule,
     currentDate: getDate(),
@@ -130,13 +131,13 @@ const Demo = () => {
     setState((prevState) => {
       let { data } = prevState;
       if (added) {
-        let inputData ={
-          dentistId: 1,
+        let inputData = {
+          dentistId: user?.id,
           startTime: formatDate(added.startDate),
-        }
+        };
         dispatch(createDentistSchedule(inputData));
-        console.log("make appointment",message);
-        if(message !=='success' ){
+        console.log("make appointment", message);
+        if (message !== "success") {
           setFail(true);
         }
       }
@@ -151,10 +152,9 @@ const Demo = () => {
         console.log("Deleted ID:", deleted);
         const rowData = schedule.find((row) => row.id === deleted);
         let inputData = {
-          dentistId: 1,
+          dentistId: user?.id,
           startTime: rowData.startDate,
         };
-        
 
         let date = new Date(inputData.startTime);
         date.setUTCHours(date.getUTCHours() + 7);
@@ -169,11 +169,10 @@ const Demo = () => {
         inputData.startTime = date_time;
 
         dispatch(deleteDentistSchedule(inputData));
-        if(message ==='success'){
+        if (message === "success") {
           setSucessD(true);
-        }
-        else{
-          console.log("mesda",message);
+        } else {
+          console.log("mesda", message);
           setMess(message);
           setFail(true);
         }
@@ -199,8 +198,10 @@ const Demo = () => {
           defaultCurrentDate={currentDate}
           defaultCurrentViewName="Week"
         />
-        <DayView startDayHour={7} endDayHour={18} />
-        <WeekView startDayHour={7} endDayHour={19} />
+        {/* <DayView startDayHour={7} endDayHour={18} />
+        <WeekView startDayHour={7} endDayHour={19} /> */}
+        <DayView startDayHour={7} endDayHour={18} cellDuration={60} />
+        <WeekView startDayHour={7} endDayHour={19} cellDuration={60} />
         <MonthView />
         <Toolbar />
         <ViewSwitcher />
@@ -231,13 +232,8 @@ const Demo = () => {
           textEditorComponent={TextEditor}
         />
       </Scheduler>
-      <PopupSuccess
-        onClose={handleClose}
-        open={sucesssD}/>
-      <PopupFail
-        onClose={handleClose}
-        open={fail}
-        message={message}/>
+      <PopupSuccess onClose={handleClose} open={sucesssD} />
+      <PopupFail onClose={handleClose} open={fail} message={message} />
     </div>
   );
 };

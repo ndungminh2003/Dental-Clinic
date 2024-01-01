@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import formatDate from "../utils/formatDate";
 import formatTime from "../utils/formatTime";
 import appointmentService from "../features/appointment/appointmentServices";
+import { cancelAppointment } from "../features/appointment/appointmentSlice";
+
 const getStatusStyle = (status) => {
   switch (status) {
     case "Completed":
@@ -20,6 +22,8 @@ const getStatusStyle = (status) => {
 };
 
 export default function MyAppointment() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [appointments, setAppointments] = useState([]);
   const { id } = useSelector((state) => state.auth?.user);
   useEffect(() => {
@@ -48,21 +52,24 @@ export default function MyAppointment() {
     }
   };
 
-  const renderButtons = (status) => {
+  const renderButtons = (status, startTime, dentistId, recordId) => {
     switch (status) {
       case "Completed":
         return (
           <button
-            className="hover:underline pl-14"
-            onClick={() => handleViewDentalRecord()}
+            className="hover:underline pl-80 text-blue-hosta text-[17px]"
+            onClick={() => handleViewDentalRecord(recordId)}
           >
-            View details
+            Views record
           </button>
         );
-      case "Booked":
+      case "Waiting":
         return (
-          <button className="hover:underline" onClick={() => handleSeeMore()}>
-            <Link to="/book-successful">See More</Link>
+          <button
+            className="hover:underline pl-80 text-[17px]"
+            onClick={() => handleCancelAppointment(startTime, dentistId)}
+          >
+            Cancel
           </button>
         );
       default:
@@ -70,12 +77,12 @@ export default function MyAppointment() {
     }
   };
 
-  const handleViewDentalRecord = () => {
-    console.log("View details clicked");
+  const handleViewDentalRecord = (recordId) => {
+    navigate(`/prescriptions/${recordId}`);
   };
 
-  const handleSeeMore = () => {
-    console.log("See More clicked");
+  const handleCancelAppointment = (startTime, dentistId) => {
+    dispatch(cancelAppointment({ startTime, dentistId }));
   };
 
   return (
@@ -125,8 +132,13 @@ export default function MyAppointment() {
                           {a.status}
                         </div>
                       </div>
-                      <div className="text-blue-hosta pl-72 text-[17px]">
-                        {renderButtons(a.status)}
+                      <div>
+                        {renderButtons(
+                          a.status,
+                          a.startTime,
+                          a.dentistId,
+                          a?.recordId
+                        )}
                       </div>
                     </div>
                   );
@@ -147,9 +159,7 @@ export default function MyAppointment() {
                     {appointment1.status}
                   </div>
                 </div>
-                <div className="text-blue-hosta pl-72 text-[17px]">
-                  {renderButtons(appointment1.status)}
-                </div>
+                <div>{renderButtons(appointment1.status)}</div>
               </div>
 
               <div className="border-2 border-solid border-black rounded-xl w-[500px] pl-10 pt-5 pb-2 flex flex-col gap-4 justify-center">
@@ -269,8 +279,13 @@ export default function MyAppointment() {
                           {a.status}
                         </div>
                       </div>
-                      <div className="text-blue-hosta pl-72 text-[17px]">
-                        {renderButtons(a.status)}
+                      <div>
+                        {renderButtons(
+                          a.status,
+                          a.startTime,
+                          a.dentistId,
+                          a?.recordId
+                        )}
                       </div>
                     </div>
                   );

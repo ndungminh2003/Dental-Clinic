@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MUIDataTable from "mui-datatables";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import PropTypes from "prop-types";
@@ -7,11 +7,14 @@ import appointmentService from "../../../features/appointment/appointmentService
 import customerService from "../../../features/customer/customerServices";
 import serviceService from "../../../features/service/serviceServices";
 import medicineService from "../../../features/medicine/medicineServices";
-import { createPatientRecord } from "../../../features/patientRecord/patientRecordSlice";
+import {
+  createPatientRecord,
+  resetState,
+} from "../../../features/patientRecord/patientRecordSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { createServiceUse } from "../../../features/serviceUse/serviceUseSlice";
 import { createPrescribeMedicine } from "../../../features/prescribeMedicine/prescribeMedicineSlice";
-import CancelIcon from '@mui/icons-material/Cancel';
+import CancelIcon from "@mui/icons-material/Cancel";
 import { TextField, Autocomplete } from "@mui/material";
 
 const emails = ["username@gmail.com", "user02@gmail.com"];
@@ -25,47 +28,50 @@ const SimpleDialog = (props) => {
     services,
     medicines,
     newPatientRecord,
-    user
+    user,
   } = props;
   const [medicineRows, setMedicineRows] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [symptom, setSymptom] = useState("");
   const [advice, setAdvice] = useState("");
   const [diagnostic, setDiagnostic] = useState("");
-
   React.useEffect(() => {
-    selectedOptions.map((selected) => {
-      services.map((service) => {
-        if (selected === service.name) {
-          dispatch(
-            createServiceUse({
-              serviceId: service.id,
-              recordId: newPatientRecord[0].id,
-            })
-          );
-        }
+    if (newPatientRecord?.length > 0) {
+      selectedOptions.map((selected) => {
+        services.map((service) => {
+          if (selected === service.name) {
+            dispatch(
+              createServiceUse({
+                serviceId: service.id,
+                recordId: newPatientRecord[0].id,
+              })
+            );
+          }
+        });
       });
-    });
-    medicineRows.map((row) => {
-      medicines.map((medicine) => {
-        if (medicine.name === row.medicine) {
-          dispatch(
-            createPrescribeMedicine({
-              medicineId: medicine.id,
-              recordId: newPatientRecord[0].id,
-              quantity: row.quantity,
-            })
-          );
-          
-        }
+      medicineRows.map((row) => {
+        medicines.map((medicine) => {
+          if (medicine.name === row.medicine) {
+            dispatch(
+              createPrescribeMedicine({
+                medicineId: medicine.id,
+                recordId: newPatientRecord[0].id,
+                quantity: row.quantity,
+              })
+            );
+          }
+        });
       });
-    });
+    }
   }, [newPatientRecord]);
 
   const dispatch = useDispatch();
 
   const addMedicineRow = () => {
-    setMedicineRows([...medicineRows, { medicine: medicines[0].name, quantity: 1 }]);
+    setMedicineRows([
+      ...medicineRows,
+      { medicine: medicines[0].name, quantity: 1 },
+    ]);
   };
   const handleClose = () => {
     onClose(selectedValue);
@@ -78,7 +84,6 @@ const SimpleDialog = (props) => {
   };
 
   const handleListItemClick = (values) => {
-    
     onClose(values);
 
     let date = new Date();
@@ -172,7 +177,7 @@ const SimpleDialog = (props) => {
             disabled="true"
             className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
           ></input>
-        </div> 
+        </div>
         <div className="flex items-center grow mt-3">
           <div className="w-1/4">
             <label className="font-mono rounded-md text-center	">Service</label>
@@ -226,50 +231,50 @@ const SimpleDialog = (props) => {
           ></input>
         </div>
         <div className="flex items-center grow mt-3">
-      <div className="w-1/4">
-        <label className="font-mono rounded-md text-center">Medicine</label>
-      </div>
-      <div>
-        <div id="medicineSection">
-          {medicineRows.map((row, idx) => (
-            <div key={idx} className="flex mb-3">
-              <select
-                name={`medicine-${idx}`}
-                value={row.medicine}
-                onChange={(e) => {
-                  const newRows = [...medicineRows];
-                  newRows[idx].medicine = e.target.value;
-                  setMedicineRows(newRows);
-                }}
-                className="block w-4/5 mt-1 mr-2 ml-8 p-2 border border-gray-300 rounded-md shadow-sm"
-              >
-                {medicines.map((medicine) => (
-                  <option key={medicine.id} value={medicine.name}>
-                    {medicine.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                name={`quantity-${idx}`}
-                value={row.quantity}
-                onChange={(e) => {
-                  const newRows = [...medicineRows];
-                  newRows[idx].quantity = e.target.value;
-                  setMedicineRows(newRows);
-                }}
-                className="block w-1/5 mt-1 mr-2 p-2 border border-gray-300 rounded-md shadow-sm"
-                min="1"
-              />
-              <button
-                type="button"
-                onClick={() => deleteMedicineRow(idx)}
-                className="text-red-500 ml-2"
-              >
-                <CancelIcon/>
-              </button>
-            </div>
-          ))}
+          <div className="w-1/4">
+            <label className="font-mono rounded-md text-center">Medicine</label>
+          </div>
+          <div>
+            <div id="medicineSection">
+              {medicineRows.map((row, idx) => (
+                <div key={idx} className="flex mb-3">
+                  <select
+                    name={`medicine-${idx}`}
+                    value={row.medicine}
+                    onChange={(e) => {
+                      const newRows = [...medicineRows];
+                      newRows[idx].medicine = e.target.value;
+                      setMedicineRows(newRows);
+                    }}
+                    className="block w-4/5 mt-1 mr-2 ml-8 p-2 border border-gray-300 rounded-md shadow-sm"
+                  >
+                    {medicines.map((medicine) => (
+                      <option key={medicine.id} value={medicine.name}>
+                        {medicine.name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="number"
+                    name={`quantity-${idx}`}
+                    value={row.quantity}
+                    onChange={(e) => {
+                      const newRows = [...medicineRows];
+                      newRows[idx].quantity = e.target.value;
+                      setMedicineRows(newRows);
+                    }}
+                    className="block w-1/5 mt-1 mr-2 p-2 border border-gray-300 rounded-md shadow-sm"
+                    min="1"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => deleteMedicineRow(idx)}
+                    className="text-red-500 ml-2"
+                  >
+                    <CancelIcon />
+                  </button>
+                </div>
+              ))}
             </div>
             <button
               type="button"
@@ -303,12 +308,12 @@ SimpleDialog.propTypes = {
 function formatDate(dateString) {
   const dateObj = new Date(dateString);
 
-  const day = String(dateObj.getUTCDate()).padStart(2, '0');
-  const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getUTCDate()).padStart(2, "0");
+  const month = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
   const year = String(dateObj.getUTCFullYear());
-  const hours = String(dateObj.getUTCHours()).padStart(2, '0');
-  const minutes = String(dateObj.getUTCMinutes()).padStart(2, '0');
-  const seconds = String(dateObj.getUTCSeconds()).padStart(2, '0');
+  const hours = String(dateObj.getUTCHours()).padStart(2, "0");
+  const minutes = String(dateObj.getUTCMinutes()).padStart(2, "0");
+  const seconds = String(dateObj.getUTCSeconds()).padStart(2, "0");
 
   const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
   return formattedDate;
@@ -337,6 +342,7 @@ const processAppointments = (responseDentistAppointment, responseCustomer) => {
 };
 
 const AllAppointments = () => {
+  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
   const [values, setValues] = React.useState([""]);
   const [newPatientRecord1, setNewPatientRecord1] = React.useState([]);
@@ -344,11 +350,8 @@ const AllAppointments = () => {
   const { error, loading, success, newPatientRecord } = useSelector(
     (state) => state.patientRecord
   );
-  
-  const { user } = useSelector(
-    (state) => state.auth
-  );
-  
+
+  const { user } = useSelector((state) => state.auth);
 
   const fetchData = async (dentistId) => {
     try {
@@ -372,7 +375,7 @@ const AllAppointments = () => {
       setServices(responseService);
       setDataAppointment(data1);
       setMedicines(responseMedicine);
-      setNewPatientRecord1(newPatientRecord);
+      setNewPatientRecord1(newPatientRecord || []);
     } catch (error) {
       console.log(error);
     }
@@ -381,10 +384,12 @@ const AllAppointments = () => {
   const [dataAppointment, setDataAppointment] = React.useState([]);
   const [services, setServices] = React.useState([]);
   const [medicines, setMedicines] = React.useState([]);
-
+  useEffect(() => {
+    dispatch(resetState());
+  }, []);
   React.useEffect(() => {
     fetchData(user.id);
-  }, [error, loading, success]);
+  }, [loading, error, success]);
 
   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
   const handleClose = (value) => {
@@ -476,7 +481,6 @@ const AllAppointments = () => {
 
   const handleActionClick = (row) => {
     setOpen(true);
-    console.log("1:", dataAppointment[row.dataIndex]);
     setValues(dataAppointment[row.dataIndex]);
   };
 
@@ -523,7 +527,7 @@ const AllAppointments = () => {
         medicines={medicines}
         data={dataAppointment}
         newPatientRecord={newPatientRecord1}
-        user = {user}
+        user={user}
       />
     </div>
   );

@@ -19,7 +19,7 @@ router.delete(
   prescribeMedicineCtrl.deletePrescribeMedicine
 );
 router.get(
-  "/get-prescribe-medicine",
+  "/get-prescribe-medicine/:recordId",
   prescribeMedicineCtrl.getPrescribeMedicineByRecordId
 );
 

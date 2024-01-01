@@ -43,7 +43,7 @@ const deleteServiceUse = async (req, res) => {
 };
 
 const getServiceUseByRecordId = async (req, res) => {
-  const { recordId } = req.query;
+  const { recordId } = req.params;
   try {
     const role = getRole(req);
     const db = await (await getDb(role))

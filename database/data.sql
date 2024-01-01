@@ -101,53 +101,54 @@ VALUES
     (3, '2023-12-21 08:00:00', '2023-12-21 09:00:00', 0),
     (3, '2023-12-21 09:00:00', '2023-12-21 10:00:00', 0);
 
+INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
+VALUES 
+	(1, 1, '2023-12-21 07:00:00', '2023-12-21 08:00:00', N'In progress', null, null);
 
 INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
 VALUES 
-	(1, 1, '2023-12-21 07:00:00', '2023-12-21 08:00:00', N'Creating patient records', null, null);
+	(1, 2, '2023-12-21 08:00:00', '2023-12-21 09:00:00', N'In progress', null, null);
 
 INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
 VALUES 
-	(1, 2, '2023-12-21 08:00:00', '2023-12-21 09:00:00', N'Creating patient records', null, null);
+	(1, 3, '2023-12-21 09:00:00', '2023-12-21 10:00:00', N'In progress', null, null);
 
 INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
 VALUES 
-	(1, 3, '2023-12-21 09:00:00', '2023-12-21 10:00:00', N'Creating patient records', null, null);
+	(2, 4, '2023-12-22 08:00:00', '2023-12-22 09:00:00', N'In progress', null, null);
 
 INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
 VALUES 
-	(2, 4, '2023-12-22 08:00:00', '2023-12-22 09:00:00', N'Creating patient records', null, null);
+	(2, 5, '2023-12-22 09:00:00', '2023-12-22 10:00:00', N'In progress', null, null);
 
 INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
 VALUES 
-	(2, 5, '2023-12-22 09:00:00', '2023-12-22 10:00:00', N'Creating patient records', null, null);
+	(2, 6, '2023-12-22 10:00:00', '2023-12-22 11:00:00', N'In progress', null, null);
 
 INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
 VALUES 
-	(2, 6, '2023-12-22 10:00:00', '2023-12-22 11:00:00', N'Creating patient records', null, null);
+	(3, 7, '2023-12-21 07:00:00', '2023-12-21 08:00:00', N'In progress', null, null);
 
 INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
 VALUES 
-	(3, 7, '2023-12-21 07:00:00', '2023-12-21 08:00:00', N'Creating patient records', null, null);
+	(3, 8, '2023-12-21 08:00:00', '2023-12-21 09:00:00', N'In progress', null, null);
 
 INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
 VALUES 
-	(3, 8, '2023-12-21 08:00:00', '2023-12-21 09:00:00', N'Creating patient records', null, null);
-
-INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
-VALUES 
-	(3, 9, '2023-12-21 09:00:00', '2023-12-21 10:00:00', N'Creating patient records', null, null);
+	(3, 9, '2023-12-21 09:00:00', '2023-12-21 10:00:00', N'In progress', null, null);
 
 
 select * from SERVICE_USE
 select * from PRESCRIBE_MEDICINE
 select * from PATIENT_RECORD
 select * from MEDICINE	
-select * from SCHEDULE INSERT INTO APPOINTMENT (dentistId, customerId, startTime, endTime, status, staffId, recordId)
-VALUES 
-	(1, 1, '2023-12-22 10:00:00', '2023-12-22 11:00:00', N'Đang chờ', null, null);
 
 
-INSERT INTO SCHEDULE (dentistId, startTime, endTime, isBooked)
-VALUES (6, '2023-12-30 07:00:00', '2023-12-30 08:00:00', 0);
+SELECT * FROM DENTIST
+SELECT * FROM CUSTOMER
+SELECT * FROM STAFF
+SELECT * FROM PATIENT_RECORD
+SELECT * FROM APPOINTMENT
+
+SELECT * FROM PRESCRIBE_MEDICINE
 

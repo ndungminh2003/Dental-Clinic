@@ -129,14 +129,14 @@ BEGIN
 	DECLARE @dateTime DATETIME = (SELECT date_time FROM inserted)
 	DECLARE @customerId INT = (SELECT customerId FROM inserted)
 	DECLARE @dentistId INT = (SELECT dentistId FROM inserted)
-	IF UPDATE(date_time)
-	BEGIN
-		IF EXISTS (SELECT 1 FROM APPOINTMENT WHERE APPOINTMENT.recordId = @recordId AND DATEDIFF(second,@dateTime, APPOINTMENT.startTime) >= 0 ) 
-		BEGIN 
-			RAISERROR (N'Error: The time to create the medical record must be after the appointment start time.', 16, 1)
-			ROLLBACK TRAN
-		END
-	END
+	-- IF UPDATE(date_time)
+	-- BEGIN
+	-- 	IF EXISTS (SELECT 1 FROM APPOINTMENT WHERE APPOINTMENT.recordId = @recordId AND DATEDIFF(second,@dateTime, APPOINTMENT.startTime) >= 0 ) 
+	-- 	BEGIN 
+	-- 		RAISERROR (N'Error: The time to create the medical record must be after the appointment start time.', 16, 1)
+	-- 		ROLLBACK TRAN
+	-- 	END
+	-- END
 	IF UPDATE(dentistId) or UPDATE(date_time)
 	BEGIN
 		IF EXISTS (SELECT 1 FROM PATIENT_RECORD p WHERE p.id != @recordId AND p.dentistId = @dentistId AND p.date_time = @dateTime)
@@ -147,7 +147,7 @@ BEGIN
 	END
 	IF UPDATE(dentistId) or UPDATE (customerId)
 	BEGIN
-		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Creating patient records')
+		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'In progress')
 		BEGIN
 			RAISERROR (N'Error: There are no appointments that require the creation of medical records.', 16, 1)
 			ROLLBACK TRAN
@@ -168,7 +168,7 @@ BEGIN
 	DECLARE @customerId INT = (SELECT customerId FROM inserted)
 	DECLARE @dentistId INT = (SELECT dentistId FROM inserted)
 	DECLARE @dateTime DATETIME = (SELECT date_time FROM inserted)
-	IF NOT EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Creating patient records')
+	IF NOT EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'In progress')
 	BEGIN
 		RAISERROR (N'Error: There are no appointments that require the creation of medical records.', 16, 1)
 		ROLLBACK TRAN
@@ -178,13 +178,12 @@ BEGIN
 		RAISERROR (N'Error: Currently this dentist can only create one medical record.', 16, 1)
 		ROLLBACK TRAN
 	END
-	IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Creating patient records' AND DATEDIFF(second,@dateTime, a.startTime) >= 0 ) 
-	BEGIN 
-		RAISERROR (N'Error: The time to create the medical record must be after the appointment start time.', 16, 1)
-		ROLLBACK TRAN
-	END
-	UPDATE a SET a.recordId = @recordId, a.status = N'Completed' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'Creating patient records'
-	INSERT INTO SERVICE_USE (recordId, serviceId) VALUES(@recordId, 1)
+	-- IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'In progress' AND DATEDIFF(second,@dateTime, a.startTime) >= 0 ) 
+	-- BEGIN 
+	-- 	RAISERROR (N'Error: The time to create the medical record must be after the appointment start time.', 16, 1)
+	-- 	ROLLBACK TRAN
+	-- END
+	UPDATE a SET a.recordId = @recordId, a.status = N'Completed' FROM APPOINTMENT a WHERE a.customerId = @customerId AND a.dentistId = @dentistId AND a.status = N'In progress'
 END
 
 GO

@@ -110,7 +110,8 @@ const updateAppointmentStatus = async (req, res) => {
 };
 
 const cancelAppointment = async (req, res) => {
-  const input = req.body;
+  const input = JSON.stringify({ ...req.query });
+  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))

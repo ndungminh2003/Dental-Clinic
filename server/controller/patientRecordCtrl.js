@@ -66,7 +66,7 @@ const deletePatientRecord = async (req, res) => {
 };
 
 const getOnePatientRecord = async (req, res) => {
-  const { recordId } = req.body;
+  const { recordId } = req.params;
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
@@ -117,7 +117,7 @@ const getOnePatientRecordByCustomerId = async (req, res) => {
 };
 
 const getPatientRecordDentistId = async (req, res) => {
-  const input = req.params
+  const input = req.params;
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
@@ -141,5 +141,5 @@ module.exports = {
   getOnePatientRecord,
   getAllPatientRecord,
   getOnePatientRecordByCustomerId,
-  getPatientRecordDentistId
+  getPatientRecordDentistId,
 };

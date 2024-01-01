@@ -19,7 +19,12 @@ const Sidebar = () => {
       <div>
         <ul>
           <li>
-            <NavLink to="appointment/all" className={`${pathname.includes("appointment")?"bg-light-Topaz":"bg-Topaz"} side mt-3`}>
+            <NavLink
+              to="appointment/all"
+              className={`${
+                pathname.includes("appointment") ? "bg-light-Topaz" : "bg-Topaz"
+              } side mt-3`}
+            >
               <TodayIcon style={{ color: "white" }} />
               <span className="ml-2 mr-3 text-white	">
                 Appointment management
@@ -57,18 +62,21 @@ const Sidebar = () => {
                         : "text-dark-Topaz"
                     }`}
                   >
-                    Add appointment
+                    Add schedule
                   </span>
                 </NavLink>
               </li>
             </div>
           )}
           <li>
-            <NavLink to="record" className={`${pathname.includes("record")?"bg-light-Topaz":"bg-Topaz"} side mt-3`}>
+            <NavLink
+              to="record"
+              className={`${
+                pathname.includes("record") ? "bg-light-Topaz" : "bg-Topaz"
+              } side mt-3`}
+            >
               <DocumentScannerIcon style={{ color: "white" }} />
-              <span className="ml-2 mr-3 text-white	" >
-                Patient Record
-              </span>
+              <span className="ml-2 mr-3 text-white	">Patient Record</span>
             </NavLink>
           </li>
         </ul>

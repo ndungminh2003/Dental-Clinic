@@ -911,9 +911,6 @@ BEGIN
         ;THROW
 	END CATCH
 END
-exec sp_createPatientRecord @customerId = 1, @dentistId = 1, @date_time = '2023-12-22 07:00:00.000',@diagnostic ='no',@symptom ='no',@advice ='no'
-
-	select * from APPOINTMENT
 
 -- update patient record - lost update
 GO

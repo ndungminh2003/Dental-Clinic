@@ -3,8 +3,7 @@ import Axios from "../../app/axiosConfig";
 const getPrescribeMedicineByRecordId = async (recordId) => {
   try {
     const response = await Axios.get(
-      "prescribe-medicine/get-prescribe-medicine",
-      { params: { recordId } }
+      `prescribe-medicine/get-prescribe-medicine/${recordId}`
     );
     return response.data;
   } catch (error) {
@@ -21,7 +20,10 @@ const getPrescribeMedicineByRecordId = async (recordId) => {
 };
 
 const createPrescribeMedicine = async (prescribeMedicine) => {
-  const response = await Axios.post("prescribe-medicine/create-prescribe-medicine", prescribeMedicine);
+  const response = await Axios.post(
+    "prescribe-medicine/create-prescribe-medicine",
+    prescribeMedicine
+  );
   return response.data;
 };
 

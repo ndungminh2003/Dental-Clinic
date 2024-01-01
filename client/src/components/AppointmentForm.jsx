@@ -7,16 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { makeAppointment } from "../features/appointment/appointmentSlice";
 import * as Yup from "yup";
 
-const initialValues = {
-  name: "",
-  birthday: "",
-  address: "",
-  phone: "",
-  gender: "",
-  date: "",
-  startTime: "",
-  dentistId: null,
-};
 const VALID_PHONE =
   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
@@ -36,12 +26,42 @@ const validationSchema = Yup.object({
 export default function Form() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [disabled, setDisabled] = useState(0);
   const [isSubmited, setIsSubmited] = useState(false);
-
+  const { user } = useSelector((state) => state.auth);
+  useEffect(() => {
+    if (user) setDisabled(1);
+  }, [user]);
   const { loading, error, success, message } = useSelector(
     (state) => state.appointment
   );
+  const formatDate = (date) => {
+    if (typeof date != "string") return "";
+    if (date.includes("T")) {
+      const dateParts = date.split("-");
+      const jsDate = new Date(
+        dateParts[0],
+        dateParts[1] - 1,
+        dateParts[2].substr(0, 2)
+      );
+      const year = jsDate.getFullYear();
+      const month = (jsDate.getMonth() + 1).toString().padStart(2, "0");
+      const day = jsDate.getDate().toString().padStart(2, "0");
 
+      return `${year}-${month}-${day}`;
+    } else return date;
+  };
+  const initialValues = {
+    name: user?.name || "",
+    birthday: formatDate(user?.birthday) || "",
+    address: user?.address || "",
+    phone: user?.phoneNumber || "",
+    gender: user?.gender || "",
+    date: "",
+    startTime: "",
+    dentistId: null,
+  };
+  console.log(initialValues);
   useEffect(() => {
     if (isSubmited && !loading && success) {
       // toast.success("Sign up Successfull!");
@@ -90,6 +110,7 @@ export default function Form() {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       maxLength={50}
+                      disabled={disabled}
                     ></input>
                     {formik.touched.name && formik.errors.name && (
                       <div>{formik.errors.name}</div>
@@ -105,6 +126,7 @@ export default function Form() {
                       value={formik.values.birthday}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      disabled={disabled}
                       className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
                     ></input>
                     {formik.touched.birthday && formik.errors.birthday && (
@@ -124,6 +146,7 @@ export default function Form() {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     maxLength={120}
+                    disabled={disabled}
                   ></input>
                   {formik.touched.address && formik.errors.address && (
                     <div>{formik.errors.address}</div>
@@ -142,6 +165,7 @@ export default function Form() {
                       value={formik.values.phone}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      disabled={disabled}
                     ></input>
                     {formik.touched.phone && formik.errors.phone && (
                       <div>{formik.errors.phone}</div>
@@ -157,6 +181,7 @@ export default function Form() {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
+                      disabled={disabled}
                     >
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>

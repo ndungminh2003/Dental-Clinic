@@ -36,15 +36,13 @@ export default function OurDentists() {
           </div>
           <div className="flex flex-row gap-16 flex-wrap">
             {dentists.map((dt) => (
-              <a href="/our-dentist/specific-dentist/">
-                <div className="flex flex-col gap-1">
-                  <img src={profile_pic} alt="" />
-                  <div className="text-3xl text-ebony-clay font-bold pt-5 hover:underline capitalize">
-                    {dt.name}
-                  </div>
-                  <div className="text-gray-500">Phone: {dt.introduction}</div>
+              <div className="flex flex-col gap-1">
+                <img src={profile_pic} alt="" />
+                <div className="text-3xl text-ebony-clay font-bold pt-5 capitalize">
+                  {dt.name}
                 </div>
-              </a>
+                <div className="text-gray-500">{dt.introduction}</div>
+              </div>
             ))}
 
             {/* <a href="/our-dentist/specific-dentist/">

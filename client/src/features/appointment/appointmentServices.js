@@ -89,9 +89,9 @@ const makeAppointment = async (appointment) => {
 
 const cancelAppointment = async (appointment) => {
   try {
+    const query = `?startTime=${appointment.startTime}&dentistId=${appointment.dentistId}`;
     const response = await Axios.delete(
-      "appointment/cancel-appointment",
-      appointment
+      `appointment/cancel-appointment/${query}`
     );
     return response.data;
   } catch (error) {

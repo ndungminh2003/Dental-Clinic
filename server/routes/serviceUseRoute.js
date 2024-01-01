@@ -13,6 +13,9 @@ router.delete(
   authM.isDentist,
   serviceUseCtrl.deleteServiceUse
 );
-router.get("/get-service-use", serviceUseCtrl.getServiceUseByRecordId);
+router.get(
+  "/get-service-use/:recordId",
+  serviceUseCtrl.getServiceUseByRecordId
+);
 
 module.exports = router;

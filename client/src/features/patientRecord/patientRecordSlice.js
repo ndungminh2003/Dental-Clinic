@@ -41,6 +41,8 @@ export const getPatientRecordDentistId = createAsyncThunk(
     }
   }
 );
+// reset state
+export const resetState = createAction("patient-record/reset-state");
 
 export const patientRecordSlice = createSlice({
   name: "patient-record",
@@ -96,6 +98,9 @@ export const patientRecordSlice = createSlice({
         state.success = false;
         state.message = action.error;
         state.loading = false;
+      })
+      .addCase(resetState, (state) => {
+        return initialState;
       });
   },
 });

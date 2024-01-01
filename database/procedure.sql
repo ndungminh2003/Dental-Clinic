@@ -1478,7 +1478,7 @@ BEGIN
 				RAISERROR(N'Error: Service ID does not exist.', 16, 1)
 				ROLLBACK TRAN
 			END
-			DELETE FROM SERVICE WHERE serviceId = @serviceId
+			DELETE FROM SERVICE WHERE id = @serviceId
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH

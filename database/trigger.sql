@@ -207,58 +207,58 @@ SELECT * FROM PATIENT_RECORD
 --Trigger8
 --R30: Số lượng của một loại thuốc trong đơn thuốc phải bé hơn hoặc bằng số lượng của loại thuốc đó ở trong kho.
 --R48: Với mỗi loại thuốc được sử dụng trong đơn thuốc thì ngày hết hạn phải sau ngày khám.
-GO
-IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PRESCRIBE_MEDICINE]'))
-DROP TRIGGER [dbo].[TRIGGER_PRESCRIBE_MEDICINE]
-GO
-CREATE TRIGGER TRIGGER_PRESCRIBE_MEDICINE ON PRESCRIBE_MEDICINE 
-FOR INSERT, UPDATE
-AS
-BEGIN
-	IF UPDATE(quantity)
-	BEGIN
-		IF EXISTS (
-			SELECT 1
-			FROM INSERTED as i
-			JOIN MEDICINE as m ON i.medicineId = m.id
-			WHERE m.quantity < i.quantity
-		)
-		BEGIN 
-			RAISERROR(N'Error: The quantity of a medicine in the prescription must be less than or equal to the quantity of that medicine in stock.', 16, 1)
-			ROLLBACK TRANSACTION;
-		END;
+-- GO
+-- IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[TRIGGER_PRESCRIBE_MEDICINE]'))
+-- DROP TRIGGER [dbo].[TRIGGER_PRESCRIBE_MEDICINE]
+-- GO
+-- CREATE TRIGGER TRIGGER_PRESCRIBE_MEDICINE ON PRESCRIBE_MEDICINE 
+-- FOR INSERT, UPDATE
+-- AS
+-- BEGIN
+-- 	IF UPDATE(quantity)
+-- 	BEGIN
+-- 		IF EXISTS (
+-- 			SELECT 1
+-- 			FROM INSERTED as i
+-- 			JOIN MEDICINE as m ON i.medicineId = m.id
+-- 			WHERE m.quantity < i.quantity
+-- 		)
+-- 		BEGIN 
+-- 			RAISERROR(N'Error: The quantity of a medicine in the prescription must be less than or equal to the quantity of that medicine in stock.', 16, 1)
+-- 			ROLLBACK TRANSACTION;
+-- 		END;
 
-		DECLARE @MEDICINE_ID INT = (SELECT medicineId FROM INSERTED)
-		DECLARE @QUANTITY INT = (SELECT quantity FROM INSERTED)
-		DECLARE @MEDICINE_STOCK FLOAT = (SELECT quantity FROM MEDICINE m WHERE m.id = @MEDICINE_ID)
-		UPDATE MEDICINE SET quantity = @MEDICINE_STOCK - @QUANTITY WHERE id = @MEDICINE_ID;
-	END
+-- 		DECLARE @MEDICINE_ID INT = (SELECT medicineId FROM INSERTED)
+-- 		DECLARE @QUANTITY INT = (SELECT quantity FROM INSERTED)
+-- 		DECLARE @MEDICINE_STOCK FLOAT = (SELECT quantity FROM MEDICINE m WHERE m.id = @MEDICINE_ID)
+-- 		UPDATE MEDICINE SET quantity = @MEDICINE_STOCK - @QUANTITY WHERE id = @MEDICINE_ID;
+-- 	END
 
-	IF UPDATE(price)
-	BEGIN
-		IF EXISTS (
-			SELECT 1
-			FROM INSERTED as i
-			JOIN MEDICINE as m ON i.medicineId = m.id
-			WHERE m.price != i.price
-		)
-		BEGIN 
-			RAISERROR(N'Error: The price of a medicine on the invoice must be the same as the price of that medicine in the warehouse.', 16, 1)
-			ROLLBACK TRANSACTION;
-		END;
-	END
+-- 	IF UPDATE(price)
+-- 	BEGIN
+-- 		IF EXISTS (
+-- 			SELECT 1
+-- 			FROM INSERTED as i
+-- 			JOIN MEDICINE as m ON i.medicineId = m.id
+-- 			WHERE m.price != i.price
+-- 		)
+-- 		BEGIN 
+-- 			RAISERROR(N'Error: The price of a medicine on the invoice must be the same as the price of that medicine in the warehouse.', 16, 1)
+-- 			ROLLBACK TRANSACTION;
+-- 		END;
+-- 	END
 
-	IF UPDATE(medicineId)
-	BEGIN
-		IF EXISTS (SELECT 1 FROM inserted i JOIN MEDICINE m ON i.medicineId = m.id JOIN PATIENT_RECORD pr ON i.recordId = pr.id WHERE datediff(second, pr.date_time, m.expirationDate) <= 0) 
-		BEGIN 
-			RAISERROR(N'Error: The expiration date of the medicine must be after the date of examination.', 16, 1)
-			ROLLBACK TRAN
-		END
-		UPDATE p SET p.medicineName = m.name, p.price = m.price
-		FROM PRESCRIBE_MEDICINE p JOIN INSERTED i ON p.medicineId = i.medicineId AND p.recordId = i.recordId JOIN MEDICINE m on m.id = i.medicineId 
-	END
-END;
+-- 	IF UPDATE(medicineId)
+-- 	BEGIN
+-- 		IF EXISTS (SELECT 1 FROM inserted i JOIN MEDICINE m ON i.medicineId = m.id JOIN PATIENT_RECORD pr ON i.recordId = pr.id WHERE datediff(second, pr.date_time, m.expirationDate) <= 0) 
+-- 		BEGIN 
+-- 			RAISERROR(N'Error: The expiration date of the medicine must be after the date of examination.', 16, 1)
+-- 			ROLLBACK TRAN
+-- 		END
+-- 		UPDATE p SET p.medicineName = m.name, p.price = m.price
+-- 		FROM PRESCRIBE_MEDICINE p JOIN INSERTED i ON p.medicineId = i.medicineId AND p.recordId = i.recordId JOIN MEDICINE m on m.id = i.medicineId 
+-- 	END
+-- END;
 
 
 -- Trigger10

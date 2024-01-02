@@ -844,6 +844,7 @@ AS
 SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
+		SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
@@ -1161,7 +1162,7 @@ SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM MEDICINE WHERE id = @medicineId)
+		IF NOT EXISTS (SELECT 1 FROM MEDICINE with(updlock) WHERE id = @medicineId)
 		BEGIN
 			RAISERROR(N'Error: Medicine ID does not exist.', 16, 1)
 			ROLLBACK TRAN
@@ -1277,15 +1278,33 @@ SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-			SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 			DECLARE @PRICE FLOAT;
-			SELECT @PRICE = price FROM MEDICINE M WHERE M.ID = @MEDICINE_ID;
-	
+			SELECT @PRICE = price FROM MEDICINE M with(updlock) WHERE M.ID = @MEDICINE_ID;
+
 			DECLARE @MEDICINE_NAME NVARCHAR(30);
 			SELECT @MEDICINE_NAME = name FROM MEDICINE M WHERE M.id = @MEDICINE_ID
 	
 			DECLARE @MEDICINE_STOCK INT;
 			SELECT @MEDICINE_STOCK = quantity FROM MEDICINE M WHERE M.ID = @MEDICINE_ID;
+			
+			IF @MEDICINE_STOCK < @QUANTITY
+			BEGIN 
+				RAISERROR(N'Error: The quantity of a medicine in the prescription must be less than or equal to the quantity of that medicine in stock.', 16, 1)
+				ROLLBACK TRANSACTION;
+			END;
+
+			DECLARE @expirationDate DATE;
+			SELECT @expirationDate = expirationDate FROM MEDICINE M WHERE M.ID = @MEDICINE_ID
+
+			DECLARE @patientDate DATE;
+			SELECT @patientDate = date_time FROM PATIENT_RECORD pr WHERE pr.id = @RECORD_ID
+
+			IF datediff(second, @patientDate, @expirationDate) <= 0
+			BEGIN 
+				RAISERROR(N'Error: The expiration date of the medicine must be after the date of examination.', 16, 1)
+				ROLLBACK TRAN
+			END
+
 			-- CHECK PATIENT RECORD ID
 			IF NOT EXISTS (
 				SELECT 1
@@ -1309,7 +1328,8 @@ BEGIN
 			END
 
 			INSERT INTO PRESCRIBE_MEDICINE (recordId, medicineId, medicineName, price, quantity) VALUES (@RECORD_ID, @MEDICINE_ID, @MEDICINE_NAME, @PRICE, @QUANTITY);
-		
+			UPDATE MEDICINE SET quantity = @MEDICINE_STOCK - @QUANTITY WHERE id = @MEDICINE_ID;
+
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH

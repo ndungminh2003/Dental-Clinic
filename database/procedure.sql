@@ -654,6 +654,7 @@ AS
 SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime)
 		BEGIN
@@ -843,6 +844,7 @@ AS
 SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM DENTIST WHERE id = @dentistId)
 		BEGIN
@@ -854,6 +856,7 @@ BEGIN
 			RAISERROR (N'Error: There are no appointments.', 16, 1)
 			ROLLBACK TRAN
 		END
+		WAITFOR DELAY '00:00:10'
 		SELECT * FROM APPOINTMENT WHERE dentistId = @dentistId
 		COMMIT TRAN
 	END TRY
@@ -1159,6 +1162,7 @@ AS
 SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRAN
 		IF NOT EXISTS (SELECT 1 FROM MEDICINE WHERE id = @medicineId)
 		BEGIN
@@ -1273,9 +1277,9 @@ CREATE PROC sp_addPrescribeMedicine
     @QUANTITY INT
 AS
 SET XACT_ABORT, NOCOUNT ON
-SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 BEGIN
 	BEGIN TRY
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 		BEGIN TRAN
 			DECLARE @PRICE FLOAT;
 			SELECT @PRICE = price FROM MEDICINE M WHERE M.ID = @MEDICINE_ID;
@@ -1285,6 +1289,25 @@ BEGIN
 	
 			DECLARE @MEDICINE_STOCK INT;
 			SELECT @MEDICINE_STOCK = quantity FROM MEDICINE M WHERE M.ID = @MEDICINE_ID;
+			IF @MEDICINE_STOCK < @QUANTITY
+			BEGIN 
+				RAISERROR(N'Error: The quantity of a medicine in the prescription must be less than or equal to the quantity of that medicine in stock.', 16, 1)
+				ROLLBACK TRANSACTION;
+			END;
+
+			DECLARE @expirationDate DATE;
+			SELECT @expirationDate = expirationDate FROM MEDICINE M WHERE M.ID = @MEDICINE_ID
+
+			DECLARE @patientDate DATE;
+			SELECT @patientDate = date_time FROM PATIENT_RECORD pr WHERE pr.id = @RECORD_ID
+
+			IF datediff(second, @patientDate, @expirationDate) <= 0
+			BEGIN 
+				RAISERROR(N'Error: The expiration date of the medicine must be after the date of examination.', 16, 1)
+				ROLLBACK TRAN
+			END
+
+			WAITFOR DELAY '00:00:10'
 			-- CHECK PATIENT RECORD ID
 			IF NOT EXISTS (
 				SELECT 1
@@ -1390,8 +1413,6 @@ BEGIN
         ;THROW	
 	END CATCH
 END
-
-
 
 
 -- view one record's prescribe Medicine 

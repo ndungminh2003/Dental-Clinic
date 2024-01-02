@@ -650,24 +650,23 @@ GO
 
 CREATE PROC sp_cancelAppointment
 	@dentistId INT,
-	@startTime DATETIME,
-	@customerId INT
+	@startTime DATETIME
 AS
 SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
 		BEGIN TRAN
-		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId)
+		IF NOT EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime)
 		BEGIN
 			RAISERROR (N'Error: The appointment does not exist.', 16, 1)
 			ROLLBACK TRAN
 		END
-		IF EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId and status != N'Waiting')
+		IF EXISTS (SELECT 1 FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and status != N'Waiting')
 		BEGIN
 			RAISERROR (N'Error: Appointments cannot be canceled.', 16, 1)
 			ROLLBACK TRAN
 		END
-		DELETE FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime and customerId = @customerId
+		DELETE FROM APPOINTMENT WHERE dentistId = @dentistId and startTime = @startTime
 		UPDATE SCHEDULE SET isBooked = 0 WHERE dentistId = @dentistId and startTime = @startTime
 		COMMIT TRAN
 	END TRY

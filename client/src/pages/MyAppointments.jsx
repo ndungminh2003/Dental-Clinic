@@ -25,12 +25,16 @@ export default function MyAppointment() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [appointments, setAppointments] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [cancelAppointmentId, setCancelAppointmentId] = useState();
+
   const { id } = useSelector((state) => state.auth?.user);
   useEffect(() => {
     appointmentService.getCustomerAppointment(id).then((res) => {
       setAppointments(res);
     });
-  }, []);
+  }, [showConfirmation]);
   const date = new Date();
   const currentDate = date.toLocaleDateString();
 
@@ -62,7 +66,10 @@ export default function MyAppointment() {
         return (
           <button
             className="hover:underline pl-80 text-[17px]"
-            onClick={() => handleCancelAppointment(startTime, dentistId)}
+            onClick={() => {
+              setCancelAppointmentId({ startTime, dentistId });
+              setShowPopup(true);
+            }}
           >
             Cancel
           </button>
@@ -76,8 +83,60 @@ export default function MyAppointment() {
     navigate(`/prescriptions/${recordId}`);
   };
 
-  const handleCancelAppointment = (startTime, dentistId) => {
-    dispatch(cancelAppointment({ startTime, dentistId }));
+  const handleCancelPopup = () => {
+    setShowPopup(false);
+  };
+
+  const handleConfirmClick = () => {
+    dispatch(cancelAppointment(cancelAppointmentId));
+    setShowPopup(false);
+    setShowConfirmation(true);
+  };
+  const handleConfirmationConfirmClick = () => {
+    setShowConfirmation(false);
+  };
+  const WarningPopup = ({ message, onCancel, onConfirm }) => {
+    return (
+      <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+        <div className="bg-black opacity-50 w-full h-full absolute"></div>
+        <div className="bg-white p-8 rounded-md shadow-md z-10">
+          <p>{message}</p>
+          <div className="mt-4 flex justify-center">
+            <button
+              className="bg-cyan-500 text-white px-4 py-2 mr-2 rounded-md hover:bg-cyan-600"
+              onClick={onConfirm}
+            >
+              Confirm
+            </button>
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const ConfirmationPopup = ({ message, onConfirm }) => {
+    return (
+      <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50">
+        <div className="bg-black opacity-50 w-full h-full absolute"></div>
+        <div className="bg-white p-8 rounded-md shadow-md z-10">
+          <p>{message}</p>
+          <div className="mt-4 flex justify-center">
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              onClick={onConfirm}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -192,7 +251,20 @@ export default function MyAppointment() {
           </button>
         </div>
       </div>
+      {showPopup && (
+        <WarningPopup
+          message="Are you sure you want to cancel the appointment?"
+          onCancel={handleCancelPopup}
+          onConfirm={handleConfirmClick}
+        />
+      )}
 
+      {showConfirmation && (
+        <ConfirmationPopup
+          message="Your appointment has been cancelled"
+          onConfirm={handleConfirmationConfirmClick}
+        />
+      )}
       <Footer />
     </>
   );

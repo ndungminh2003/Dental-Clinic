@@ -62,7 +62,8 @@ AS
 SET XACT_ABORT, NOCOUNT ON
 BEGIN
     BEGIN TRY
-        BEGIN TRAN
+		SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
+      BEGIN TRAN
 			IF @role = 'guest'
 			BEGIN
 				IF NOT EXISTS (SELECT 1 FROM CUSTOMER WHERE phoneNumber = @phone AND role = 'Customer' AND password = @password )

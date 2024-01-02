@@ -79,7 +79,7 @@ export default function Profile() {
     <div className="flex flex-col justify-center items-center gap-10">
       <Toaster position="top-center" reverseOrder={false} />
       <NavBar />
-      <div className="w-full flex items-center">
+      <div className="w-full flex items-center pb-20">
         <div className="w-full max-w-3xl mx-auto">
           <form onSubmit={formik.handleSubmit}>
             <div className="bg-mercury p-10 rounded-3xl">

@@ -62,7 +62,6 @@ export default function Form() {
     startTime: "",
     dentistId: null,
   };
-  console.log(initialValues);
   useEffect(() => {
     if (isSubmited && !loading && success) {
       // toast.success("Sign up Successfull!");
@@ -82,6 +81,7 @@ export default function Form() {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={(values, actions) => {
+            localStorage.setItem("appointment", JSON.stringify(values));
             dispatch(makeAppointment(values));
             setIsSubmited(true);
             console.log(values);

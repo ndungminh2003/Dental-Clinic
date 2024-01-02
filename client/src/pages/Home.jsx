@@ -7,7 +7,13 @@ import bg_home2 from "../images/home2.png";
 import bg_home3 from "../images/home3.png";
 import bg_home4 from "../images/home4.png";
 import bg_home5 from "../images/home5.png";
-import fb_pic from "../images/facebook.png";
+import fb_pic from '../images/facebook.png';
+import dental_pic1 from '../images/dental-vector-free-icon-set-02.png'
+import dental_pic2 from '../images/dental-vector-free-icon-set-20.png'
+import dental_pic3 from '../images/dental-vector-free-icon-set-07.png'
+import dental_pic4 from '../images/dental-vector-free-icon-set-01.png'
+import dental_pic5 from '../images/dental-vector-free-icon-set-12.png'
+import dental_pic6 from '../images/dental-vector-free-icon-set-16.png'
 import { Link } from "react-router-dom";
 import serviceService from "../features/service/serviceServices";
 import "aos/dist/aos.css";
@@ -123,15 +129,11 @@ export default function Home() {
               </button>
 
               {/* Dots representing images */}
-              <div className="absolute bottom-6 right-[860px] transform -translate-x-1/2 flex gap-2">
+              <div className="absolute bottom-6 right-[950px] transform -translate-x-1/2 flex gap-2">
                 {images.map((_, dotIndex) => (
                   <div
                     key={dotIndex}
-                    className={`h-3 w-3 rounded-full ${
-                      currentIndex === dotIndex
-                        ? "bg-blue-hosta"
-                        : "bg-gray-300"
-                    } cursor-pointer`}
+                    className={`h-3 w-3 rounded-full ${currentIndex === dotIndex ? 'bg-blue-hosta' : 'bg-gray-200'} cursor-pointer`}
                     onClick={() => changeImage(dotIndex)}
                   />
                 ))}
@@ -139,14 +141,7 @@ export default function Home() {
 
               <div className="absolute top-1/2 transform -translate-x-1/2 -translate-y-1/2 left-1/2 text-center text-white ">
                 {contentPhrases[index].map((line, lineIndex) => (
-                  <p
-                    key={lineIndex}
-                    className={`${
-                      lineIndex === 0
-                        ? "text-5xl font-montserrat"
-                        : "text-3xl font-sans-mono"
-                    } text-white w-[1600px]`}
-                  >
+                  <p key={lineIndex} className={`${lineIndex === 0 ? 'text-5xl font-montserrat' : 'text-3xl font-sans-mono'} text-white w-[1600px]`}>
                     {line}
                   </p>
                 ))}
@@ -154,7 +149,7 @@ export default function Home() {
 
               {index === 0 && (
                 <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <button className="text-3xl text-white font-bold bg-cyan-blue-azure rounded-lg hover:bg-ebony-clay w-96 ">
+                  <button className="text-3xl text-white font-bold bg-cyan-blue-azure rounded-lg hover:bg-ebony-clay w-96 h-16">
                     <Link to="/book-appointment">Book an appointment</Link>
                   </button>
                 </div>
@@ -163,14 +158,14 @@ export default function Home() {
               {index === 1 && (
                 <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                   <button className="text-3xl text-white font-bold bg-cyan-blue-azure rounded-lg hover:bg-ebony-clay w-96 h-16">
-                    <Link to="/see-more">Find out more</Link>
+                    <Link to="/our-dentist">Find out more</Link>
                   </button>
                 </div>
               )}
               {index === 4 && (
                 <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                   <button className="text-3xl text-white font-bold bg-cyan-blue-azure rounded-lg hover:bg-ebony-clay w-96 h-16">
-                    <Link to="/see-more">Contact us now</Link>
+                    <Link to="/contact-us">Contact us now</Link>
                   </button>
                 </div>
               )}
@@ -180,90 +175,156 @@ export default function Home() {
       </div>
 
       {/*Start Service*/}
-      <div
-        className="my-16 flex flex-col justify-center items-center gap-16"
-        data-aos="fade-up"
-      >
-        <div className="ml-10 flex flex-row w-9/12 gap-16">
-          <div>
-            <div className=" flex flex-col gap-5 w-auto">
-              <span className="text-xl font-bold ">Services</span>
-              <h2 className="text-5xl font-bold ">
-                Feel amazing about your oral health
-              </h2>
-            </div>
-          </div>
-          <div className="w-10/12">
-            <p className="text-grullo py-14">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris
-              dapibus, nunc et porttitor tincidunt, ipsum, onsectetur adipiscing
-              elit. Mauris dapibus, nunc et porttitor tincidunt
-            </p>
+    <div className="my-16 ml-10 flex flex-col justify-center items-center gap-16 bg-gray-100 rounded-xl w-[1740px] pb-10" data-aos="fade-up">
+      <div className="ml-10 flex flex-row w-10/12 gap-16 pt-6 pl-3">
+        <div>
+          <div className=" flex flex-col gap-5 w-auto">
+            <span className="text-xl font-bold ">Services</span>
+            <h2 className="text-5xl font-bold ">Feel amazing about your oral health</h2>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center gap-16">
-          {/* 4 khung service*/}
-          <div className="flex flex-row justify-center items-center gap-20">
-            {services.map((sv) => (
-              <div className="flex flex-col justify-center items-center w-[260px] h-80 gap-4 border-2 border-solid border-black rounded-3xl pt-10">
-                <div className="border-2 border-solid border-black rounded-3xl w-40 h-64 flex justify-center items-center">
-                  <img
-                    src={sv.image}
-                    alt="Facebook"
-                    className=" w-full h-full rounded-3xl"
-                  />
+        <div className="w-10/12">
+          <p className="text-grullo text-xl py-14">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris dapibus, nunc et porttitor tincidunt, ipsum, onsectetur adipiscing elit. Mauris dapibus, nunc et porttitor tincidunt</p>
+        </div>
+      </div>
+      <div className="flex flex-col items-center justify-center gap-16">
+        {/* 4 khung service*/}
+        <div className="flex flex-row justify-center items-center gap-20">
+          <div className='flex flex-col justify-center items-center gap-7'>
+            <Link to="/service">
+                <div className='bg-white w-[360px] h-44 pl-5 hover:bg-blue-500 hover:text-white transition duration-200'>
+                  <div className='flex flex-col gap-6 '>
+                    <div className='flex flex-row gap-24 '>
+                      <div className='font-semibold text-2xl pt-5'>
+                        Cosmetic Dentistry
+                      </div>
+                      <div className='text-4xl pt-3 '>
+                      &#8250;
+                      </div>
+                    </div>
+                    <div className='flex flex-row'>
+                      <div className='text-xl'>
+                        Vineers, whitening, bonding, fillings etc.
+                      </div>
+                      <img src={dental_pic1} alt=""  className="flex justify-end items-end w-40 h-24"/>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold">{sv.name}</h3>
-                <p className="text-center text-gr">{sv.description}</p>
-              </div>
-            ))}
-            {/* <div className="flex flex-col justify-center items-center w-[260px] h-80 gap-4 border-2 border-solid border-black rounded-3xl pt-10">
-              <div className="border-2 border-solid border-black rounded-3xl w-40 h-64 flex justify-center items-center">
-                <img src={fb_pic} alt="Facebook" className=" w-10 h-10" />
-              </div>
-              <h3 className="text-xl font-bold">Dentures</h3>
-              <p className="text-center text-gr">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-              </p>
-            </div>
-            <div className="flex flex-col justify-center items-center w-[260px] h-80 gap-4 border-2 border-solid border-black rounded-3xl pt-10">
-              <div className="border-2 border-solid border-black rounded-3xl w-40 h-64 flex justify-center items-center">
-                <img src={fb_pic} alt="Facebook" className=" w-10 h-10" />
-              </div>
-              <h3 className="text-xl font-bold ">Implants</h3>
-              <p className="text-center text-gr">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-              </p>
-            </div>
-            <div className="flex flex-col justify-center items-center w-[260px] h-80 gap-4 border-2 border-solid border-black rounded-3xl pt-10">
-              <div className="border-2 border-solid border-black rounded-3xl w-40 h-64 flex justify-center items-center">
-                <img src={fb_pic} alt="Facebook" className=" w-10 h-10" />
-              </div>
-              <h3 className="text-xl font-bold ">Root Canal</h3>
-              <p className="text-center text-gr">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-              </p>
-            </div>
-            <div className="flex flex-col justify-center items-center w-[260px] h-80 gap-4 border-2 border-solid border-black rounded-3xl pt-10">
-              <div className="border-2 border-solid border-black rounded-3xl w-40 h-64 flex justify-center items-center">
-                <img src={fb_pic} alt="Facebook" className=" w-10 h-10" />
-              </div>
-              <h3 className="text-xl font-bold ">Teeth Whitening</h3>
-              <p className="text-center text-gr">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-              </p>
-            </div> */}
+                </Link>
+                <Link to="/service">
+                <div className='bg-white w-[360px] h-44 pl-5 hover:bg-blue-500 hover:text-white transition duration-200'>
+                  <div className='flex flex-col gap-6 '>
+                    <div className='flex flex-row gap-40 '>
+                      <div className='font-semibold text-2xl pt-5'>
+                        Orthodontics
+                      </div>
+                      <div className='text-4xl pt-3 '>
+                      &#8250;
+                      </div>
+                    </div>
+                    <div className='flex flex-row'>
+                      <div className='text-xl'>
+                        Invasaligns,metal braces, expander, etc.
+                      </div>
+                      <img src={dental_pic2} alt=""  className="flex justify-end items-end w-40 h-24"/>
+                    </div>
+                  </div>
+                </div>
+                </Link>
           </div>
-          {/* 4 khung service*/}
-          <Link
-            to="/service"
-            className="flex items-center justify-center text-xl text-white font-bold hover:bg-ebony-clay border-2 border-solid bg-blue-hosta rounded-2xl w-60 h-14"
-          >
+          
+          <div className='flex flex-col justify-center items-center gap-7'>
+            <Link to="/service">
+                <div className='bg-white w-[360px] h-44 pl-5 hover:bg-blue-500 hover:text-white transition duration-200'>
+                  <div className='flex flex-col gap-6 '>
+                    <div className='flex flex-row gap-[116px] '>
+                      <div className='font-semibold text-2xl pt-5'>
+                        General Dentistry
+                      </div>
+                      <div className='text-4xl pt-3 '>
+                      &#8250;
+                      </div>
+                    </div>
+                    <div className='flex flex-row'>
+                      <div className='text-xl'>
+                        Vineers, whitening, bonding, fillings etc.
+                      </div>
+                      <img src={dental_pic3} alt="" className="flex justify-end items-end w-40 h-24"/>
+                    </div>
+                  </div>
+                </div>
+                </Link>
+                <Link to="/service">
+                <div className='bg-white w-[360px] h-44 pl-5 hover:bg-blue-500 hover:text-white transition duration-200'>
+                  <div className='flex flex-col gap-6 '>
+                    <div className='flex flex-row gap-[158px]'>
+                      <div className='font-semibold text-2xl pt-5'>
+                        Oral Dentistry
+                      </div>
+                      <div className='text-4xl pt-3 '>
+                      &#8250;
+                      </div>
+                    </div>
+                    <div className='flex flex-row'>
+                      <div className='text-xl'>
+                        Vineers, whitening, bonding, fillings etc.
+                      </div>
+                      <img src={dental_pic4} alt="" className="flex justify-end items-end w-40 h-24"/>
+                    </div>
+                  </div>
+                </div>
+                </Link>
+          </div>
+          <div className='flex flex-col justify-center items-center gap-7'>
+            <Link to="/service">
+                <div className='bg-white w-[360px] h-44 pl-5 hover:bg-blue-500 hover:text-white transition duration-200'>
+                  <div className='flex flex-col gap-6 '>
+                    <div className='flex flex-row gap-[180px] '>
+                      <div className='font-semibold text-2xl pt-5'>
+                        Restoration
+                      </div>
+                      <div className='text-4xl pt-3 '>
+                      &#8250;
+                      </div>
+                    </div>
+                    <div className='flex flex-row'>
+                      <div className='text-xl'>
+                        Vineers, whitening, bonding, fillings etc.
+                      </div>
+                      <img src={dental_pic5} alt="" className="flex justify-end items-end w-40 h-24"/>
+                    </div>
+                  </div>
+                </div>
+                </Link>
+                <Link to="/service">
+                <div className='bg-white w-[360px] h-44 pl-5 hover:bg-blue-500 hover:text-white transition duration-200'>
+                  <div className='flex flex-col gap-6 '>
+                    <div className='flex flex-row gap-[124px] '>
+                      <div className='font-semibold text-2xl pt-5'>
+                        Tooth Extraction
+                      </div>
+                      <div className='text-4xl pt-3 '>
+                      &#8250;
+                      </div>
+                    </div>
+                    <div className='flex flex-row'>
+                      <div className='text-xl'>
+                        Vineers, whitening, bonding, fillings etc.
+                      </div>
+                      <img src={dental_pic6} alt="" className="flex justify-end items-end w-40 h-24"/>
+                    </div>
+                  </div>
+                </div>
+                </Link>
+          </div>
+        </div>
+        {/* 4 khung service*/}
+        <Link to="/service" className="flex items-center justify-center text-xl text-white font-bold hover:bg-blue-500 border-2 border-solid bg-blue-hosta rounded-2xl w-60 h-14 transition duration-200">
             View all service list
           </Link>
-        </div>
-        {/*End Services*/}
-        {/*Testimonial*/}
+      </div>
+      {/*End Services*/}
+      {/*Testimonial*/}
         <div className="ml-10 flex flex-col gap-20 w-[1740px] h-[600px] pt-14 bg-blue-hosta rounded-3xl">
           <div className="flex flex-row " data-aos="fade-up">
             <div className="flex flex-col gap-5 pl-48">

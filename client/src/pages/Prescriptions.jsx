@@ -52,38 +52,37 @@ export default function Prescriptions() {
   return (
     <>
       <NavBar />
-
       <div className="container mx-auto my-8 p-8 bg-white shadow-xl text-center">
         <h2 className="text-4xl font-semibold mb-4 pb-7">
           Dental Prescription
         </h2>
         <div className="flex flex-col pl-20">
-          <div className="flex flex-row gap-[77px] text-xl pb-2">
+          <div className="flex flex-row gap-[130px] text-xl pb-2">
             <div className="font-bold">Patient's name: </div>
             <div className="">{user.name}</div>
           </div>
-          <div className="flex flex-row gap-[109px] text-xl pb-2">
+          <div className="flex flex-row gap-[162px] text-xl pb-2">
             <div className="font-bold">Patient's ID: </div>
             <div className="">{user.id}</div>
           </div>
 
-          <div className="flex flex-row gap-24 text-xl pb-2">
+          <div className="flex flex-row gap-[153px] text-xl pb-2">
             <div className="font-bold">Date of birth:</div>
             <div className="">{formatDate(user.birthday)}</div>
           </div>
-          <div className="flex flex-row gap-[116px] text-xl pb-2">
+          <div className="flex flex-row gap-[166px] text-xl pb-2">
             <div className="font-bold">Symptoms:</div>
             <div className="">{patientRecord[0].symptom}</div>
           </div>
-          <div className="flex flex-row gap-[125px] text-xl pb-2">
+          <div className="flex flex-row gap-[173px] text-xl pb-2">
             <div className="font-bold">Diagnosis:</div>
             <div className="">{patientRecord[0].diagnostic}</div>
           </div>
-          <div className="flex flex-row gap-[109px] text-xl pb-2">
+          <div className="flex flex-row gap-[160px] text-xl pb-2">
             <div className="font-bold">Dentist's ID: </div>
             <div className="">{patientRecord[0].dentistId}</div>
           </div>
-          <div className="flex flex-row gap-[104px] text-xl pb-8">
+          <div className="flex flex-row gap-[156px] text-xl pb-8">
             <div className="font-bold">Date of visit:</div>
             <div className="">{formatDate(patientRecord[0].date_time)}</div>
           </div>

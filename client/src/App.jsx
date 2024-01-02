@@ -40,7 +40,6 @@ import AddService from "./pages/Admin/pages/AddService";
 import Profile from "./pages/Profile";
 import BookAppointment from "./pages/BookAppointment";
 import OurDentists from "./pages/OurDentists";
-import SpecificDentists from "./pages/SpecificDentist";
 import MyAppointment from "./pages/MyAppointments";
 import BookSuccess from "./pages/BookSuccess";
 import BookFailed from "./pages/BookFailed";
@@ -95,10 +94,6 @@ const router = createBrowserRouter(
       <Route path="/profile" element={<Profile />}></Route>
       <Route path="/book-appointment" element={<BookAppointment />}></Route>
       <Route path="/our-dentist" element={<OurDentists />}></Route>
-      <Route
-        path="/our-dentist/specific-dentist"
-        element={<SpecificDentists />}
-      ></Route>
       <Route path="/my-appointment" element={<MyAppointment />}></Route>
       <Route path="/my-dental-record" element={<DentalRecords />}></Route>
       <Route path="/book-successful" element={<BookSuccess />}></Route>

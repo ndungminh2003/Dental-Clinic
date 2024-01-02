@@ -1,28 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
-import profile_pic from "../images/CharliePuth.png";
+import dentist1 from "../images/dentist1.png";
+import dentist2 from "../images/dentist2.png";
+import dentist3 from "../images/dentist3.png";
+import dentist4 from "../images/dentist4.png";
+import dentist5 from "../images/dentist5.png";
+import dentist6 from "../images/dentist6.png";
 import Form from "../components/AppointmentForm";
 import dentistService from "../features/dentist/dentistServices";
 export default function OurDentists() {
   const [dentists, setDentists] = useState([]);
+  const [dentistImage, setDentistImage] = useState([
+    dentist1,
+    dentist2,
+    dentist3,
+    dentist4,
+    dentist5,
+    dentist6,
+  ]);
+  console.log(dentistImage);
   useEffect(() => {
     dentistService.getAllDentist().then((res) => {
       setDentists(res);
     });
   }, []);
-  console.log(dentists);
   return (
     <>
       <div className="flex flex-col justify-center items-center gap-10">
         <NavBar />
-        <div className="flex flex-col justify-center items-center gap-16 w-10/12">
+        <div className="flex flex-col justify-center items-center gap-12 w-10/12">
           <div className="text-6xl font-extrabold">OUR DENTISTS</div>
           <div>
             <div className="text-4xl font-extrabold">
               Welcome to Our Dentists!
             </div>
-            <div className="text-2xl ">
+            <div className="text-2xl pt-4">
               Meet our dedicated dental professionals, each committed to
               delivering personalized care tailored to your unique needs. With a
               passion for dentistry, our team strives to make your visit
@@ -34,64 +47,71 @@ export default function OurDentists() {
               confident, glowing smile!
             </div>
           </div>
-          <div className="flex flex-row gap-16 flex-wrap">
-            {dentists.map((dt) => (
-              <div className="flex flex-col gap-1">
-                <img src={profile_pic} alt="" />
-                <div className="text-3xl text-ebony-clay font-bold pt-5 capitalize">
-                  {dt.name}
+          <div className="flex flex-row  flex-wrap  gap-16 justify-center">
+            {dentists.map((dentist, index) => (
+              <div
+                className="flex flex-col gap-1 basis-1/4 justify-center items-center"
+                key={index}
+              >
+                <img
+                  src={dentistImage[index]}
+                  className="w-[430px] h-[370px]"
+                  alt=""
+                />
+                <div className="text-3xl text-ebony-clay font-bold pt-5  ">
+                  {dentist.name}
                 </div>
-                <div className="text-gray-500">{dt.introduction}</div>
+                <div className="text-gray-500">{dentist.introduction}</div>
               </div>
             ))}
+            {/* <div className="flex flex-col gap-1 items-center">
+              <img src={dentist1} className="w-[430px] h-[370px]" alt="" />
+              <div className="text-3xl text-ebony-clay font-bold pt-5  ">
+                DR.ANH NGUYEN
+              </div>
+              <div className="text-gray-500">General & Cosmetic Dentist</div>
+            </div>
 
-            {/* <a href="/our-dentist/specific-dentist/">
-              <div className="flex flex-col gap-1">
-                <img src={profile_pic} alt="" />
-                <div className="text-3xl text-ebony-clay font-bold pt-5 hover:underline">
-                  CHARLIE PUTH
-                </div>
-                <div className="text-gray-500">General & Cosmetic Dentist</div>
+            <div className="flex flex-col gap-1 items-center">
+              <img src={dentist2} className="w-[430px] h-[370px]" alt="" />
+              <div className="text-3xl text-ebony-clay font-bold pt-5  ">
+                DR.NGUYEN LE
               </div>
-            </a>
-            <a href="/our-dentist/specific-dentist/">
-              <div className="flex flex-col gap-1">
-                <img src={profile_pic} alt="" />
-                <div className="text-3xl text-ebony-clay font-bold pt-5 hover:underline">
-                  CHARLIE PUTH
-                </div>
-                <div className="text-gray-500">General & Cosmetic Dentist</div>
+              <div className="text-gray-500">General & Cosmetic Dentist</div>
+            </div>
+
+            <div className="flex flex-col gap-1 items-center">
+              <img src={dentist3} className="w-[430px] h-[370px]" alt="" />
+              <div className="text-3xl text-ebony-clay font-bold pt-5  ">
+                DR.SOFYAN AMRABAT
               </div>
-            </a>
+              <div className="text-gray-500">General & Cosmetic Dentist</div>
+            </div>
           </div>
           <div className="flex flex-row gap-16">
-            <a href="/our-dentist/specific-dentist/">
-              <div className="flex flex-col gap-1">
-                <img src={profile_pic} alt="" />
-                <div className="text-3xl text-ebony-clay font-bold pt-5 hover:underline">
-                  CHARLIE PUTH
-                </div>
-                <div className="text-gray-500">General & Cosmetic Dentist</div>
+            <div className="flex flex-col gap-1 items-center">
+              <img src={dentist4} className="w-[430px] h-[370px]" alt="" />
+              <div className="text-3xl text-ebony-clay font-bold pt-5  ">
+                DR.KHANH NGUYEN
               </div>
-            </a>
-            <a href="/our-dentist/specific-dentist/">
-              <div className="flex flex-col gap-1">
-                <img src={profile_pic} alt="" />
-                <div className="text-3xl text-ebony-clay font-bold pt-5 hover:underline">
-                  CHARLIE PUTH
-                </div>
-                <div className="text-gray-500">General & Cosmetic Dentist</div>
+              <div className="text-gray-500">General & Cosmetic Dentist</div>
+            </div>
+
+            <div className="flex flex-col gap-1 items-center">
+              <img src={dentist5} className="w-[430px] h-[370px]" alt="" />
+              <div className="text-3xl text-ebony-clay font-bold pt-5  ">
+                DR.ISABELLA FLETCHER
               </div>
-            </a>
-            <a href="/our-dentist/specific-dentist/">
-              <div className="flex flex-col gap-1">
-                <img src={profile_pic} alt="" />
-                <div className="text-3xl text-ebony-clay font-bold pt-5 hover:underline">
-                  CHARLIE PUTH
-                </div>
-                <div className="text-gray-500">General & Cosmetic Dentist</div>
+              <div className="text-gray-500">General & Cosmetic Dentist</div>
+            </div>
+
+            <div className="flex flex-col gap-1 items-center">
+              <img src={dentist6} className="w-[430px] h-[370px]" alt="" />
+              <div className="text-3xl text-ebony-clay font-bold pt-5  ">
+                DR.MINH NGUYEN
               </div>
-            </a>*/}
+              <div className="text-gray-500">General & Cosmetic Dentist</div>
+            </div> */}
           </div>
         </div>
         <Form />

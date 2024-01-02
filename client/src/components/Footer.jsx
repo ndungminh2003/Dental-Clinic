@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import fb_pic from '../images/facebook.png'
+import Logo from '../images/logo.png'
 import ig_pic from '../images/instagram.png'
 import tw_pic from '../images/twitter.png'
 import phone from '../images/phone.png'
 import clock from '../images/clock.png'
 import address from '../images/address.png'
-
 
 export default function Footer() {
     return (
@@ -15,10 +15,10 @@ export default function Footer() {
       <div className="container mx-auto grid grid-cols-3 gap-4 py-3 justify-items-center p-6">
       <div className=" flex flex-col gap-7 ">
         <div className="flex flex-row">
-            <div><img
-              src={fb_pic}
+        <div><img
+              src={Logo}
               alt="Facebook"
-              className=" w-8 h-8 cursor-pointer "
+              className=" w-12 h-12 cursor-pointer "
             />
             </div>
             <p className=" ml-2 flex items-center text-2xl text-white text-grullo font-extrabold" >DentalCare</p>

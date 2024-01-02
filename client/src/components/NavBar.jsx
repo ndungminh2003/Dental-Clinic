@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { faCircleUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { logout } from "../features/auth/authSlice";
+import Logo from '../images/logo.png'
 export default function NavBar() {
   const dispatch = useDispatch();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -27,7 +28,12 @@ export default function NavBar() {
   return (
     <>
       <div className="flex w-full border-b border-solid border-gray justify-evenly items-center h-24">
-        <div>Logo</div>
+      <div><img
+              src={Logo}
+              alt="Facebook"
+              className=" w-12 h-12 cursor-pointer "
+            />
+            </div>
         <div className="flex flex-row gap-[60px] ">
           <div className="text-2xl hover:bg-gray-100 w-[140px] h-14 rounded-xl flex justify-center items-center">
             <Link to="/">Home</Link>

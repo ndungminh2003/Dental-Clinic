@@ -179,6 +179,15 @@ BEGIN
     GRANT EXEC ON dbo.sp_viewAllSchedule TO adminRole
     GRANT EXEC ON dbo.sp_addInvoice TO adminRole -- x
 
+	GRANT SELECT ON CUSTOMER TO adminRole  
+	GRANT UPDATE ON CUSTOMER TO adminRole
+
+	GRANT SELECT ON STAFF TO adminRole  
+	GRANT UPDATE ON STAFF TO adminRole
+
+	GRANT SELECT ON DENTIST TO adminRole  
+	GRANT UPDATE ON DENTIST TO adminRole
+
     GRANT SELECT ON CUSTOMER TO customerRole
     GRANT SELECT ON STAFF TO staffRole
     GRANT SELECT ON DENTIST TO dentistRole

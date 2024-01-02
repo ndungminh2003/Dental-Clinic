@@ -260,7 +260,6 @@ BEGIN
 END
 
 
-
 -- LOST UPDATE (Admin cùng cập nhật password sẽ bị ghi đè) 
 -- change customer password  (CUSTOMER, ADMIN)
 GO

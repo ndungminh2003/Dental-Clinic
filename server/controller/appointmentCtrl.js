@@ -110,16 +110,14 @@ const updateAppointmentStatus = async (req, res) => {
 };
 
 const cancelAppointment = async (req, res) => {
-  const input = JSON.stringify({ ...req.query });
+  const input = req.query;
   console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
       .input("dentistId", input.dentistId)
       .input("startTime", input.startTime)
-      .input("customerId", input.customerId)
       .execute("sp_cancelAppointment");
-    console.log(db);
     res.status(200).send("Appointment has been canceled");
   } catch (error) {
     if (error instanceof Error) {

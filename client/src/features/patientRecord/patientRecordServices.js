@@ -55,6 +55,25 @@ const getPatientRecordDentistId = async (dentistId) => {
   }
 };
 
+const getPatientRecordByCustomerId = async (customerId) => {
+  try {
+    const response = await Axios.get(
+      `patient-record/get-patient-record-by-customer-id/${customerId}`
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+  }
+};
+
 const createPatientRecord = async (patientRecord) => {
   const response = await Axios.post(
     "patient-record/create-patient-record",
@@ -68,6 +87,7 @@ const patientRecordService = {
   createPatientRecord,
   getPatientRecordDentistId,
   getOnePatientRecord,
+  getPatientRecordByCustomerId,
 };
 
 export default patientRecordService;

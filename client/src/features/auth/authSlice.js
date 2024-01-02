@@ -38,6 +38,17 @@ export const logout = createAsyncThunk("auth/logout", async (thunkAPI) => {
   }
 });
 
+export const updateCustomerProfile = createAsyncThunk(
+  "auth/update-customer-profile",
+  async (customer, thunkAPI) => {
+    try {
+      return await authService.updateCustomerProfile(customer);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const blockUser = createAsyncThunk(
   "auth/block-user",
   async (user, thunkAPI) => {
@@ -116,6 +127,26 @@ export const authSlice = createSlice({
         state.error = true;
         state.success = false;
         state.message = action.error;
+        state.loading = false;
+      })
+      .addCase(updateCustomerProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateCustomerProfile.fulfilled, (state, action) => {
+        state.error = false;
+        state.loading = false;
+        state.success = true;
+        state.user.gender = action.payload[0].gender;
+        state.user.address = action.payload[0].address;
+        state.user.birthday = action.payload[0].birthday;
+        state.user.phoneNumber = action.payload[0].phoneNumber;
+        state.user.name = action.payload[0].name;
+        state.message = "success";
+      })
+      .addCase(updateCustomerProfile.rejected, (state, action) => {
+        state.error = true;
+        state.success = false;
+        state.message = action.payload;
         state.loading = false;
       });
   },

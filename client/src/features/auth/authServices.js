@@ -19,6 +19,14 @@ const logout = async () => {
   return response.data;
 };
 
+const updateCustomerProfile = async (customer) => {
+  const response = await Axios.put(
+    `customer/update-customer-profile/${customer.id}`,
+    customer
+  );
+  return response.data;
+};
+
 const blockUser = async (user) => {
   try {
     const response = await Axios.put("auth/block-user", user);
@@ -41,6 +49,7 @@ const authService = {
   signUp,
   logout,
   blockUser,
+  updateCustomerProfile,
 };
 
 export default authService;

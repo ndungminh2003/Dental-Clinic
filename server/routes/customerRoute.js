@@ -12,7 +12,7 @@ router.get(
 );
 
 router.put(
-  "/update-customer-profile",
+  "/update-customer-profile/:customerId",
   authM.authMiddleware,
   authM.isNotDentist,
   authM.isNotStaff,

@@ -43,22 +43,52 @@ const YourFormComponent = () => {
     setFieldValue("date", e.target.value);
     let times = [];
     schedules?.forEach((element) => {
-      const date = formatDate(element.startTime);
-      if (date === e.target.value) {
-        times.push(element.startTime);
+      if (element.isBooked == false) {
+        const date = formatDate(element.startTime);
+        if (date === e.target.value) {
+          times.push(element.startTime);
+        }
       }
     });
     setAppointmentTime(times);
   };
-
+  const compareDates = (d1, d2) => {
+    let date1 = new Date(d1).getTime();
+    let date2 = new Date(d2).getTime();
+    console.log(d1, d2);
+    console.log(date1, date2);
+    if (date1 < date2) {
+      return -1;
+    } else if (date1 > date2) {
+      return 1;
+    } else {
+      return 0;
+    }
+  };
   const handleDentistChange = async (e) => {
     setFieldValue("dentistId", e.target.value);
     scheduleService.getDentistSchedule(e.target.value).then((res) => {
       let dates = [];
       res?.forEach((element) => {
-        const date = formatDate(element.startTime);
-        if (!dates.includes(date)) {
-          dates.push(date);
+        let d = new Date();
+        let currentDate = new Date(
+          d.getFullYear(),
+          d.getMonth(),
+          d.getDate(),
+          d.getHours() + 15,
+          d.getMinutes()
+        )
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " ");
+        if (
+          element.isBooked == false &&
+          compareDates(element.startTime, currentDate) == 1
+        ) {
+          const date = formatDate(element.startTime);
+          if (!dates.includes(date)) {
+            dates.push(date);
+          }
         }
       });
       setAppointmentDate(dates);

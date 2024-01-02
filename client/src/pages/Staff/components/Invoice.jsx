@@ -6,43 +6,76 @@ import { getInvoiceByRecordId } from "../../../features/invoice/invoiceSlice";
 import { updateInvoiceStatus } from "../../../features/invoice/invoiceSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-
+import PopupSuccess from "../../../components/PopupSuccess";
+import PopupFail from "../../../components/PopupFail";
 export default function Invoice(props) {
   const { onClose, open, services, medicine, getTotal, recordId } = props;
   const dispatch = useDispatch();
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isFail, setIsFail] = useState(false);
+  const [mess, setMess] = useState("");
+  const [isPay, setIsPay] = useState("");
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const {
     invoice: invoiceData,
     loading: invoiceLoading,
     success: invoiceSuccess,
+    message: invoiceMessage,
     error: invoiceError,
   } = useSelector((state) => state.invoice);
   useEffect(() => {
     dispatch(getInvoiceByRecordId(recordId));
   }, []);
+  useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
+  useEffect(() => {
+    if (!isFirstRender) {
+      if (invoiceLoading && isPay) {
+        if (invoiceMessage === "success") {
+          setIsSuccess(true);
+          setMess("pay invoice successfully!");
+        } else {
+          setIsFail(true);
+          setMess("pay invoice unsuccessfully!");
+        }
+        setIsPay(false);
+      }
+    }
+  }, [invoiceLoading, invoiceSuccess, invoiceMessage]);
+
   const handleListItemClick = (value) => {
     onClose(value);
   };
   const handleInvoicePrintClick = () => {
     window.print();
   };
+  useEffect(() => {
+    console.log("invoice", invoiceData);
+  }, [invoiceData]);
   const handlePayClick = () => {
     let data = {
       invoiceId: invoiceData[0].id,
       status: "Paid",
     };
     dispatch(updateInvoiceStatus(data));
+    setIsPay(true);
   };
+  const handleClosePopUp = () => {
+    setIsSuccess(false);
+    setIsFail(false);
+  };
+
   return (
     <Dialog onClose={onClose} open={open}>
-      {invoiceData && invoiceData.length > 0 && (
-        <div className=" p-10">
-          <div>
-            <InvoiceCom
-              services={services}
-              medicine={medicine}
-              total={getTotal}
-            />
-          </div>
+      <div className=" p-10">
+        <div>
+          <InvoiceCom
+            services={services}
+            medicine={medicine}
+            total={getTotal}
+          />
+        </div>
           <div className="text-right mt-5">
             {invoiceData &&
             invoiceData.length > 0 &&
@@ -72,8 +105,13 @@ export default function Invoice(props) {
               Close
             </button>
           </div>
-        </div>
-      )}
+      </div>
+      <PopupSuccess
+        onClose={handleClosePopUp}
+        open={isSuccess}
+        message={mess}
+      />
+      <PopupFail onClose={handleClosePopUp} open={isFail} message={mess} />
     </Dialog>
   );
 }
@@ -95,4 +133,5 @@ Invoice.propTypes = {
     })
   ),
   recordId: PropTypes.number,
+  getTotal: PropTypes.func.isRequired,
 };

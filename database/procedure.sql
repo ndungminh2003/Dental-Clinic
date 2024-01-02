@@ -565,6 +565,87 @@ BEGIN
 END
 
 
+-- update staff profile, lost update(Admin cùng sửa profile), dirty read(khi 2 người nhân viên cùng sửa đổi số điện thoại cùng 1 lúc nhưng 1 người được cập nhật số điện thoại mới 1 người không nhưng đến cuối người được cập nhật số điện thoại lại fail commit)
+GO
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_updateStaffProfile')
+BEGIN
+	DROP PROCEDURE sp_updateStaffProfile
+END
+GO
+
+CREATE PROC sp_updateStaffProfile
+	@staffId INT,
+	@name NVARCHAR(50),
+	@phoneNumber VARCHAR(15),
+	@gender NVARCHAR(6)
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+	BEGIN TRY
+	 	BEGIN TRAN
+		IF NOT EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
+		BEGIN
+			RAISERROR(N'Error: Staff ID does not exist.',16, 1)
+			ROLLBACK TRAN
+		END
+		IF EXISTS (SELECT 1 FROM STAFF WHERE id != @staffId AND phoneNumber = @phoneNumber)
+		BEGIN
+			RAISERROR(N'Error: Phone number has been registered.',16, 1)
+			ROLLBACK TRAN
+		END
+		UPDATE STAFF SET name = @name, phoneNumber = @phoneNumber, gender = @gender WHERE id = @staffId
+		SELECT * FROM STAFF WHERE id = @staffId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
+
+--change staff password Lost update(Admin cùng thay đổi), Dirty read 
+GO
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_changeStaffPassword')
+BEGIN
+	DROP PROCEDURE sp_changeStaffPassword
+END
+GO
+
+CREATE PROC sp_changeStaffPassword
+	@staffId INT,
+	@oldPassword VARCHAR(50),
+	@newPassword VARCHAR(50)
+AS
+SET XACT_ABORT, NOCOUNT ON
+BEGIN
+	BEGIN TRY
+		BEGIN TRAN
+			IF NOT EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId)
+			BEGIN
+				RAISERROR(N'Error: Dentist ID does not exist.',16, 1)
+				ROLLBACK TRAN
+			END
+			IF LEN(@newPassword) <= 10
+			BEGIN
+				RAISERROR(N'Error: Password must be more than 10 characters.', 16, 1)
+				ROLLBACK TRAN
+			END
+			IF NOT EXISTS (SELECT 1 FROM STAFF WHERE id = @staffId AND password = @oldPassword)
+			BEGIN
+				RAISERROR(N'Error: The old password is incorrect.',16, 1)
+				ROLLBACK TRAN
+			END
+			UPDATE STAFF SET password = @newPassword WHERE id = @staffId
+		COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF @@trancount > 0 ROLLBACK TRAN
+        ;THROW
+	END CATCH
+END
+
+
 -- make appointment 
 -- 2 user cung make dirty read, lost update
 GO

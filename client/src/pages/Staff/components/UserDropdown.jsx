@@ -117,9 +117,11 @@ export default function UserDropdown() {
                       aria-labelledby="composition-button"
                       onKeyDown={handleListKeyDown}
                     >
-                      <MenuItem onClick={handleProfile}>
-                        <NavLink to="profile">Profile</NavLink>
-                      </MenuItem>
+                       <NavLink to="profile" onClick={handleProfile}>
+                        <MenuItem >
+                          Profile
+                        </MenuItem>
+                      </NavLink>
                       <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
                     </MenuList>
                   </ClickAwayListener>

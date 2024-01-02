@@ -10,7 +10,7 @@ router.post(
   // authM.isAdmin,
   dentistCtrl.createDentistAccount
 );
-router.get("/get-one-dentist", dentistCtrl.getOneDentist);
+router.get("/get-one-dentist/:dentistId", dentistCtrl.getOneDentist);
 router.get("/get-all-dentist", dentistCtrl.getAllDentist);
 router.put(
   "/change-dentist-profile",

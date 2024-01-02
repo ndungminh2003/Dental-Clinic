@@ -19,7 +19,7 @@ export default function PopupFail(props) {
             <CancelIcon style={{ fontSize: 70, color: "#f87171" }} />
           </div>
             <h1 className ="text-center text-lg font-medium text-red-400">SORRY!</h1>
-            <p className ="text-center mt-5"></p>
+            <p className ="text-center mt-5">{message}</p>
             <p className ="text-center mt-5">Please try again</p>
           </div>
           <button

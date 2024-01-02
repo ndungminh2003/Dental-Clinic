@@ -24,11 +24,11 @@ const createDentistAccount = async (req, res) => {
 };
 
 const getOneDentist = async (req, res) => {
-  const { dentistId } = req.body;
+  const input = req.params;
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
-      .input("dentistId", dentistId)
+      .input("dentistId", input.dentistId)
       .execute("sp_viewOneDentist");
     res.status(200).json(db.recordset);
   } catch (error) {

@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import Invoice from "../components/Invoice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import serviceUseServices from "../../../features/service/serviceServices";
+import serviceUseServices from "../../../features/serviceUse/serviceUseServices";
 import invoiceServices from "../../../features/invoice/invoiceServices";
 import prescribeMedicineServices from "../../../features/prescribeMedicine/prescribeMedicineServices";
 import patientRecordServices from "../../../features/patientRecord/patientRecordServices";
@@ -25,6 +25,7 @@ function SimpleDialog(props) {
     recordId,
   } = props;
   const dispatch = useDispatch();
+  const [isAdd, setIsAdd] = React.useState(false);
   const [total, setTotal] = React.useState();
   const handleClose = () => {
     onClose();
@@ -33,6 +34,11 @@ function SimpleDialog(props) {
   const getTotal = (e) => {
     setTotal(e);
   };
+  
+  useEffect(() => {
+    console.log("total", total);
+  },[total]);
+
   const getCurrentDateTime = () => {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -46,16 +52,25 @@ function SimpleDialog(props) {
   };
   useEffect(() => {
     if (total && !invoice?.length) {
+      console.log("test",total && !invoice?.length);
       let data = {
         recordId: recordId,
         date_time: getCurrentDateTime(),
-        status: "Chưa thanh toán",
+        status: "Unpaid",
         total: total,
         staffId: 1,
       };
+      console.log("data",data);
       dispatch(addInvoice(data));
+      setIsAdd(true);
     }
-  }, [total, recordId]);
+  }, [total, recordId,invoice]);
+
+  useEffect(() => {
+    console.log("total",total)
+  },[total])
+
+
   const [openInvoice, setOpenInvoice] = React.useState(false);
   const handleCloseInvoice = () => {
     setOpenInvoice(false);
@@ -147,8 +162,7 @@ function SimpleDialog(props) {
           <button
             onClick={handleInvoiceClick}
             className="bg-sky-500 rounded-md px-3 py-2 mr-2"
-          >
-            {invoice && !invoice.length ? "Add Invoice" : "See Invoice"}
+          > {isAdd ? ("See Invoice"):((invoice && !invoice.length) ? "Add Invoice" : "See Invoice")}
           </button>
           <button
             onClick={() => handleListItemClick("hi")}
@@ -157,14 +171,14 @@ function SimpleDialog(props) {
             Close
           </button>
         </div>
-        <Invoice
-          open={openInvoice}
-          onClose={handleCloseInvoice}
-          services={service}
-          medicine={prescribeMedicine}
-          getTotal={getTotal}
-          recordId={recordId}
-        />
+          <Invoice
+            open={openInvoice}
+            onClose={handleCloseInvoice}
+            services={service}
+            medicine={prescribeMedicine}
+            getTotal={getTotal}
+            recordId={recordId}
+          />
       </div>
     </Dialog>
   );
@@ -339,6 +353,7 @@ export default function AllAppointments() {
         invoiceServices.getInvoiceByRecordId(recordId),
         prescribeMedicineServices.getPrescribeMedicineByRecordId(recordId),
       ]);
+      console.log("in",invoiceResponse);
       setAllData((prevData) => {
         return prevData.map((item) => {
           if (item.recordId === recordId) {

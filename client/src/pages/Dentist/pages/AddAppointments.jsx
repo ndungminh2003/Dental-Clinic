@@ -19,8 +19,8 @@ import {
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import scheduleService from "../../../features/schedule/scheduleServices";
-import PopupSuccess from "../components/PopupSuccess";
-import PopupFail from "../components/PopupFail";
+import PopupSuccess from "../../../components/PopupSuccess";
+import PopupFail from "../../../components/PopupFail";
 import { deleteDentistSchedule } from "../../../features/schedule/scheduleSlice";
 import { createDentistSchedule } from "../../../features/schedule/scheduleSlice";
 function getDate() {
@@ -47,17 +47,35 @@ const Demo = () => {
   let { error, loading, success, message } = useSelector(
     (state) => state.schedule
   );
+  const [schedule, setSchedule] = useState([]);
+  const [sucesssD, setSucessD] = useState(false);
+  const [fail, setFail] = useState(false);
+  const [mess, setMess] = useState(false);
+  const [isFirstRender, setIsFirstRender] = useState(true);
+  const [index, setIndex] = useState(true);
 
   const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
 
   useEffect(() => {
     fetchData(user.id);
   }, [error, loading, success]);
 
-  const [schedule, setSchedule] = useState([]);
-  const [sucesssD, setSucessD] = useState(false);
-  const [fail, setFail] = useState(false);
-  const [mess, setMess] = useState(false);
+  useEffect(() => {
+    if (!isFirstRender) {
+      if (loading !== true) {
+        if (success) {
+          setSucessD(true);
+        } else {
+          setFail(true);
+          setMess("Temp message");
+        }
+      }
+    }
+  }, [loading, success, message]);
 
   const fetchData = async (dentistId) => {
     try {
@@ -66,18 +84,33 @@ const Demo = () => {
         scheduleService.getFullslotSchedule(),
       ]);
       let i = 0;
-      const dentist = dentistResponse.map((item, index) => ({
-        id: i++,
-        title: "free schedule",
-        endDate: new Date(item.endTime).toLocaleString("en-US", {
-          timeZone: "UTC",
-        }),
-        startDate: new Date(item.startTime).toLocaleString("en-US", {
-          timeZone: "UTC",
-        }),
-        color: "#80B3EE",
-      }));
-      console.log("dentist", dentist);
+      const dentist = dentistResponse
+        .filter((item) => !item.isBooked)
+        .map((item, index) => ({
+          id: i++,
+          title: "free schedule",
+          endDate: new Date(item.endTime).toLocaleString("en-US", {
+            timeZone: "UTC",
+          }),
+          startDate: new Date(item.startTime).toLocaleString("en-US", {
+            timeZone: "UTC",
+          }),
+          color: "#80B3EE",
+        }));
+      setIndex(i);
+      const appointment = dentistResponse
+        .filter((item) => item.isBooked)
+        .map((item, index) => ({
+          id: i++,
+          title: "appointment",
+          endDate: new Date(item.endTime).toLocaleString("en-US", {
+            timeZone: "UTC",
+          }),
+          startDate: new Date(item.startTime).toLocaleString("en-US", {
+            timeZone: "UTC",
+          }),
+          color: "#F59E0B",
+        }));
       const fullSlot = fullSlotResponse.map((item, index) => ({
         id: i++,
         title: "full slot schedule",
@@ -89,9 +122,8 @@ const Demo = () => {
         }),
         color: "#EE8080",
       }));
-      const mergedData = [...dentist, ...fullSlot];
+      const mergedData = [...dentist, ...fullSlot, ...appointment];
       setSchedule(mergedData);
-      console.log(mergedData);
     } catch (error) {
       console.log(error);
     }
@@ -132,14 +164,11 @@ const Demo = () => {
       let { data } = prevState;
       if (added) {
         let inputData = {
-          dentistId: user?.id,
+          dentistId: 1,
           startTime: formatDate(added.startDate),
         };
         dispatch(createDentistSchedule(inputData));
-        console.log("make appointment", message);
-        if (message !== "success") {
-          setFail(true);
-        }
+        setMess("The schedule has been successfully added.");
       }
       if (changed) {
         data = data.map((appointment) =>
@@ -149,32 +178,30 @@ const Demo = () => {
         );
       }
       if (deleted !== undefined) {
-        console.log("Deleted ID:", deleted);
-        const rowData = schedule.find((row) => row.id === deleted);
-        let inputData = {
-          dentistId: user?.id,
-          startTime: rowData.startDate,
-        };
-
-        let date = new Date(inputData.startTime);
-        date.setUTCHours(date.getUTCHours() + 7);
-        let year = date.getUTCFullYear();
-        let month = ("0" + (date.getUTCMonth() + 1)).slice(-2);
-        let day = ("0" + date.getUTCDate()).slice(-2);
-        let hours = ("0" + date.getUTCHours()).slice(-2);
-        let minutes = ("0" + date.getUTCMinutes()).slice(-2);
-        let seconds = ("0" + date.getUTCSeconds()).slice(-2);
-        let date_time = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
-        inputData.startTime = date_time;
-
-        dispatch(deleteDentistSchedule(inputData));
-        if (message === "success") {
-          setSucessD(true);
-        } else {
-          console.log("mesda", message);
-          setMess(message);
+        if (deleted > index - 1) {
+          setMess("This isn't schedule and can't be deleted");
           setFail(true);
+        } else {
+          const rowData = schedule.find((row) => row.id === deleted);
+          let inputData = {
+            dentistId: 1,
+            startTime: rowData.startDate,
+          };
+
+          let date = new Date(inputData.startTime);
+          date.setUTCHours(date.getUTCHours() + 7);
+          let year = date.getUTCFullYear();
+          let month = ("0" + (date.getUTCMonth() + 1)).slice(-2);
+          let day = ("0" + date.getUTCDate()).slice(-2);
+          let hours = ("0" + date.getUTCHours()).slice(-2);
+          let minutes = ("0" + date.getUTCMinutes()).slice(-2);
+          let seconds = ("0" + date.getUTCSeconds()).slice(-2);
+          let date_time = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+          inputData.startTime = date_time;
+
+          dispatch(deleteDentistSchedule(inputData));
+          setMess("The selected schedule has been successfully deleted.");
         }
       }
       return { ...prevState, data };
@@ -198,8 +225,6 @@ const Demo = () => {
           defaultCurrentDate={currentDate}
           defaultCurrentViewName="Week"
         />
-        {/* <DayView startDayHour={7} endDayHour={18} />
-        <WeekView startDayHour={7} endDayHour={19} /> */}
         <DayView startDayHour={7} endDayHour={18} cellDuration={60} />
         <WeekView startDayHour={7} endDayHour={19} cellDuration={60} />
         <MonthView />
@@ -232,8 +257,8 @@ const Demo = () => {
           textEditorComponent={TextEditor}
         />
       </Scheduler>
-      <PopupSuccess onClose={handleClose} open={sucesssD} />
-      <PopupFail onClose={handleClose} open={fail} message={message} />
+      <PopupSuccess onClose={handleClose} open={sucesssD} message={mess} />
+      <PopupFail onClose={handleClose} open={fail} message={mess} />
     </div>
   );
 };

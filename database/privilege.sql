@@ -99,7 +99,8 @@ BEGIN
     GRANT EXEC ON dbo.sp_getDentistHaveSchedule TO staffRole
     GRANT EXEC ON dbo.sp_addInvoice TO staffRole
     GRANT EXEC ON dbo.sp_viewAllPatientRecord to staffRole
-
+    GRANT EXEC ON dbo.sp_updateStaffProfile TO staffRole
+	GRANT EXEC ON dbo.sp_changeStaffPassword TO staffRole
 -- Dentist role
     GRANT EXEC ON dbo.sp_viewOneCustomer TO dentistRole
     GRANT EXEC ON dbo.sp_viewOneDentist TO dentistRole  
@@ -165,6 +166,7 @@ BEGIN
     GRANT EXEC ON dbo.sp_viewAllMedicine TO adminRole
     GRANT EXEC ON dbo.sp_viewPrescribeMedicine TO adminRole
     GRANT EXEC ON dbo.sp_addService TO adminRole
+	GRANT EXEC ON dbo.sp_deleteService TO adminRole 
     GRANT EXEC ON dbo.sp_updateService TO adminRole
     GRANT EXEC ON dbo.sp_viewOneService TO adminRole
     GRANT EXEC ON dbo.sp_viewAllService TO adminRole

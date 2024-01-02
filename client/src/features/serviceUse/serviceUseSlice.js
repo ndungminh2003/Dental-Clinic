@@ -10,27 +10,19 @@ const initialState = {
   message: "",
 };
 
-const getServiceUseByRecordId = async (recordId) => {
-  try{
-    const response = await Axios.get("service-use/get-service-use",
-    { params: { recordId } }
-    );
-    return response.data;
-  } catch (error) {
-    if (error.response) {
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      console.log(error.request);
-    } else {
-      console.log("Error", error.message);
+export const getServiceUseByRecordId = createAsyncThunk(
+  "serviceUse/get-service-use",
+  async (recordId, thunkAPI) => {
+    try {
+      return await serviceUseService.getServiceUseByRecordId(recordId);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
     }
   }
-};
+);
 
 export const createServiceUse = createAsyncThunk(
-  "service/create",
+  "serviceUse/create",
   async (data, thunkAPI) => {
     try {
       console.log("in here");
@@ -59,6 +51,22 @@ export const serviceUseSlice = createSlice({
         state.message = "success";
       })
       .addCase(createServiceUse.rejected, (state, action) => {
+        state.error = true;
+        state.success = false;
+        state.message = action.error;
+        state.loading = false;
+      })
+      .addCase(getServiceUseByRecordId.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getServiceUseByRecordId.fulfilled, (state, action) => {
+        state.error = false;
+        state.loading = false;
+        state.success = true;
+        state.service = action.payload;
+        state.message = "success";
+      })
+      .addCase(getServiceUseByRecordId.rejected, (state, action) => {
         state.error = true;
         state.success = false;
         state.message = action.error;

@@ -3,9 +3,9 @@ import Dialog from "@mui/material/Dialog";
 import PropTypes from "prop-types";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 export default function PopupSuccess(props) {
-  const { onClose, open } = props;
+  const { onClose, open, message } = props;
   return (
-    <Dialog onClose={onClose} open={open} className="p-5">
+    <Dialog onClose={onClose} open={open} className="p-5" me>
       <div className="w-[350px] h-[310px] border-4	border-emerald-500 p-5">
         <div>
           <div
@@ -22,7 +22,7 @@ export default function PopupSuccess(props) {
             SUCCESS!!
           </h1>
           <p className="text-center mt-5">
-            The selected schedule has been successfully deleted.
+            {message}
           </p>
         </div>
         <button
@@ -38,4 +38,5 @@ export default function PopupSuccess(props) {
 PopupSuccess.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
+  message:  PropTypes.string.isRequired,
 };

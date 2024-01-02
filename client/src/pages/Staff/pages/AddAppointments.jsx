@@ -1,14 +1,14 @@
 import React from "react";
-import { useState, } from "react";
+import { useState } from "react";
 import {
   ViewState,
   GroupingState,
   IntegratedGrouping,
 } from "@devexpress/dx-react-scheduler";
 import PropTypes from "prop-types";
-import { TextField, Autocomplete } from "@mui/material";
 import PhoneInput from "react-phone-input-2";
-
+import PopupSuccess from "../../../components/PopupSuccess";
+import PopupFail from "../../../components/PopupFail";
 import {
   Scheduler,
   DayView,
@@ -53,9 +53,12 @@ function SimpleDialog(props) {
   const { onClose, open, dentist } = props;
 
   const dispatch = useDispatch();
-  const error = useSelector((state) => state.appointment.error);
   const { user } = useSelector((state) => state.auth);
-
+  const { error, loading, success,message } = useSelector((state) => state.appointment);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isFail, setIsFail] = useState(false);
+  const [isFalse, setIsFalse] = useState("");
+  const [mess, setMess] = useState("");
   const [add, isAdd] = useState(false);
   const [field, setField] = useState(false);
   const [data, setData] = useState({
@@ -89,12 +92,46 @@ function SimpleDialog(props) {
     data.date,
     data.start,
   ]);
+  const resetFrom = () => {
+    setData({
+      phone: "",
+      name: "",
+      gender: "Male",
+      birthday: "",
+      address: "",
+      dentistId: 1,
+      date: "",
+      start: "",
+      value: [],
+    });
+  };
+
+  useEffect(() => {
+    if (loading) {
+      if (message === "success") {
+        setIsSuccess(true);
+        setMess("add appointment successfully!");
+      } else {
+        setIsFail(true);
+        setMess("add appointment unsuccessfully!");
+      }
+    }
+  }, [loading, success, message]);
+
   const handleClose = () => {
     onClose();
   };
-
-  const handleListItemClick = (value) => {
-    onClose(value);
+  const handleClosePopUp = () => {
+    if(isSuccess){
+      onClose();
+      resetFrom();
+    }
+    setIsSuccess(false);
+    setIsFail(false);
+  };
+  const handleListItemClick = () => {
+    onClose();
+    isAdd(false);
   };
   const handleListItemAdd = () => {
     isAdd(true);
@@ -108,11 +145,8 @@ function SimpleDialog(props) {
       staffId: user?.id,
       startTime: `${data.date} ${data.start}.000`,
     };
-    console.log("pushData", pushData);
-    console.log("field", field);
     if (field) {
       dispatch(makeAppointment(pushData));
-      console.log("message", error);
     }
   };
   const handleInputChange = (name, value) => {
@@ -142,12 +176,14 @@ function SimpleDialog(props) {
               className={` w-3/4  px-3 py-2 rounded-md  border border-gray-300	`}
             ></input>
           </div>
-          {add && (data.name.length === 0 || data.name.length > 50) && (
+          {add && (data.name.length === 0 || data.name.length > 50) ? (
             <>
               <h1 className="ml-[105px] text-xs text-red-600">
                 Patient name should have 1-50 characters
               </h1>
             </>
+          ) : (
+            <div className="h-4"></div>
           )}
           <div className="flex  grow mt-3">
             <div className="flex w-[250px] items-center">
@@ -179,12 +215,14 @@ function SimpleDialog(props) {
               </select>
             </div>
           </div>
-          {add && data.birthday.length == 0 && (
+          {add && data.birthday.length == 0 ? (
             <>
               <h1 className="ml-[105px] text-xs text-red-600">
                 Birthday required
               </h1>
             </>
+          ) : (
+            <div className="h-4"></div>
           )}
           <div className="flex items-center grow mt-3">
             <div className="w-1/4">
@@ -200,12 +238,14 @@ function SimpleDialog(props) {
               />
             </div>
           </div>
-          {add && (data.phone.length == 0 || data.phone.length > 11) && (
+          {add && (data.phone.length == 0 || data.phone.length > 11) ? (
             <>
               <h1 className="ml-[105px] text-xs text-red-600">
                 Phone should have 11 number including country code
               </h1>
             </>
+          ) : (
+            <div className="h-4"></div>
           )}
           <div className="flex items-center grow mt-3">
             <div className="w-1/4">
@@ -220,12 +260,14 @@ function SimpleDialog(props) {
               className={` w-3/4  px-3 py-2 rounded-md border border-gray-300	`}
             ></input>
           </div>
-          {add && (data.address.length === 0 || data.address.length > 50) && (
+          {add && (data.address.length === 0 || data.address.length > 50) ? (
             <>
               <h1 className="ml-[105px] text-xs text-red-600">
                 Patient address should have 1-120 characters
               </h1>
             </>
+          ) : (
+            <div className="h-4"></div>
           )}
           <div className="flex items-center grow mt-3">
             <div className="w-1/4">
@@ -277,19 +319,23 @@ function SimpleDialog(props) {
             </div>
           </div>
           <div className="flex">
-            {add && data.date.length === 0 && (
+            {add && data.date.length === 0 ? (
               <>
                 <h1 className="ml-[105px] text-xs text-red-600">
                   Date required
                 </h1>
               </>
+            ) : (
+              <div className="h-4"></div>
             )}
-            {add && data.start.length === 0 && (
+            {add && data.start.length === 0 ? (
               <>
                 <h1 className="ml-[132px] text-xs text-red-600">
                   Time required
                 </h1>
               </>
+            ) : (
+              <div className="h-4"></div>
             )}
           </div>
           <div className="flex mt-5 justify-end">
@@ -308,6 +354,12 @@ function SimpleDialog(props) {
           </div>
         </div>
       )}
+       <PopupSuccess
+        onClose={handleClosePopUp}
+        open={isSuccess}
+        message={mess}
+      />
+      <PopupFail onClose={handleClosePopUp} open={isFail} message={mess} />
     </Dialog>
   );
 }
@@ -354,9 +406,6 @@ function AddAppointments() {
       dentistData && dentistData.length > 0 ? dentistData[0].id : 0,
   });
 
-  useEffect(()=>{
-    console.log("schdeule",scheduleData);
-  },[scheduleData])
 
   const fetchata = async () => {
     try {

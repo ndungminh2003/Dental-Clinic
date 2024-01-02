@@ -23,8 +23,6 @@ const createDentistSchedule = async (req, res) => {
 
 const deleteDentistSchedule = async (req, res) => {
   const input = req.query;
-  console.log("hello");
-  console.log(input);
   try {
     const role = getRole(req);
     const db = await (await getDb(role))
@@ -79,7 +77,6 @@ const getAllScheduleAvailable = async (req, res) => {
   try {
     const role = getRole(req);
     const db = await (await getDb(role)).execute("sp_viewAllScheduleAvailable");
-    console.log("db",db.recordset)
     res.status(200).json(db.recordset);
   } catch (error) {
     if (error instanceof Error) {

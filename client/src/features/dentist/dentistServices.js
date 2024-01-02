@@ -39,9 +39,7 @@ const getAllDentist = async () => {
 
 const getOneDentist = async (dentistId) => {
   try {
-    const response = await Axios.get("dentist/get-one-dentist", {
-      dentistId,
-    });
+    const response = await Axios.get(`dentist/get-one-dentist/${dentistId}`);
     return response.data;
   } catch (error) {
     if (error.response) {

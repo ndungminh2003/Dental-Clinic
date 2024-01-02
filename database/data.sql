@@ -31,9 +31,8 @@ VALUES
 (N'Trần Văn Quang', '123123123123', '8498765432', N'Male', '1978-06-15', N'Nha sĩ chuyên nghiệp', 0),
 (N'Phạm Thị Hương', '123123123123', '8412345678', N'Female', '1990-12-05', N'Bác sĩ tận tâm', 1),
 (N'Lê Văn Tuấn', '123123123123', '84987654321', N'Male', '1983-04-25', N'Nha sỹ uy tín', 0),
-(N'Hồ Thị Mai', '123123123123', '84654321098', N'Female', '1987-10-30', N'Bác sĩ có kinh nghiệm', 0);
-
-
+(N'Hồ Thị Mai', '123123123123', '84654321098', N'Female', '1987-10-30', N'Bác sĩ có kinh nghiệm', 0),
+(N'Hồ Thị Hương', '123123123123', '84999898888', N'Female', '1987-09-30', N'Bác sĩ có kinh nghiệm', 0);
 -- Insert data into the STAFF table
 INSERT INTO STAFF (name, password, phoneNumber, gender, isBlocked)
 VALUES 

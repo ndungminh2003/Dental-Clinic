@@ -96,7 +96,7 @@ export default function AllService() {
     print: false,
     onRowsDelete: (rowsDeleted) => {
       for (let i = 0; i < rowsDeleted.data.length; i++) {
-        // dispatch(deleteService(services[rowsDeleted.data[i].dataIndex].id));
+        dispatch(deleteService(services[rowsDeleted.data[i].dataIndex].id));
       }
       toast.success("Successfully deleted service");
     },

@@ -30,6 +30,27 @@ export const createDentistAccount = createAsyncThunk(
     }
   }
 );
+export const updateDentistProfile = createAsyncThunk(
+  "dentist/change-dentist-profile",
+  async (dentist, thunkAPI) => {
+    try {
+      return await dentistServices.updateDentistProfile(dentist);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const changeDentistPassword = createAsyncThunk(
+  "dentist/change-dentist-password",
+  async (dentist, thunkAPI) => {
+    try {
+      return await dentistServices.changeDentistPassword(dentist);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
 
 export const resetState = createAction("Reset_all");
 
@@ -66,6 +87,38 @@ export const dentistSlice = createSlice({
         state.message = "success";
       })
       .addCase(getAllDentist.rejected, (state, action) => {
+        state.error = true;
+        state.success = false;
+        state.message = action.error;
+        state.loading = false;
+      })
+      .addCase(updateDentistProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateDentistProfile.fulfilled, (state, action) => {
+        state.error = false;
+        state.loading = false;
+        state.success = true;
+        state.dentist = action.payload;
+        state.message = "success";
+      })
+      .addCase(updateDentistProfile.rejected, (state, action) => {
+        state.error = true;
+        state.success = false;
+        state.message = action.error;
+        state.loading = false;
+      })
+      .addCase(changeDentistPassword.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(changeDentistPassword.fulfilled, (state, action) => {
+        state.error = false;
+        state.loading = false;
+        state.success = true;
+        state.dentist = action.payload;
+        state.message = "success";
+      })
+      .addCase(changeDentistPassword.rejected, (state, action) => {
         state.error = true;
         state.success = false;
         state.message = action.error;

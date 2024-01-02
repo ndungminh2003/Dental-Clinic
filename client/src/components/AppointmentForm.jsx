@@ -113,8 +113,10 @@ export default function Form() {
                       maxLength={50}
                       disabled={disabled}
                     ></input>
-                    {formik.touched.name && formik.errors.name && (
-                      <div>{formik.errors.name}</div>
+                    {formik.touched.name && formik.errors.name ? (
+                      <div className="text-base text-red-600">{formik.errors.name}</div>
+                    ): (
+                      <div className="h-6"></div>
                     )}
                   </div>
 
@@ -130,8 +132,10 @@ export default function Form() {
                       disabled={disabled}
                       className="rounded-xl w-[390px] h-[48px] text-2xl text-center"
                     ></input>
-                    {formik.touched.birthday && formik.errors.birthday && (
-                      <div>{formik.errors.birthday}</div>
+                    {formik.touched.birthday && formik.errors.birthday ? (
+                      <div className="text-base text-red-600">{formik.errors.birthday}</div>
+                    ):(
+                      <div className="h-6"></div>
                     )}
                   </div>
                 </div>
@@ -149,8 +153,10 @@ export default function Form() {
                     maxLength={120}
                     disabled={disabled}
                   ></input>
-                  {formik.touched.address && formik.errors.address && (
-                    <div>{formik.errors.address}</div>
+                  {formik.touched.address && formik.errors.address ? (
+                    <div className="text-base text-red-600">{formik.errors.address}</div>
+                  ): (
+                    <div className="h-6"></div>
                   )}
                 </div>
                 <div className="flex flex-row gap-16 items-center justify-center w-[1000px] ">
@@ -168,8 +174,10 @@ export default function Form() {
                       onBlur={formik.handleBlur}
                       disabled={disabled}
                     ></input>
-                    {formik.touched.phone && formik.errors.phone && (
-                      <div>{formik.errors.phone}</div>
+                    {formik.touched.phone && formik.errors.phone ? (
+                      <div className="text-base text-red-600">{formik.errors.phone}</div>
+                    ): (
+                      <div className="h-6"></div>
                     )}
                   </div>
                   <div className="flex flex-col gap-3">
@@ -187,8 +195,10 @@ export default function Form() {
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
                     </select>
-                    {formik.touched.gender && formik.errors.gender && (
-                      <div>{formik.errors.gender}</div>
+                    {formik.touched.gender && formik.errors.gender ? (
+                      <div className="text-base text-red-600">{formik.errors.gender}</div>
+                    ): (
+                      <div className="h-6"></div>
                     )}
                   </div>
                 </div>

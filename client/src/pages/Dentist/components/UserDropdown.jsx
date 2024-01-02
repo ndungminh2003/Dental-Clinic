@@ -69,7 +69,7 @@ export default function UserDropdown() {
   return (
     <div>
       <Stack direction="row" spacing={2}>
-        <div>
+        <div >
           <Button
             className="!text-black !capitalize"
             ref={anchorRef}
@@ -90,7 +90,7 @@ export default function UserDropdown() {
             </div>
           </Button>
           <Popper
-            className="z-10 w-[150px] border	border-zinc-300"
+            className="z-10 w-[205px] border	border-zinc-300"
             open={open}
             anchorEl={anchorRef.current}
             role={undefined}
@@ -113,10 +113,12 @@ export default function UserDropdown() {
                       id="composition-menu"
                       aria-labelledby="composition-button"
                       onKeyDown={handleListKeyDown}
-                    >
-                      <MenuItem onClick={handleProfile}>
-                        <NavLink to="profile">Profile</NavLink>
-                      </MenuItem>
+                    > 
+                      <NavLink to="profile" onClick={handleProfile}>
+                        <MenuItem >
+                          Profile
+                        </MenuItem>
+                      </NavLink>
                       <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
                     </MenuList>
                   </ClickAwayListener>

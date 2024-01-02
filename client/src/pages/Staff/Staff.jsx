@@ -10,7 +10,7 @@ export default function Staff() {
       </div>
       <div className ="grow">
         <Header/>
-        <div >
+        <div style={{ height: "calc(100vh - 80px)", overflowX: "auto" }}>
           <Outlet />
         </div>
       </div>

@@ -43,8 +43,14 @@ const login = async (req, res) => {
       httpOnly: true,
       maxAge: 72 * 60 * 60 * 1000,
     });
-    db.recordset[0].accessToken = accessToken;
-    db.recordset[0].role = input.role == "guest" ? "customer" : input.role;
+    console.log(db.recordset[0]);
+    console.log(db);
+    console.log(db.recordset.length > 0);
+    console.log(db.recordset.length);
+    if (db.recordset.length > 0) {
+      db.recordset[0].accessToken = accessToken;
+      db.recordset[0].role = input.role == "guest" ? "customer" : input.role;
+    }
     res.status(200).json(db.recordset[0]);
   } catch (error) {
     if (error instanceof Error) {

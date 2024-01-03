@@ -74,6 +74,7 @@ BEGIN
 				BEGIN
 					RAISERROR (N'Error: Account has been blocked', 16, 1)
 				END
+				WAITFOR DELAY '00:00:10';
 				SELECT * FROM CUSTOMER WHERE phoneNumber = @phone AND role = 'Customer' AND password = @password AND isBlocked = 0
 			END
 
@@ -251,7 +252,6 @@ BEGIN
 		DECLARE @sql3 NVARCHAR(128) = 'UPDATE '+ quotename(@role) +' SET isBlocked = @isBlocked WHERE id = @userId'
 		exec sp_executesql @sql3, N'@isBlocked BIT, @role VARCHAR(16), @userId INT',
 		@isBlocked = @isBlocked, @role = @role, @userId = @userId
-
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -588,7 +588,7 @@ AS
 SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
-	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
+	--SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
 		BEGIN TRAN
 		IF datediff(second, @startTime, GETDATE()) > 0
 		BEGIN
@@ -603,7 +603,7 @@ BEGIN
 				ROLLBACK TRAN
 			END
 		END
-		IF NOT EXISTS (SELECT 1 FROM SCHEDULE WHERE dentistId = @dentistId and startTime = @startTime and isBooked = 0)
+		IF NOT EXISTS (SELECT 1 FROM SCHEDULE WITH(UPDLOCK) WHERE dentistId = @dentistId and startTime = @startTime and isBooked = 0)
 		BEGIN
 			RAISERROR (N'Error: The schedule does not exist or has been booked.', 16, 1)
 			ROLLBACK TRAN
@@ -624,11 +624,12 @@ BEGIN
 			RAISERROR (N'Error: Phone number has been blocked.', 16, 1)
 			ROLLBACK TRAN
 		END
-		IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId != @dentistId AND a.customerId = @customerId)
+		IF EXISTS (SELECT 1 FROM APPOINTMENT a WITH(UPDLOCK) WHERE a.startTime = @startTime AND a.dentistId = @dentistId AND a.customerId != @customerId)
 		BEGIN 
-			RAISERROR (N'Error: Customers can only have one appointment with one dentist at a time.', 16, 1)
+			RAISERROR (N'Error: Appointment has been booked by another user.', 16, 1)
 			ROLLBACK TRAN
 		END
+		WAITFOR DELAY '00:00:05'
 		DECLARE @endTime DATETIME
 		SET @endTime = DATEADD(HOUR, 1, @startTime)
 		INSERT INTO APPOINTMENT VALUES(@dentistId, @customerId, @startTime, @endTime, N'Waiting', @staffId, NULL)
@@ -858,6 +859,7 @@ BEGIN
 			RAISERROR (N'Error: There are no appointments.', 16, 1)
 			ROLLBACK TRAN
 		END
+		WAITFOR DELAY '00:00:10'
 		SELECT * FROM APPOINTMENT WHERE dentistId = @dentistId
 		COMMIT TRAN
 	END TRY
@@ -996,7 +998,7 @@ AS
 SET XACT_ABORT, NOCOUNT ON
 BEGIN
 	BEGIN TRY
-	SET TRANSACTION ISOLATION LEVEL READ SERIALIZABLE
+	SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 		BEGIN TRAN
 			IF NOT EXISTS (
 				SELECT 1

@@ -73,6 +73,7 @@ BEGIN
 				BEGIN
 					RAISERROR (N'Error: Account has been blocked', 16, 1)
 				END
+				WAITFOR DELAY '00:00:10';
 				SELECT * FROM CUSTOMER WHERE phoneNumber = @phone AND role = 'Customer' AND password = @password AND isBlocked = 0
 			END
 
@@ -250,7 +251,6 @@ BEGIN
 		DECLARE @sql3 NVARCHAR(128) = 'UPDATE '+ quotename(@role) +' SET isBlocked = @isBlocked WHERE id = @userId'
 		exec sp_executesql @sql3, N'@isBlocked BIT, @role VARCHAR(16), @userId INT',
 		@isBlocked = @isBlocked, @role = @role, @userId = @userId
-
 		COMMIT TRAN
 	END TRY
 	BEGIN CATCH
@@ -565,7 +565,7 @@ BEGIN
 END
 
 
--- make appointment 
+-- make appointment
 -- 2 user cung make dirty read, lost update
 GO
 IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_makeAppointment')
@@ -622,16 +622,16 @@ BEGIN
 			RAISERROR (N'Error: Phone number has been blocked.', 16, 1)
 			ROLLBACK TRAN
 		END
-		IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId != @dentistId AND a.customerId = @customerId)
+		IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId = @dentistId AND a.customerId != @customerId)
 		BEGIN 
-			RAISERROR (N'Error: Customers can only have one appointment with one dentist at a time.', 16, 1)
+			RAISERROR (N'Error: Appointment has been booked by another user.', 16, 1)
 			ROLLBACK TRAN
 		END
+		WAITFOR DELAY '00:00:05'
 		DECLARE @endTime DATETIME
 		SET @endTime = DATEADD(HOUR, 1, @startTime)
 		INSERT INTO APPOINTMENT VALUES(@dentistId, @customerId, @startTime, @endTime, N'Waiting', @staffId, NULL)
 		UPDATE SCHEDULE SET isBooked = 1 WHERE dentistId = @dentistId and startTime = @startTime and endTime = @endTime
-		WAITFOR DELAY '00:00:10'
 		SELECT * FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId = @dentistId AND a.customerId = @customerId
 		COMMIT TRAN
 	END TRY
@@ -2167,4 +2167,3 @@ EXEC sp_viewScheduleAvailableOnDay '2023-12-28'
 -- EXEC sp_makeAppointment '0327116254', 'Customer4b', 'Nam', '2008-11-11', N'Hà Nội', 2, NULL, '2024-05-15 09:00:00', '2024-05-15 010:00:00'
 -- EXEC sp_addDentistSchedule '2023-11-15 07:00:00.000','2023-11-15 08:00:00.000',7
 -- EXEC sp_addPrescribeMedicine 1, 2, 100
-

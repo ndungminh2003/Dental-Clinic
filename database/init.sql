@@ -65,7 +65,7 @@ CREATE TABLE APPOINTMENT (
   status NVARCHAR(30) CHECK(status IN (N'In progress', N'Waiting', N'Completed', N'Cancelled', N'Creating patient records')),
   staffId INT,
   recordId INT,
-  CONSTRAINT PK_APPOINTMENT PRIMARY KEY (dentistId, startTime)
+  CONSTRAINT PK_APPOINTMENT PRIMARY KEY (dentistId, startTime, customerId)
 );
 
 CREATE TABLE PATIENT_RECORD(	

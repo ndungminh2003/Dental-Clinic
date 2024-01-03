@@ -56,6 +56,7 @@ BEGIN
 			ROLLBACK TRAN
 		END
 	END
+	WAITFOR DELAY '00:00:05'
 	IF UPDATE(startTime) or UPDATE(customerId)
 	BEGIN
 		IF EXISTS (SELECT 1 FROM APPOINTMENT a WHERE a.startTime = @startTime AND a.dentistId != @dentistId AND a.customerId = @customerId)
